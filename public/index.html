@@ -440,6 +440,19 @@ span.pchip{display:inline-block}
 .cl-next i{position:absolute;inset:0 auto 0 0;background:var(--lagoon-soft);width:0}
 .cl-next span{position:relative}
 
+/* spin & explain turns */
+#spinRes{display:flex;flex-direction:column;gap:12px}
+.sp-team{font-size:clamp(1.8rem,3.6vw,2.8rem);font-weight:900;border-left:8px solid var(--tc);padding-left:12px}
+.sp-cust{font-family:var(--f-display);font-stretch:108%;font-weight:800;font-size:clamp(1.2rem,2.4vw,1.6rem);background:var(--sun-soft);color:var(--sun);border-radius:14px;padding:12px 16px}
+.sp-cust.shuffling{opacity:.7}
+.sp-clock{display:flex;align-items:baseline;gap:14px;border-radius:16px;padding:10px 16px;background:var(--lagoon-soft);color:var(--lagoon)}
+.sp-clock .mono{font-size:3rem;font-weight:700;line-height:1}
+.sp-clock span:last-child{font-weight:800;font-size:1.05rem}
+.sp-clock.vote{background:var(--accent-soft);color:var(--accent)}
+.sp-clock.low .mono{animation:pulse .5s ease-in-out infinite}
+.sp-notes summary{cursor:pointer;color:var(--muted);font-weight:600;font-size:.88rem}
+.sp-notes[open] summary{margin-bottom:8px}
+
 @media (max-width:1100px){
   .board{grid-template-columns:repeat(3,minmax(0,1fr))}
   .board .cat{display:none}
@@ -500,12 +513,12 @@ span.pchip{display:inline-block}
 
     <!-- RUN OF SHOW -->
     <section class="view" id="v-plan" data-title="Run of show">
-      <div class="hd"><div><div class="eyebrow">Facilitator view · 120 minutes</div><h2>Run of show</h2>
+      <div class="hd"><div><div class="eyebrow">Facilitator view · 95 minutes</div><h2>Run of show</h2>
         <p>Every block puts the room to work. Teams of 4–6 sit at tables, score points all session, and the winning table takes the prize at the close. Slides are not used; this screen is the only thing on the projector.</p></div></div>
       <div class="split">
-        <div class="kpi"><b>7</b><span>activities, no lecture longer than 5 minutes</span></div>
+        <div class="kpi"><b>5</b><span>activities, no lecture longer than 5 minutes</span></div>
         <div class="kpi"><b>40+</b><span>BML products and updates covered</span></div>
-        <div class="kpi"><b>9</b><span>Maldivian customer personas to match</span></div>
+        <div class="kpi"><b>8</b><span>customer quotes to decode</span></div>
         <div class="kpi"><b>25 / 50 / 25</b><span>refresh / practice / reflect, as the programme asks</span></div>
       </div>
       <div class="ros" id="ros"></div>
@@ -559,38 +572,10 @@ span.pchip{display:inline-block}
       </div>
     </section>
 
-    <!-- MATCH -->
-    <section class="view" id="v-match" data-title="Match the Customer">
-      <div class="hd"><div><div class="eyebrow">Activity 5 · 25 min · product matching</div><h2>Match the Customer</h2>
-        <p>Give each table a persona. They have 4 minutes to choose the products that fit best, including at least one cross-sell, and to write the first question they would ask. Send the persona to the team phones: each team picks its products there. Press Reveal &amp; score: every team gets 10 points for each recommended product it picked.</p></div>
-        <div class="row"><button class="btn primary" id="mCheck">Reveal &amp; score</button></div></div>
-      <div class="match">
-        <div class="plist" id="plist"></div>
-        <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
-          <div class="marks" id="mPresent"></div>
-          <div class="panel persona" id="persona"></div>
-          <div class="panel pool" id="pool"></div>
-          <div class="legend"><span><i style="background:var(--good)"></i>Picked and recommended</span><span><i style="background:var(--good-soft);border:1px dashed var(--good)"></i>Recommended, missed</span><span><i style="background:var(--sun-soft);border:1px solid var(--sun)"></i>Also reasonable</span><span><i style="background:var(--bad-soft);border:1px solid var(--bad)"></i>Ask the table why</span></div>
-          <div class="panel answer" id="answer" hidden></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- SPOT -->
-    <section class="view" id="v-spot" data-title="Spot the Opportunity">
-      <div class="hd"><div><div class="eyebrow">Activity 6 · 15 min · cross-selling in routine service</div><h2>Spot the Opportunity</h2>
-        <p>A routine request arrives at the counter. Tables get 2 minutes to list every genuine opportunity hidden in it. Teams type their list on their phone. Show the team lists, reveal the opportunities one at a time, and tick the teams that spotted each one; the points are added automatically.</p></div>
-        <div class="row"><button class="btn" id="spPrev">Back</button><button class="btn" id="spNext">Next scenario</button></div></div>
-      <div class="spot">
-        <div class="scn" id="scn"></div>
-        <div class="opp" id="opp"></div>
-      </div>
-    </section>
-
     <!-- SPIN -->
     <section class="view" id="v-spin" data-title="Spin & Explain">
-      <div class="hd"><div><div class="eyebrow">Activity 7 · 10 min · confidence round</div><h2>Spin &amp; Explain</h2>
-        <p>One volunteer per table. Spin, then explain the product to an imaginary customer in 30 seconds, using Feature, Advantage and Benefit. The room votes with thumbs up. For a clear pitch, tick the volunteer's table and it gets 30 points.</p></div></div>
+      <div class="hd"><div><div class="eyebrow">Activity 5 · 20 min · confidence round</div><h2>Spin &amp; Explain</h2>
+        <p>Teams take turns. The team presses <b>SPIN</b> on its phone: the wheel picks a product and a curveball customer. One volunteer pitches it to that customer in 30 seconds using Feature, Advantage and Benefit, while every other team rates the pitch on its phone. Voting closes 20 seconds after the pitch and the team scores 10 points per average star (up to 50).</p></div></div>
       <div class="spinwrap">
         <div class="wheel-box"><div class="pointer" aria-hidden="true"></div><canvas id="wheel" width="1040" height="1040" aria-label="Product wheel"></canvas></div>
         <div class="result" id="spinRes"></div>
@@ -643,18 +628,16 @@ const store={get(k,d){try{const v=localStorage.getItem("kykp:"+k);return v?JSON.
 /* ================= DATA ================= */
 const VIEWS=[
  ["plan","Run of show","Facilitator plan"],["warmup","True or False","Warm-up · 10 min"],["library","Product Passport","Refresh · 25 min"],
- ["challenge","Product Challenge","Quiz · 20 min"],["clues","Listen for the Clue","Needs · 15 min"],["match","Match the Customer","Matching · 25 min"],
- ["spot","Spot the Opportunity","Cross-sell · 15 min"],["spin","Spin & Explain","Confidence · 10 min"],["close","Close","Commit · 5 min"]];
+ ["challenge","Product Challenge","Quiz · 20 min"],["clues","Listen for the Clue","Needs · 15 min"],
+ ["spin","Spin & Explain","Confidence · 20 min"],["close","Close","Commit · 5 min"]];
 
 const ROS=[
  {t:"0:00",d:"10 min",v:"warmup",h:"True or False warm-up",p:"Wakes the room up and shows what people don't know yet, before any teaching starts.",n:["Ask the 1–5 confidence question first and note the hand count.","Run 6–8 statements. Keep it fast: about 60 seconds each.","Start the session and show the join QR code. Each team joins on one phone (up to 6 teams)."]},
  {t:"0:10",d:"25 min",v:"library",h:"Product Passport: jigsaw teach-back",p:"Staff refresh the products by teaching each other. People remember what they explain far better than what they hear.",n:["Open product picking: each table takes 2 products on its phone, and no two tables can take the same one.","10 minutes to prepare, then 3 minutes per table to teach.","The other tables score each teach-back on their phones. You correct and add detail in under 60 seconds."]},
  {t:"0:35",d:"20 min",v:"challenge",h:"BML Product Challenge quiz",p:"Checks recall across all families straight after the teach-backs. Includes the Islamic structure names customers will now ask about.",n:["Tables take turns choosing a tile. Every team answers on its phone, and every correct team scores.","Leave the 400-point questions until the end to build tension.","After each answer, ask: how would you say that to a customer?"]},
  {t:"0:55",d:"15 min",v:"clues",h:"Listen for the Clue",p:"Moves from knowing products to spotting needs. Introduces ASK · LISTEN · LINK · LEAD.",n:["2 minutes on the four clue types, then press Start.","It runs by itself: each customer gets 3 timed questions on the phones (clue, product, next question), 20 points each, +10 for the fastest.","Read each quote aloud and use the 8-second answer pause to say why the right answer wins."]},
- {t:"1:10",d:"25 min",v:"match",h:"Match the Customer",p:"The core practical exercise. Tables build a complete recommendation, including cross-sells, for a realistic Maldivian customer.",n:["One persona per table, with 4 minutes to prepare.","Send the persona to the team phones. Teams pick products there; Reveal & score marks every team at once.","Discuss the red chips. They aren't always wrong, so ask the table to justify them."]},
- {t:"1:35",d:"15 min",v:"spot",h:"Spot the Opportunity",p:"Cross-selling inside routine service: a cash withdrawal, a statement request, a declined card.",n:["2 minutes per scenario. All tables work at once.","Reveal the opportunities one by one and tick the tables that listed each one.","Stress the difference between a genuine need and pushing a product."]},
- {t:"1:50",d:"10 min",v:"spin",h:"Spin & Explain",p:"Builds confidence through a 30-second product pitch using Feature, Advantage and Benefit.",n:["One volunteer per table. The timer starts automatically after the spin.","The room gives thumbs up or down. Coach in one sentence."]},
- {t:"2:00",d:"5 min",v:"close",h:"Close and commitments",p:"Winner announced, confidence check repeated, three commitments written on sticky notes.",n:["Ask the confidence question again and compare with the opening count.","Collect the sticky notes for the Day 2 sales simulation."]}
+ {t:"1:10",d:"20 min",v:"spin",h:"Spin & Explain",p:"Builds confidence through a 30-second pitch to a curveball customer, scored by the other teams on their phones.",n:["Each team takes a turn: it presses SPIN on its phone, the wheel picks a product and a customer.","One volunteer pitches using Feature, Advantage and Benefit; the other teams rate it on their phones.","Voting closes by itself; coach in one sentence, then press Next team."]},
+ {t:"1:30",d:"5 min",v:"close",h:"Close and commitments",p:"Winner announced, confidence check repeated, three commitments written on sticky notes.",n:["Ask the confidence question again and compare with the opening count.","Collect the sticky notes for the Day 2 sales simulation."]}
 ];
 
 // Statements are deliberately near-misses: the right product with a wrong threshold, a swapped condition,
@@ -761,58 +744,6 @@ const CLUES=[
  {q:"I have about 50,000 just sitting in savings. I don't touch it.",by:"Customer, 39, teacher",clue:"Goal: idle money",need:"A better return without risk",lead:"Investment Account (MVR 10,000–50,000: 1.60% for 6 months, 1.70% for 12 months, auto-renew)",ask:"\"Is there a date when you might need it? That tells us whether 6 or 12 months fits.\""},
  {q:"I've been freelancing as a video editor for two years. I really need proper gear.",by:"Freelancer, 24",clue:"Goal and life stage: young self-employed",need:"Start-up capital without collateral",lead:"Youth Entrepreneurship Financing (up to MVR 150,000, 7%, decision in 24h) · Startup Grant 2026",ask:"\"Is your freelance income coming into a BML account? And have you thought about registering the business?\""},
  {q:"Every month I come here on Friday to send money to my family in Dhaka.",by:"Expatriate worker, 33",clue:"Pain point: repeated branch visits",need:"Remit easily and cheaply without queuing",lead:"Expatriate Account · Mobile Banking outward TT up to USD 5,000 · Debit card",ask:"\"Shall we set up the app together now, so next month you can send it from your room?\""}
-];
-
-const POOL=[
- ["Accounts",[["cur","Current Account"],["sav","Savings Account"],["kids","Kids' Saver"],["inv","Investment Account"],["expat","Expatriate Account"],["usdacc","USD Account"]]],
- ["Cards",[["debit","Debit Card"],["usddebit","Visa Platinum Debit (USD)"],["credit","Islamic Visa Credit Card"],["infinite","Visa Infinite"],["student","BML Student Card"],["travel","Travel Card (USD prepaid)"],["masv","Masveriyaa Card"]]],
- ["Financing",[["lui","Lui Financing"],["homep","Home Purchase"],["hometour","Home Financing – Tourism Employees"],["homec","Home Construction"],["life","Lifestyle Financing"],["kiyavaa","Kiyavaa Financing"],["green","Green Financing"],["yef","Youth Entrepreneurship Financing"],["micro","Islamic Micro Financing (SME Digital)"],["grant","Startup Grant 2026"]]],
- ["Digital",[["app","Mobile Banking & Mobile Pay"],["remit","Online remittance (TT)"],["aaya","Aaya assistant"]]]
-];
-const PNAME=Object.fromEntries(POOL.flatMap(g=>g[1]));
-
-const PERSONAS=[
- {id:"ahmed",n:"Ahmed",age:29,place:"Works in Baa Atoll, family in Hulhumalé",col:"#0b7f83",story:"F&B supervisor at a resort, paid in US dollars plus service charge. He has been sending money home by cash through a colleague. He came in to deposit USD cash.",says:"\"I want to buy a flat in Hulhumalé before I'm 32.\"",ideal:{hometour:"7.5% p.a., and his service charge counts. The income must be routed through BML, which is the reason to move his salary.",usdacc:"Keeps USD income in USD, and is needed for USD cards.",usddebit:"Spend USD directly. USD 5,000 a day abroad.",app:"Apply for home financing in the app, and stop sending cash through colleagues."},ok:["homep","remit","inv"],q:"\"Is your salary paid into a BML account at the moment, or somewhere else?\""},
- {id:"aishath",n:"Aishath",age:34,place:"Malé",col:"#c4122f",story:"Mother of two (8 and 13). She came to deposit MVR 20,000 in cash gifts the children received at Eid. Her 13-year-old wants to start shopping online.",says:"\"I just want it somewhere safe for the kids.\"",ideal:{kids:"3% p.a. on MVR, versus 1.5% in her own savings. One account per child.",student:"For the 13-year-old: no fees, a 0.5% rebate and full parent control.",app:"Set up free scheduled monthly transfers and see the student card alerts."},ok:["inv","sav"],q:"\"Would you like to keep adding to it every month, even a small amount?\""},
- {id:"raju",n:"Raju",age:31,place:"Construction site, Hulhumalé",col:"#b77900",story:"Indian construction supervisor on a new work permit valid for 2 years. He is paid in cash at the moment and sends money to his family in Kerala every month.",says:"\"My employer says they want to pay us by bank now.\"",ideal:{expat:"His permit qualifies (more than 1 month of validity). He can open an INR account online too.",debit:"Pay and withdraw without carrying salary in cash.",remit:"Send home up to USD 5,000 from the app, with no Friday queue.",app:"The whole relationship runs from his phone."},ok:["aaya"],q:"\"How do you send money home now, and how long does it take you each month?\""},
- {id:"hassan",n:"Hassan",age:50,place:"Owns land in Malé",col:"#4b5fb0",story:"His daughter Mariyam has been accepted to an ACCA programme in Colombo, starting in March. Hassan owns family land and has a steady salary.",says:"\"I want her to focus on studying, not on money.\"",ideal:{kiyavaa:"Secured: 2.5%, repayments 10 years after studies, collateral 150%, Family Takaful needed. Unsecured is also possible for ACCA (10%, disbursed in USD).",student:"USD 1,200 a month for a student living abroad, with Hassan watching every transaction.",travel:"A USD prepaid card for her first trip and emergencies."},ok:["app","remit"],q:"\"Would you prefer the lowest rate using your land as security, or to keep the land free?\""},
- {id:"shifa",n:"Shifa",age:26,place:"Hulhumalé",col:"#7a3fa0",story:"Freelance graphic designer for two years, earning from local clients into her BML account. She wants to open a small studio with a printer and two laptops.",says:"\"Banks always ask for collateral. I don't have any.\"",ideal:{yef:"Up to MVR 150,000, unsecured, 7%, a decision in 24h, plus SME Digital mentoring. Built for her age group.",grant:"Applications opened 20 Oct 2026. Check eligibility before referring.",cur:"Keep business income separate from personal spending."},ok:["micro","app","credit"],q:"\"What would the studio cost to set up, and how much do you earn in a typical month?\""},
- {id:"moosa",n:"Moosa",age:58,place:"Owns a building in Malé",col:"#16794a",story:"Rents out three floors, with rent paid into BML for years. He wants to refurbish the top floor and has been reading about solar panels for the roof.",says:"\"The rent comes in, but the building is getting old.\"",ideal:{life:"Built for rental income. Secured up to MVR 1.5m at 12%, with no equity required.",green:"Solar on the roof. No processing fee, 10% secured.",inv:"Park surplus rent at up to 2.0% while the refurbishment is planned."},ok:["homec","app"],q:"\"Do you have a valid rental agreement for each floor? We'll need those.\""},
- {id:"zuha",n:"Zuha",age:38,place:"Fuvahmulah",col:"#c4122f",story:"Government employee whose salary (MVR 26,000) has been paid into BML for 5 years. She wants a new sofa set and fridge for Eid, travels to Bangkok twice a year, and complains her card fails online.",says:"\"I hate carrying cash when I travel.\"",ideal:{lui:"Buy from an Authorized Dealer under Murabaha. With 12 months of BML payroll she may get instant approval.",credit:"Her income qualifies for Gold (MVR 23,130+). The Islamic Visa Credit Card earns Rewards for flights.",travel:"A USD Travel Card for Bangkok trips, safer than cash."},ok:["app","usddebit"],q:"\"Would you rather pay for the furniture over time, or is this a one-off purchase you'd like to clear quickly?\""},
- {id:"hawwa",n:"Hawwa",age:67,place:"Kulhudhuffushi",col:"#0b7f83",story:"Retired, with MVR 800,000 from the sale of a house in her Savings Account. She visits the service centre every week to check her balance and asks staff to help.",says:"\"I don't trust phones with my money.\"",ideal:{inv:"The MVR 50,001–1m tier earns 1.70% (6 months) or 1.80% (12 months), with auto-renewal.",app:"Assisted onboarding: show her the balance on her own phone and do it with her the first time.",aaya:"Help is available any time, and she can reach a staff member through it."},ok:["sav"],q:"\"Will you need some of this money soon? We can keep part of it available and invest the rest.\""},
- {id:"ibrahim",n:"Ibrahim",age:45,place:"Fisherman, Gaafu Dhaalu",col:"#4b5fb0",story:"Skipper on a pole-and-line vessel. His income comes in irregular catches and he pays his crew in cash. His boat engine needs an overhaul.",says:"\"When the fish are good, the money is good. When not, nothing.\"",ideal:{masv:"Made for the fishing industry: collect and make payments, top up free with MobilePay.",sav:"Build a buffer in the good months, earning profit from MVR 5,000.",app:"Pay the crew digitally instead of in cash."},ok:["lui","micro"],q:"\"How do you pay your crew today, and how do you get paid for the catch?\""}
-];
-
-const SPOT=[
- {h:"Cash at the counter",tk:"Service request · Cash withdrawal",p:"Fathimath, 41, wants to withdraw MVR 15,000 in cash to pay the deposit on a dining set at a furniture shop. Her salary has been paid into BML for 3 years.",o:[
-  ["Lui Financing through an Authorized Dealer","She doesn't have to drain her savings. With 3 years of BML payroll she may get instant approval.",20],
-  ["Pay digitally instead of in cash","Transfer to the shop or pay by card. It's safer than carrying MVR 15,000.",10],
-  ["Credit card eligibility","Income routed for 6+ months: check her tier and BML Rewards.",20],
-  ["Activate the app if she isn't using it","Most of her next visit could happen on her phone.",10],
-  ["Ask about the bigger picture","\"New furniture: are you moving?\" might open a Home Purchase conversation.",30]]},
- {h:"Statement for a visa",tk:"Service request · Printed statement",p:"Ali, 33, needs a printed bank statement for a Schengen visa. He is visiting Europe with his wife in two months.",o:[
-  ["Statements are free in Internet Banking","Show him how, now. Next time he won't need to come in.",10],
-  ["Travel Card (USD prepaid)","Load euros' worth in USD for the trip, safer than cash.",20],
-  ["Platinum credit card benefits","If his income qualifies: lounge access and travel insurance.",20],
-  ["Foreign transaction limits","Make sure his card's travel limits suit a two-week trip.",10],
-  ["Ask the purpose of travel","Holiday, family, studies or medical? Each one points to different products.",20]]},
- {h:"Declined online",tk:"Complaint · Card declined",p:"Nadha, 27, is upset. Her MVR debit card was declined while she was booking a flight on an airline website last night.",o:[
-  ["Explain the e-commerce allocation calmly","Her card isn't faulty. The travel category has a daily allocation that resets at 7:00am.",20],
-  ["The travel rule: 3 transactions in 3 months","Help her plan her travel bookings within it.",10],
-  ["USD card if she earns USD","A USD card is the alternative the bank recommends.",20],
-  ["Show her the card controls in the app","Check status and limits without calling.",10],
-  ["Turn the complaint into trust","Acknowledge it, explain, offer a next step. She leaves with a solution.",30]]},
- {h:"First salary",tk:"Service request · Card collection",p:"Hamdhan, 21, is collecting his first debit card. He just joined a company that pays salaries through BML. He mentions he edits videos on weekends.",o:[
-  ["Set up the app and Mobile Pay now","Make digital his default from the first day.",10],
-  ["Savings Account goal","Profit from MVR 5,000. Help him set a monthly transfer.",10],
-  ["Credit card after 6 months of routing","Classic tier from MVR 4,000 a month. Tell him when he'll qualify.",20],
-  ["Youth Entrepreneurship Financing","The weekend editing is a business idea. He could get up to MVR 150,000.",30],
-  ["Lui Financing after 12 months of payroll","Explain how BML payroll leads to instant approval later.",10]]},
- {h:"New address after marriage",tk:"Service request · Update details",p:"Leena and Faisal, both 28, want to update their address. They just married and are renting a flat in Hulhumalé. Both work in the private sector.",o:[
-  ["Home Purchase Financing","5% equity, which can come from the Pension Fund, and up to 25 years. They can apply jointly.",30],
-  ["Joint account","For shared household expenses.",10],
-  ["Lui for furnishing","Unsecured, with no guarantor.",10],
-  ["Approved developer projects","Over 30 bank-approved projects. Share the list.",20]]}
 ];
 
 const WHEEL=["Kids' Saver","Investment Account","Expatriate Account","Islamic Visa Credit Card","BML Student Card","Visa Infinite","Lui Financing","Home Purchase","Green Financing","Kiyavaa Financing","Youth Entrepreneurship","Mobile Pay & Aaya"];
@@ -943,7 +874,7 @@ function changed(full){
   chFull=chFull||!!full;if(chQueued)return;chQueued=true;
   queueMicrotask(()=>{chQueued=false;const f=chFull;chFull=false;
     renderTeams();renderBoard();renderLeader();
-    if(f){renderMF();renderPicks();renderLib();renderTeach();renderClue();renderMatch();renderSpot();if(spinPick&&!spinning)renderSpinRes(spinPick);if(modalKind==="quiz")renderQuizLive()}
+    if(f){renderMF();renderPicks();renderLib();renderTeach();renderClue();if(!spinning)renderSpin();if(modalKind==="quiz")renderQuizLive()}
     if(modalKind==="sess")renderSess();
     if(modalKind==="stand")renderStandings();
     if(f)renderFinishBtns();
@@ -1090,7 +1021,7 @@ function stopPickPoll(){clearInterval(pickPoll);pickPoll=null}
 // Finishing a game records it as complete and puts the standings on the projector and on every team phone:
 // each team's score in the game just finished, its total, and its score in every finished game so far.
 const GAMES=[["mythfact","True or False","warmup"],["teach","Product Passport","library"],["quiz","Product Challenge","challenge"],
-  ["clue","Listen for the Clue","clues"],["match","Match the Customer","match"],["spot","Spot the Opportunity","spot"],["spin","Spin & Explain","spin"]];
+  ["clue","Listen for the Clue","clues"],["spin","Spin & Explain","spin"]];
 const gameName=k=>(GAMES.find(g=>g[0]===k)||[k,ACT[k]||k])[1];
 let finished=[];
 const gameScore=(team,key)=>{let s=0;for(const e of events.values())if(e.team_id===team&&e.activity===key)s+=e.points;return s};
@@ -1554,75 +1485,15 @@ const goClue=d=>{clI=(clI+d+CLUES.length)%CLUES.length;clStep=0;clPhase="idle";r
 $("#clNext").onclick=()=>goClue(1);
 $("#clPrev").onclick=()=>goClue(-1);
 
-/* ================= MATCH ================= */
-// Every team picks products for the persona on its phone; Check scores 10 per recommended product picked.
-let pI=0;
-const ini=n=>n.slice(0,1);
-const mRef=p=>"match:"+p.id;
-ROUND_OPENERS.match=ref=>{const p=PERSONAS.find(x=>"match:"+x.id===ref);
-  return openRound("multi","match",ref,10,{type:"match",title:"Match the Customer",persona:{n:p.n,age:p.age,place:p.place,story:p.story,says:p.says},pool:POOL},{ideal:Object.keys(p.ideal)})};
-function renderPlist(){
-  $("#plist").innerHTML=PERSONAS.map((p,i)=>{const r=roundFor(mRef(p));return `<button data-p="${i}" aria-pressed="${i===pI}"><span class="av" style="background:${p.col}">${ini(p.n)}</span><span>${esc(p.n)}, ${p.age}<small>${esc(p.place)}</small></span>${r&&r.status==="closed"?`<span class="done-mark">✓</span>`:""}</button>`}).join("");
-}
-$("#plist").onclick=e=>{const b=e.target.closest("button");if(!b)return;if(isHost()&&liveRound&&liveRound.ref===mRef(PERSONAS[pI]))cancelRound();pI=+b.dataset.p;renderMatch()};
-function renderMatch(){
-  renderPlist();
-  const p=PERSONAS[pI],ref=mRef(p),r=roundFor(ref),checked=r&&r.status==="closed";
-  $("#mPresent").innerHTML=teams.length?(checked?"":roundCtl(ref,"Send persona to team phones")):noTeams();
-  $("#persona").innerHTML=`<div class="big-av" style="background:${p.col}">${ini(p.n)}</div><div style="min-width:0"><div class="eyebrow">Persona ${pI+1} of ${PERSONAS.length}</div><h3>${esc(p.n)}, ${p.age}</h3><div class="meta">${esc(p.place)}</div><p class="story">${esc(p.story)}</p><div class="says">${esc(p.says)}</div></div>`;
-  $("#pool").innerHTML=POOL.map(g=>`<div class="pool-fam"><span>${g[0]}</span>${g[1].map(([id,n])=>{
-    const cls=checked?(id in p.ideal?"hit":p.ok.includes(id)?"okx":""):"";
-    return `<span class="pchip ${cls}">${esc(n)}</span>`}).join("")}</div>`).join("");
-  const ans=$("#answer");
-  $("#mCheck").disabled=!!checked;
-  if(!checked){ans.hidden=true;refreshRoundStatus();return}
-  const res=r.result.teams||{},tot=Object.keys(p.ideal).length;
-  ans.hidden=false;
-  ans.innerHTML=`<div class="scoreline">Recommended for ${esc(p.n)}</div>
-   ${Object.entries(p.ideal).map(([id,why])=>`<div class="ln"><b>${esc(PNAME[id])}</b><span>${esc(why)}</span></div>`).join("")}
-   ${p.ok.length?`<div class="ln"><b>Also reasonable</b><span>${p.ok.map(id=>esc(PNAME[id])).join(", ")}</span></div>`:""}
-   <div class="ln"><b>A strong first question</b><span>${esc(p.q)}</span></div>
-   <div class="eyebrow" style="margin-top:6px">Team picks · 10 points per recommended product</div>
-   ${sortedTeams().map(t=>{const x=res[t.id]||{},picks=x.answer&&Array.isArray(x.answer.picks)?x.answer.picks:[];
-     const hit=picks.filter(id=>id in p.ideal),extra=picks.filter(id=>!(id in p.ideal)&&!p.ok.includes(id));
-     return `<div class="ln team-ln" style="--tc:${tcol(t)}"><b>${esc(t.name)} · ${hit.length}/${tot} <span class="mono">${x.points>0?"+"+x.points:"0"}</span></b><span>${picks.length?picks.map(id=>`<span class="tag ${id in p.ideal?"hit":p.ok.includes(id)?"okx":"ask"}">${esc(PNAME[id]||id)}</span>`).join(" "):"No picks sent"}${extra.length?`<br><small class="muted">Ask why: ${extra.map(id=>esc(PNAME[id]||id)).join(", ")}</small>`:""}</span></div>`}).join("")}
-   ${markRow(ref+":adj",10,"match","Bonus for a strong first question (+10)")}`;
-  refreshMarks();
-}
-$("#mCheck").onclick=async()=>{
-  const ref=mRef(PERSONAS[pI]);
-  if(isHost()&&liveRound&&liveRound.ref===ref){try{scoredToast(await closeRound())}catch(_){return}}
-  else if(!roundFor(ref)){toast("Send the persona to the team phones first.",true);return}
-  renderMatch();
-};
-
-/* ================= SPOT ================= */
-// Teams list the opportunities on their phone; reveal them, show the team lists, and tick who spotted each one.
-let sI=0,sShown=new Set();
-const sRef=i=>"spot:"+i;
-ROUND_OPENERS.spot=ref=>{const i=+ref.split(":")[1],s=SPOT[i];
-  return openRound("text","spot",ref,0,{type:"text",title:"Spot the Opportunity",text:s.p,sub:s.tk,fields:["Every opportunity you spotted, one per line"]},{})};
-function renderSpot(){
-  const s=SPOT[sI],ref=sRef(sI),r=roundFor(ref),closed=r&&r.status==="closed",res=closed&&r.result?r.result.teams||{}:{};
-  $("#scn").innerHTML=`<span class="ticket">Scenario ${sI+1} of ${SPOT.length} · ${esc(s.tk)}</span><h3>${esc(s.h)}</h3><p>${esc(s.p)}</p>
-   <div class="row"><button class="btn" id="spTimer">Start 2-minute timer</button><button class="btn" id="spAll">Reveal all</button>${isHost()&&liveRound&&liveRound.ref===ref?`<button class="btn primary" id="spShow">Show team lists</button>`:""}</div>
-   ${teams.length?(closed?"":roundCtl(ref)):noTeams()}
-   ${closed?`<div class="tans">${sortedTeams().map(t=>{const a=(res[t.id]||{}).answer,txt=a&&Array.isArray(a.fields)?a.fields[0]:"";return `<div class="ta" style="--tc:${tcol(t)}"><b>${esc(t.name)}</b><div class="ta-txt pre">${esc(txt||"No list sent")}</div></div>`}).join("")}</div>`:""}
-   <div class="note">Total available: <b class="mono">${s.o.reduce((a,o)=>a+o[2],0)}</b> points per table. Under each revealed opportunity, tick the tables that listed it.</div>`;
-  $("#opp").innerHTML=s.o.map((o,i)=>`<div class="o ${sShown.has(i)?"shown":""}"><button class="o-head" data-i="${i}" aria-label="${sShown.has(i)?esc(o[0]):"Reveal opportunity "+(i+1)}"><span class="num">${i+1}</span><span class="txt"><b>${esc(o[0])}</b><span>${esc(o[1])}</span></span><span class="pts">+${o[2]}</span></button>
-    ${sShown.has(i)?markRow(`spot:${sI}:${i}`,o[2],"spot","Listed it"):""}</div>`).join("");
-  $("#spTimer").onclick=()=>{clockSet(2);clockToggle()};
-  $("#spAll").onclick=()=>{s.o.forEach((_,i)=>sShown.add(i));renderSpot()};
-  const sh=$("#spShow");if(sh)sh.onclick=async()=>{try{await closeRound()}catch(_){}renderSpot()};
-  refreshMarks();refreshRoundStatus();
-}
-$("#opp").onclick=e=>{const b=e.target.closest("button.o-head");if(!b)return;sShown.add(+b.dataset.i);renderSpot()};
-const goSpot=d=>{if(isHost()&&liveRound&&liveRound.ref===sRef(sI))cancelRound();sI=(sI+d+SPOT.length)%SPOT.length;sShown=new Set();renderSpot()};
-$("#spNext").onclick=()=>goSpot(1);
-$("#spPrev").onclick=()=>goSpot(-1);
-
 /* ================= SPIN ================= */
-const cv=$("#wheel"),cx=cv.getContext("2d");let ang=0,spinning=false,spinPick=null,spinId=0,spT=30,spInt=null;
+// A turn: the team whose turn it is presses SPIN on its phone (or the facilitator spins for it), the wheel picks a
+// product and a curveball customer, the team pitches for 30 seconds, and every other team rates Feature, Advantage
+// and Benefit on its phone. Voting closes 20 seconds after the pitch (or once every phone has voted), the team
+// scores 10 points per average star (max 50), and the turn passes to the next team.
+const SP_PITCH=30,SP_VOTE=20,SP_CRIT=["Feature","Advantage","Benefit"];
+const SP_CUSTOMERS=["Retired teacher, 67, nervous about phones","Resort worker paid in US dollars","University student, 19, first job","Expatriate construction worker","Small shop owner in Addu","Newly married couple renting in Hulhumalé","Fisherman with an irregular income","Busy doctor who hates queues"];
+const cv=$("#wheel"),cx=cv.getContext("2d");let ang=0,spinning=false;
+let spPhase="idle",spTeam=null,spTurn=store.get("spturn",0),spPick=null,spCust=null,spPitchEnd=0,spVoteEnd=0,spResult=null,spShuffle=null;
 const WCOL=["#c4122f","#0f2238","#0b7f83","#b77900","#4b5fb0","#16794a"];
 function drawWheel(){
   const W=cv.width,R=W/2-10,n=WHEEL.length,seg=2*Math.PI/n;
@@ -1635,31 +1506,101 @@ function drawWheel(){
   cx.restore();
 }
 function pickAt(a){const n=WHEEL.length,seg=2*Math.PI/n;let p=(-Math.PI/2-a)%(2*Math.PI);if(p<0)p+=2*Math.PI;return Math.floor(p/seg)%n}
-function spin(){
-  if(spinning)return;spinning=true;clearInterval(spInt);
+function spinWheel(done){
+  if(spinning)return;spinning=true;
   const start=ang,delta=2*Math.PI*(5+Math.random()*3)+Math.random()*2*Math.PI,dur=matchMedia("(prefers-reduced-motion: reduce)").matches?10:4200,t0=performance.now();
-  renderSpinRes(null);
-  const step=now=>{const k=Math.min(1,(now-t0)/dur),e=1-Math.pow(1-k,4);ang=start+delta*e;drawWheel();if(k<1)requestAnimationFrame(step);else{spinning=false;spinPick=WHEEL[pickAt(ang)];spinId=Date.now();renderSpinRes(spinPick);startSpinTimer()}};
+  const step=now=>{const k=Math.min(1,(now-t0)/dur),e=1-Math.pow(1-k,4);ang=start+delta*e;drawWheel();if(k<1)requestAnimationFrame(step);else{spinning=false;done(WHEEL[pickAt(ang)])}};
   requestAnimationFrame(step);
 }
-function startSpinTimer(){spT=30;clearInterval(spInt);const el=()=>$("#spT");spInt=setInterval(()=>{spT--;if(el()){el().textContent=fmt(spT);el().classList.toggle("low",spT<=5)}if(spT<=0){clearInterval(spInt);beep()}},1000)}
-function renderSpinRes(p){
-  if(!p){$("#spinRes").innerHTML=`<div class="eyebrow">Ready</div><h3>${spinning?"Spinning…":"Tap the wheel or Spin"}</h3>
-    <p style="margin:0;color:var(--muted)">Structure the 30 seconds as Feature, then Advantage, then Benefit ("which means for you…"). End with a next step.</p>
-    <div class="row"><button class="btn primary" id="spinBtn" ${spinning?"disabled":""}>Spin</button></div>`;
-    const b=$("#spinBtn");if(b)b.onclick=spin;return}
-  const f=FAB[p];
-  $("#spinRes").innerHTML=`<div class="eyebrow">Explain in 30 seconds</div><h3>${esc(p)}</h3><div class="bigtimer" id="spT">${fmt(spT)}</div>
-   <div class="fab"><div><b>Feature</b><span>${esc(f[0])}</span></div><div><b>Advantage</b><span>${esc(f[1])}</span></div><div><b>Benefit</b><span>${esc(f[2])}</span></div></div>
-   <p style="margin:0;color:var(--muted);font-size:.9rem">These are coaching notes. Compare them with the pitch once the volunteer has finished.</p>
-   ${markRow("spin:"+spinId,30,"spin","Thumbs up from the room: tick the volunteer's table (+30)")}<div class="row"><button class="btn primary" id="spinBtn">Spin again</button></div>`;
-  $("#spinBtn").onclick=spin;
-  refreshMarks();
+const spUp=()=>{const st=sortedTeams();return st.length?st[spTurn%st.length]:null};
+const spRateLive=()=>liveRound&&liveRound.payload&&liveRound.payload.type==="rate"&&String(liveRound.ref).startsWith("spinrate:")?liveRound:null;
+function renderSpin(){
+  const el=$("#spinRes");if(!spTeam||!teamById(spTeam))spTeam=(spUp()||{}).id||null;
+  const t=teamById(spTeam),st=sortedTeams(),stars=v=>`<span class="stars-row">${[1,2,3,4,5].map(i=>`<i class="${v>=i-0.25?"on":v>=i-0.75?"half":""}">★</i>`).join("")}</span>`;
+  let h="";
+  if(!teams.length)h=`<div class="eyebrow">Spin &amp; Explain</div>${noTeams()}`;
+  else if(spPhase==="idle"){
+    h=`<div class="eyebrow">Up next</div><h3 class="sp-team" style="--tc:${t?tcol(t):"var(--line)"}">${esc(t?t.name:"")}</h3>
+      ${isHost()?`<div class="marks"><span class="eyebrow">Or choose a team</span>${st.map(x=>`<button class="mk" style="--tc:${tcol(x)}" data-spteam="${x.id}" aria-pressed="${x.id===spTeam}">${esc(x.name)}${[...events.values()].some(e=>e.team_id===x.id&&e.activity==="spin")?" ✓":""}</button>`).join("")}</div>
+      <div class="row">${t&&t.claimed?`<button class="btn primary" id="spSend">Send SPIN to ${esc(t.name)}'s phone</button>`:""}<button class="btn ${t&&t.claimed?"":"primary"}" id="spHere">Spin here</button></div>`:`<p class="muted">Waiting for the facilitator.</p>`}
+      <p class="muted" style="margin:0">The team spins for a product and a curveball customer, pitches for ${SP_PITCH} seconds, and the other teams score it on their phones.</p>`;
+  }else if(spPhase==="waiting"){
+    h=`<div class="eyebrow">Over to the team</div><h3 class="sp-team" style="--tc:${tcol(t)}">${esc(t.name)}</h3>
+      <div class="rs-head"><span class="pulse"></span><b>Waiting for ${esc(t.name)} to press SPIN on their phone…</b></div>
+      ${isHost()?`<div class="row"><button class="btn" id="spHere">Spin here instead</button><button class="btn ghost" id="spCancel">Cancel</button></div>`:""}`;
+  }else if(spPhase==="spinning"){
+    h=`<div class="eyebrow">${esc(t.name)} is spinning</div><h3>Spinning…</h3>`;
+  }else if(spPhase==="customer"){
+    h=`<div class="eyebrow">${esc(t.name)} will pitch</div><h3>${esc(spPick)}</h3><div class="eyebrow">…to this customer</div><div class="sp-cust shuffling" id="spCust">${esc(spCust||"")}</div>`;
+  }else if(spPhase==="pitch"||spPhase==="vote"){
+    const f=FAB[spPick]||["","",""];
+    h=`<div class="eyebrow">${esc(t.name)} · pitch in ${SP_PITCH} seconds</div><h3>${esc(spPick)}</h3>
+      <div class="sp-cust">${esc(spCust)}</div>
+      <div class="sp-clock ${spPhase}"><span class="mono" id="spClock"></span><span id="spClockLbl">${spPhase==="pitch"?"Pitch time":"Vote now on your phones!"}</span></div>
+      ${rstatus(spRateLive()?spRateLive().ref:"")}
+      <details class="sp-notes"><summary>Coaching notes (Feature · Advantage · Benefit)</summary><div class="fab"><div><b>Feature</b><span>${esc(f[0])}</span></div><div><b>Advantage</b><span>${esc(f[1])}</span></div><div><b>Benefit</b><span>${esc(f[2])}</span></div></div></details>
+      ${isHost()?`<div class="row"><button class="btn" id="spSkip">${spPhase==="pitch"?"End pitch now":"Close voting now"}</button></div>`:""}`;
+  }else if(spPhase==="result"&&spResult){
+    const sc=tbScore(spResult),rt=teamById(spResult.payload.presenter);
+    h=`<div class="eyebrow">${esc(spResult.payload.products[0])} · for ${esc(spResult.payload.customer)}</div>
+      <div class="tb-res-top"><h3>${esc(rt?rt.name:spResult.payload.presenterName)}</h3><span class="tb-pts mono">+${sc.pts}</span></div>
+      <div class="tb-avgs">${SP_CRIT.map((c,i)=>`<div><span>${c}</span>${stars(sc.avg[i])}<span class="mono">${sc.avg[i].toFixed(1)}</span></div>`).join("")}</div>
+      <small class="muted">${sc.n} team${sc.n===1?"":"s"} voted</small>
+      ${sc.notes.length?`<div class="tb-notes"><span class="eyebrow">What the room said</span>${sc.notes.map(([tid,n])=>{const x=teamById(tid);return `<div style="--tc:${x?tcol(x):"var(--line)"}"><b>${esc(x?x.name:"")}</b> “${esc(n)}”</div>`}).join("")}</div>`:""}
+      ${isHost()?`<div class="row"><button class="btn primary" id="spNextTeam">Next team: ${esc((spUp()||{}).name||"")}</button></div>`:""}`;
+  }
+  el.innerHTML=h;refreshRoundStatus();spDrawClock();
 }
-cv.addEventListener("click",spin);
+function spDrawClock(){
+  const c=$("#spClock");if(!c)return;const now=Date.now();
+  const left=spPhase==="pitch"?Math.max(0,spPitchEnd-now):Math.max(0,spVoteEnd-now);
+  c.textContent=fmt(Math.ceil(left/1000));c.parentElement.classList.toggle("low",left<=5000);
+}
+async function spSend(){
+  const t=teamById(spTeam);if(!t)return;
+  try{await openRound("text","spin","spinturn:"+Date.now(),0,{type:"spin",title:"Spin & Explain",team:t.id,teamName:t.name},{})}catch(_){return}
+  spPhase="waiting";renderSpin();
+}
+function spGo(){
+  if(spPhase!=="idle"&&spPhase!=="waiting")return;
+  spPhase="spinning";renderSpin();
+  spinWheel(pick=>{
+    spPick=pick;spCust=SP_CUSTOMERS[Math.floor(Math.random()*SP_CUSTOMERS.length)];spPhase="customer";renderSpin();
+    // Shuffle through the customer cards before landing on the curveball.
+    let n=0;clearInterval(spShuffle);spShuffle=setInterval(()=>{const e=$("#spCust");if(e)e.textContent=SP_CUSTOMERS[(n++)%SP_CUSTOMERS.length];
+      if(n>14){clearInterval(spShuffle);if(e){e.textContent=spCust;e.classList.remove("shuffling")}setTimeout(spPitch,1200)}},110);
+  });
+}
+async function spPitch(){
+  const t=teamById(spTeam);if(!t){spPhase="idle";renderSpin();return}
+  try{await openRound("text","spin","spinrate:"+Date.now(),0,{type:"rate",title:"Spin & Explain",presenter:t.id,presenterName:t.name,family:"Spin & Explain",criteria:SP_CRIT,products:[spPick],customer:spCust,pitch:SP_PITCH},{})}catch(_){spPhase="idle";renderSpin();return}
+  spPitchEnd=Date.now()+SP_PITCH*1000;spVoteEnd=spPitchEnd+SP_VOTE*1000;spPhase="pitch";renderSpin();
+}
+async function spClose(){
+  if(spPhase!=="vote")return;spPhase="closing";
+  try{const r=await closeRound();if(r){const sc=tbScore(r);if(sc.n)await award(r.payload.presenter,sc.pts,"spin","spin:"+r.id);spResult=r;
+    toast(sc.n?`${r.payload.presenterName} +${sc.pts}`:"No team voted, so no points.",!sc.n)}}catch(_){}
+  spTurn++;store.set("spturn",spTurn);spPhase="result";spTeam=null;renderSpin();
+}
+// Heartbeat: notices the team's phone spin, runs the pitch and vote clocks, and closes the vote.
+setInterval(()=>{
+  if(spPhase==="waiting"&&liveRound&&liveRound.payload&&liveRound.payload.type==="spin"&&liveAns[spTeam])spGo();
+  else if(spPhase==="pitch"){spDrawClock();if(Date.now()>=spPitchEnd){spPhase="vote";beep();renderSpin()}}
+  else if(spPhase==="vote"){spDrawClock();const raters=teams.filter(x=>x.claimed&&x.id!==spTeam),voted=raters.filter(x=>liveAns[x.id]).length;
+    if(Date.now()>=spVoteEnd||(raters.length&&voted>=raters.length))spClose()}
+},200);
+$("#spinRes").addEventListener("click",async e=>{
+  const pick=e.target.closest("[data-spteam]");if(pick){spTeam=pick.dataset.spteam;renderSpin();return}
+  if(e.target.closest("#spSend"))return spSend();
+  if(e.target.closest("#spHere"))return spGo();
+  if(e.target.closest("#spCancel")){await cancelRound();spPhase="idle";renderSpin();return}
+  if(e.target.closest("#spSkip")){if(spPhase==="pitch"){spPitchEnd=Date.now()}else if(spPhase==="vote"){spVoteEnd=Date.now()}return}
+  if(e.target.closest("#spNextTeam")){spPhase="idle";spResult=null;spTeam=null;renderSpin()}
+});
+cv.addEventListener("click",()=>{if(isHost()&&(spPhase==="idle"||spPhase==="waiting"))spGo()});
 
 /* ================= INIT ================= */
-renderQSec();renderFinishBtns();renderTeams();renderMF();renderPicks();renderLib();renderTeach();renderBoard();renderClue();renderMatch();renderSpot();renderSpinRes(null);renderLeader();drawClock();setConn("none");
+renderQSec();renderFinishBtns();renderTeams();renderMF();renderPicks();renderLib();renderTeach();renderBoard();renderClue();renderSpin();renderLeader();drawClock();setConn("none");
 const h=(location.hash||"").slice(1);show(VIEWS.some(v=>v[0]===h)?h:store.get("view","plan"));
 document.fonts&&document.fonts.ready.then(drawWheel);
 (async()=>{

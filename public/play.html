@@ -153,6 +153,10 @@ textarea.field{min-height:92px;resize:vertical}
 .cdbar.low i{background:var(--accent-soft)}
 .cdbar.low span{color:var(--accent)}
 .banner.speedb{background:var(--sun-soft);color:var(--sun);font-size:1.15rem;margin-top:-6px}
+.spinbtn{margin:10px auto 0;width:min(240px,70vw);aspect-ratio:1;border-radius:50%;border:0;background:var(--tc);color:#fff;font-family:var(--f-display);font-stretch:125%;font-weight:900;font-size:2.6rem;letter-spacing:.06em;box-shadow:0 10px 30px color-mix(in srgb,var(--tc) 45%,transparent);animation:throb 1.4s ease-in-out infinite}
+.spinbtn:disabled{animation:none;opacity:.6}
+@keyframes throb{50%{transform:scale(1.05)}}
+.cust{background:var(--sun-soft);color:var(--sun);border-radius:12px;padding:10px 12px;font-size:1rem}
 .toast{position:fixed;z-index:60;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 20px);transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:12px;font-weight:600;font-size:.92rem;box-shadow:var(--shadow);max-width:calc(100vw - 32px)}
 .toast.bad{background:var(--bad);color:#fff}
 @media (prefers-reduced-motion:reduce){*{animation:none!important}}
@@ -269,6 +273,7 @@ function render(force){
   if(!me)return renderPick();
   // The product picker has no typing, so it redraws whenever picks change.
   if(round&&round.status==="open"&&round.payload&&round.payload.type==="pick"){shownKey="pick:"+round.id;return renderProducts()}
+  if(round&&round.status==="open"&&round.payload&&round.payload.type==="spin"){const k="spin:"+round.id+":"+!!sentFor[round.id];if(!force&&k===shownKey)return;shownKey=k;return renderSpinTurn()}
   const key=round?round.id+":"+round.status:"none";
   if(!force&&key===shownKey)return;
   shownKey=key;
@@ -409,6 +414,22 @@ function renderProductsDone(){
   bindFoot();
 }
 
+/* ---------- Spin & Explain: the team whose turn it is spins from its phone ---------- */
+function renderSpinTurn(){
+  const p=round.payload||{},t=teams.find(x=>x.id===p.team),col=t?tcol(t):"var(--accent)";
+  if(me.team_id!==p.team){
+    app.innerHTML=`<div class="card wait"><div class="dots"><i></i><i></i><i></i></div><h2>${esc(p.teamName)} is about to spin</h2><p class="muted">Watch the big screen. You'll score their pitch here in a moment.</p></div>
+      <div class="card"><div class="eyebrow">Scoreboard</div><div class="lb" id="lb">${lbRows()}</div></div>${foot()}`;
+    bindFoot();return;
+  }
+  const done=!!sentFor[round.id];
+  app.innerHTML=`<div class="card" style="border-left:6px solid ${col};text-align:center"><div class="eyebrow">Spin &amp; Explain</div><h2>${done?"Spinning! Watch the big screen":"Your turn!"}</h2>
+      <p class="muted" style="margin:0">${done?"You'll get a product and a customer. Pick your volunteer to pitch.":"Press SPIN: the wheel picks your product and a curveball customer on the big screen."}</p>
+      <button class="spinbtn" id="spinGo" ${done?"disabled":""} style="--tc:${col}">SPIN</button></div>${foot()}`;
+  $("#spinGo").onclick=async()=>{$("#spinGo").disabled=true;await submit({spin:true});render(true)};
+  bindFoot();
+}
+
 /* ---------- teach-back score card ---------- */
 // Same scoring as the facilitator console: average stars per criterion, 10 points per average star.
 function rateScore(r){
@@ -422,6 +443,14 @@ function rateScore(r){
 }
 function renderRate(){
   const r=round,p=r.payload||{},pt=teams.find(x=>x.id===p.presenter),pcol=pt?tcol(pt):"var(--accent)";
+  if(me.team_id===p.presenter&&p.customer){
+    app.innerHTML=`<div class="banner good">You're pitching!</div>
+      <div class="card" style="border-left:6px solid ${pcol}"><div class="eyebrow">Spin &amp; Explain · ${p.pitch||30} seconds</div><h2>${esc((p.products||[])[0]||"")}</h2>
+      <div class="cust">Your customer: <b>${esc(p.customer)}</b></div>
+      <p class="muted" style="margin:0">The other teams give 1–5 stars for:</p><ol class="crit-list">${(p.criteria||[]).map(c=>`<li>${esc(c)}</li>`).join("")}</ol>
+      <p style="margin:0">Feature: what it is. Advantage: why that's better. Benefit: what it means for <i>this</i> customer. End with a next step.</p></div>${foot()}`;
+    bindFoot();return;
+  }
   if(me.team_id===p.presenter){
     app.innerHTML=`<div class="banner good">You're presenting!</div>
       <div class="card" style="border-left:6px solid ${pcol}"><div class="eyebrow">Teach-back · ${esc(p.family)}</div><h2>The other teams are scoring you now</h2>
@@ -430,8 +459,8 @@ function renderRate(){
     bindFoot();return;
   }
   const d=draft[r.id]||(draft[r.id]={ratings:[0,0,0],note:""});
-  app.innerHTML=`<div class="card" style="border-left:6px solid ${pcol}"><div class="eyebrow">Rate the teach-back</div><h2>${esc(p.presenterName)}</h2>
-      <div class="sub">${esc(p.family)}${(p.products||[]).length?": "+esc(p.products.join(", ")):""}</div></div>
+  app.innerHTML=`<div class="card" style="border-left:6px solid ${pcol}"><div class="eyebrow">${p.customer?"Rate the pitch":"Rate the teach-back"}</div><h2>${esc(p.presenterName)}</h2>
+      ${p.customer?`<div class="sub">${esc((p.products||[])[0]||"")}</div><div class="cust">Customer: <b>${esc(p.customer)}</b></div>`:`<div class="sub">${esc(p.family)}${(p.products||[]).length?": "+esc(p.products.join(", ")):""}</div>`}</div>
     <div class="card">${(p.criteria||[]).map((c,i)=>`<div class="crit"><b>${esc(c)}</b><div class="stars" data-c="${i}">${[1,2,3,4,5].map(v=>`<button class="star" data-v="${v}" aria-pressed="${d.ratings[i]>=v}" aria-label="${v} of 5 for ${esc(c)}">★</button>`).join("")}</div></div>`).join("")}
       <label class="eyebrow" for="note">Best line, or one thing to fix (optional)</label><textarea class="field" id="note" maxlength="200" placeholder="Shown on the big screen after the vote">${esc(d.note)}</textarea>
       <button class="btn primary" id="send"></button><div class="sent" id="sent"></div></div>${foot()}`;
@@ -444,8 +473,8 @@ function renderRate(){
 function renderRateResult(){
   const r=round,p=r.payload||{},sc=rateScore(r),mine=me.team_id===p.presenter;
   const starRow=v=>[1,2,3,4,5].map(i=>`<i class="${v>=i-0.25?"on":v>=i-0.75?"half":""}">★</i>`).join("");
-  app.innerHTML=`<div class="banner ${sc.n?"good":"info"}">${mine?(sc.n?`Your teach-back scored +${sc.pts}`:"No team sent a rating"):`${esc(p.presenterName)} scored +${sc.pts}`}</div>
-    <div class="card"><div class="eyebrow">Teach-back · ${esc(p.family)} · ${sc.n} team${sc.n===1?"":"s"} rated</div>
+  app.innerHTML=`<div class="banner ${sc.n?"good":"info"}">${mine?(sc.n?`Your ${p.customer?"pitch":"teach-back"} scored +${sc.pts}`:"No team sent a rating"):`${esc(p.presenterName)} scored +${sc.pts}`}</div>
+    <div class="card"><div class="eyebrow">${p.customer?`Pitch · ${esc((p.products||[])[0]||"")} for ${esc(p.customer)}`:`Teach-back · ${esc(p.family)}`} · ${sc.n} team${sc.n===1?"":"s"} rated</div>
       ${(p.criteria||[]).map((c,i)=>`<div class="avg-row"><span>${esc(c)}</span><span class="srow">${starRow(sc.avg[i])}</span><span class="mono">${sc.avg[i].toFixed(1)}</span></div>`).join("")}
       ${sc.notes.length?`<div class="eyebrow" style="margin-top:6px">What the room said</div>${sc.notes.map(([tid,n])=>{const t=teams.find(x=>x.id===tid);return `<div class="note-row" style="--tc:${t?tcol(t):"var(--line)"}"><b>${esc(t?t.name:"")}</b> “${esc(n)}”</div>`}).join("")}`:""}</div>
     <div class="card"><div class="eyebrow">Scoreboard</div><div class="lb" id="lb">${lbRows()}</div></div>${foot()}`;
