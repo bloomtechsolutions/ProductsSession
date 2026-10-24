@@ -255,7 +255,8 @@ nav.rail a[aria-current="page"] .n{color:var(--accent)}
 
 
 /* session, teams and automatic scoring */
-.conn{font-size:.75rem;font-weight:700;color:var(--bar-fg);opacity:.8;white-space:nowrap}
+.conn{font-size:.75rem;font-weight:700;color:var(--bar-fg);opacity:.8;white-space:nowrap;background:transparent;border:0;padding:4px 2px}
+.conn:hover{text-decoration:underline}
 .conn[data-s="live"]{color:#4cd38b;opacity:1}
 .conn[data-s="off"]{color:#ff7a6b;opacity:1}
 .teams-empty{font-size:.85rem;opacity:.8;color:var(--bar-fg);padding:4px 2px}
@@ -358,7 +359,7 @@ body.viewer #teamAdd,body.viewer #resetAll{display:none}
       <button class="chipbtn" data-min="10">10m</button>
     </div>
     <div class="row">
-      <span class="conn" id="conn" data-s="none">No session</span>
+      <button class="conn" id="conn" data-s="none" title="Connection to the scoreboard database. Tap to reconnect.">No session</button>
       <button class="chipbtn solid" id="sessBtn" title="Create, join or manage the session and teams">Session…</button>
       <button class="chipbtn" id="teamAdd" title="Create a team">+ Team</button>
       <button class="chipbtn" id="resetAll" title="Reset scores and used questions">Reset</button>
@@ -711,7 +712,15 @@ const teamScore=id=>{let s=0;for(const e of events.values())if(e.team_id===id)s+
 const findRef=(team,ref)=>{for(const e of events.values())if(e.team_id===team&&e.ref===ref)return e;return null};
 
 function toast(msg,bad){const el=$("#toast");el.textContent=msg;el.classList.toggle("bad",!!bad);el.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>el.hidden=true,bad?5000:2200)}
-function setConn(state){const el=$("#conn");el.dataset.s=state;el.textContent={live:"● Live",connecting:"Connecting…",off:"Offline",none:"No session"}[state]}
+function setConn(state){const el=$("#conn");el.dataset.s=state;el.textContent={live:"● Live",connecting:"Connecting…",off:"Offline · Reconnect",none:"No session"}[state]}
+// Reconnect the live channel and re-read teams and scores. Runs on tap, on a timer after a failure,
+// when the network comes back, and when the tab becomes visible again.
+let retryT=null,retryN=0;
+function reconnect(){clearTimeout(retryT);retryT=null;if(!sess||!sb)return;subscribe();reload()}
+function scheduleRetry(){if(retryT||!sess)return;const d=Math.min(30000,2000*2**retryN++);retryT=setTimeout(reconnect,d)}
+$("#conn").onclick=()=>{if(!sess){openSess();return}retryN=0;toast("Reconnecting…");reconnect()};
+window.addEventListener("online",()=>{retryN=0;if(sess&&$("#conn").dataset.s!=="live")reconnect()});
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&sess&&$("#conn").dataset.s!=="live"){retryN=0;reconnect()}});
 
 async function rpc(fn,args){
   if(!isHost()){toast("Only the facilitator's device can change teams and scores.",true);throw new Error("not host")}
@@ -737,19 +746,23 @@ async function reload(){
   teams=t.data;events=new Map(e.data.map(x=>[x.id,x]));changed(true);
 }
 function subscribe(){
-  if(chan)sb.removeChannel(chan);
+  const old=chan;chan=null;if(old)sb.removeChannel(old);
   const f="session_id=eq."+sess.id,sid=sess.id;
   const upEv=p=>{if(p.new.session_id!==sid)return;events.set(p.new.id,p.new);changed()};
   const upTeam=p=>{if(p.new.session_id!==sid)return;const i=teams.findIndex(t=>t.id===p.new.id);if(i>=0)teams[i]=p.new;else teams.push(p.new);changed(true)};
   setConn("connecting");
-  chan=sb.channel("kykp:"+sid)
+  const my=chan=sb.channel("kykp:"+sid)
     .on("postgres_changes",{event:"INSERT",schema:"public",table:"score_events",filter:f},upEv)
     .on("postgres_changes",{event:"UPDATE",schema:"public",table:"score_events",filter:f},upEv)
     .on("postgres_changes",{event:"DELETE",schema:"public",table:"score_events"},p=>{if(events.delete(p.old.id))changed()})
     .on("postgres_changes",{event:"INSERT",schema:"public",table:"teams",filter:f},upTeam)
     .on("postgres_changes",{event:"UPDATE",schema:"public",table:"teams",filter:f},upTeam)
     .on("postgres_changes",{event:"DELETE",schema:"public",table:"teams"},p=>{const n=teams.length;teams=teams.filter(t=>t.id!==p.old.id);if(teams.length!==n){for(const [k,e] of events)if(e.team_id===p.old.id)events.delete(k);changed(true)}})
-    .subscribe(st=>{if(st==="SUBSCRIBED"){setConn("live");reload()}else if(st==="CHANNEL_ERROR"||st==="TIMED_OUT"||st==="CLOSED")setConn("off")});
+    .subscribe(st=>{
+      if(chan!==my)return; // an older channel we already replaced
+      if(st==="SUBSCRIBED"){retryN=0;setConn("live");reload()}
+      else if(st==="CHANNEL_ERROR"||st==="TIMED_OUT"||st==="CLOSED"){setConn("off");scheduleRetry()}
+    });
 }
 async function joinSession(code,key){
   if(!sb){toast("The database library did not load. Check the connection and reload.",true);return false}
@@ -774,7 +787,8 @@ async function createSession(name){
   if(await joinSession(data.code))renderSess();
 }
 function leaveSession(){
-  if(chan)sb.removeChannel(chan);chan=null;sess=null;hostKey=null;teams=[];events=new Map();store.set("sess",null);
+  clearTimeout(retryT);retryT=null;
+  const old=chan;chan=null;if(old)sb.removeChannel(old);sess=null;hostKey=null;teams=[];events=new Map();store.set("sess",null);
   try{const u=new URL(location.href);u.searchParams.delete("s");history.replaceState(null,"",u)}catch(_){}
   $("#sessBtn").textContent="Session…";document.body.classList.remove("viewer");setConn("none");changed(true);
 }
