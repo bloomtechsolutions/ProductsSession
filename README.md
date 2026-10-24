@@ -9,7 +9,7 @@ It is a single static page (`public/index.html`) with no build step, backed by S
 - **Session…** in the top bar creates a session (a 6-character code). The device that creates it is the facilitator console: it holds a private host key and is the only device that can send questions or change scores.
 - **Show on screen** puts a join QR code on the projector. Each team joins on **one phone** at `/play`: it picks a free team or creates its own. A session has **at most 6 teams**, and a team that already has a phone can't be taken by another one. If a phone dies, **Release phone** in the session dialog frees the seat.
 - Teams answer on their phones. The facilitator sends each item to the phones and sees who has answered (not what) until the reveal:
-  - True or False: teams tap True or False; Reveal marks every team (+10 if right).
+  - True or False: Start sends statement 1 to every phone; Reveal scores every team (+10 if right); Next sends the next statement. Next waits for Reveal during a game, and Finish ends it after the last statement.
   - Product Challenge: opening a tile sends it to every phone; Reveal gives the tile value to every correct team. The choosing table still rotates.
   - Match the Customer: teams pick products for the persona; Reveal & score gives 10 per recommended product each team picked.
   - Listen for the Clue and Spot the Opportunity: teams type their answers; the facilitator shows them on screen and ticks what is right.

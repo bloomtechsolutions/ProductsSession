@@ -430,8 +430,8 @@ span.pchip{display:inline-block}
     <!-- WARM UP -->
     <section class="view" id="v-warmup" data-title="True or False">
       <div class="hd"><div><div class="eyebrow">Activity 1 · 10 min · whole room</div><h2>True or False?</h2>
-        <p>Read the statement aloud. Everyone stands for <b>True</b> and stays seated for <b>False</b>. Send the statement to the team phones. Each team answers True or False on its phone; Reveal marks every team and adds 10 points for a correct call. Ask one person who got it right to explain why.</p></div>
-        <div class="row"><button class="btn" id="mfPrev">Back</button><button class="btn primary" id="mfReveal">Reveal</button><button class="btn" id="mfNext">Next</button></div></div>
+        <p>Read the statement aloud. Everyone stands for <b>True</b> and stays seated for <b>False</b>. Press <b>Start</b>: the statement appears on every team phone. <b>Reveal</b> shows the answer and adds 10 points to every team that called it right. <b>Next</b> sends the next statement to the phones. Ask one person who got it right to explain why.</p></div>
+        <div class="row"><button class="btn primary" id="mfStart">Start</button><button class="btn" id="mfPrev">Back</button><button class="btn primary" id="mfReveal">Reveal</button><button class="btn" id="mfNext">Next</button></div></div>
       <div class="mf">
         <div class="mf-card" id="mfCard"></div>
         <div class="progress" id="mfProg"></div>
@@ -1051,27 +1051,47 @@ $("#ros").innerHTML=ROS.map(r=>`<div class="ros-row"><div class="ros-time">${r.t
   <ul>${r.n.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`).join("");
 
 /* ================= TRUE OR FALSE ================= */
-// Send the statement to team phones; Reveal closes the round and the server scores every team that called it right.
-let mfI=0,mfShown=false;
+// Run as a game: Start sends statement 1 to every team phone, Reveal closes the round and the server
+// scores every team that called it right, Next sends the following statement straight away.
+let mfI=0,mfShown=false,mfLive=false;
 const mfRef=i=>"mf:"+i;
 ROUND_OPENERS.mf=ref=>{const i=+ref.split(":")[1],m=MF[i];
-  return openRound("choice","mythfact",ref,10,{type:"mf",title:"True or False?",text:m.s,options:["True","False"]},{correct:m.a?0:1})};
+  return openRound("choice","mythfact",ref,10,{type:"mf",title:`True or False? · ${i+1} of ${MF.length}`,text:m.s,options:["True","False"]},{correct:m.a?0:1})};
 function renderMF(){
-  const m=MF[mfI],ref=mfRef(mfI),r=roundFor(ref);
+  // After a reload mid-game, pick the game up from the statement that is still open on the phones.
+  if(!mfLive&&liveRound&&liveRound.ref.startsWith("mf:")){mfLive=true;mfI=+liveRound.ref.slice(3);mfShown=false}
+  const m=MF[mfI],ref=mfRef(mfI),r=roundFor(ref),last=mfI===MF.length-1;
+  const status=mfLive?`<span class="pill">Game on · statement ${mfI+1} of ${MF.length}</span>`:`<span class="pill">True or False?</span>`;
   $("#mfCard").innerHTML=`<div class="eyebrow">Statement ${mfI+1} of ${MF.length}</div><div class="mf-q">${esc(m.s)}</div>`+
    (mfShown?`<div class="verdict ${m.a?"fact":"myth"}">${m.a?"TRUE":"FALSE"}</div><div class="mf-ex">${esc(m.e)}</div>
       ${resultsRow(r,a=>a.choice===0?"True":"False")}${markRow(ref,10,"mythfact","Correct the points if needed")}`
-     :`<div class="row"><span class="pill">True or False?</span><span class="pill red">Teams answer on their phone</span></div>${teams.length?roundCtl(ref):noTeams()}`);
+     :`<div class="row">${status}<span class="pill red">Teams answer on their phone</span></div>
+      ${!teams.length?noTeams():mfLive?rstatus(ref):isHost()?`<div class="note">Press <b>Start</b> to send statement ${mfI+1} to every team phone.</div>`:rstatus(ref)}`);
   $("#mfProg").innerHTML=MF.map((_,i)=>`<i class="${i<mfI?"done":i===mfI?"cur":""}"></i>`).join("");
+  const st=$("#mfStart");st.hidden=!isHost();st.textContent=mfLive?"Stop game":(mfI?"Start from "+(mfI+1):"Start");st.classList.toggle("primary",!mfLive);
   $("#mfReveal").disabled=mfShown;
+  // In a live game, Next waits for the reveal so no statement goes unscored by accident.
+  $("#mfNext").disabled=mfLive&&!mfShown;
+  $("#mfNext").textContent=mfLive&&last?"Finish":"Next";
   refreshMarks();refreshRoundStatus();
 }
+async function sendMF(){if(!isHost())return;try{await ROUND_OPENERS.mf(mfRef(mfI))}catch(_){mfLive=false}renderMF()}
+$("#mfStart").onclick=async()=>{
+  if(mfLive){mfLive=false;if(liveRound&&liveRound.ref.startsWith("mf:"))await cancelRound();renderMF();toast("True or False stopped");return}
+  if(!teams.length){toast("No teams yet. Show the join code so teams can join on their phones.",true);return}
+  mfLive=true;mfShown=false;await sendMF();
+};
 $("#mfReveal").onclick=async()=>{
   const ref=mfRef(mfI);
-  if(isHost()&&liveRound&&liveRound.ref===ref){try{const r=await closeRound();scoredToast(r)}catch(_){}}
+  if(isHost()&&liveRound&&liveRound.ref===ref){try{const r=await closeRound();scoredToast(r)}catch(_){return}}
   mfShown=true;renderMF();
 };
-const goMF=d=>{if(isHost()&&liveRound&&liveRound.ref===mfRef(mfI))cancelRound();mfI=(mfI+d+MF.length)%MF.length;mfShown=false;renderMF()};
+async function goMF(d){
+  if(isHost()&&liveRound&&liveRound.ref===mfRef(mfI))await cancelRound();
+  if(mfLive&&d>0&&mfI===MF.length-1){mfLive=false;mfShown=false;renderMF();toast("True or False finished");return}
+  mfI=(mfI+d+MF.length)%MF.length;mfShown=false;
+  if(mfLive)await sendMF();else renderMF();
+}
 $("#mfNext").onclick=()=>goMF(1);
 $("#mfPrev").onclick=()=>goMF(-1);
 function scoredToast(r){
