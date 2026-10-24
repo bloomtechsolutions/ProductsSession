@@ -426,6 +426,20 @@ span.pchip{display:inline-block}
 .speed{border:2px solid var(--tc);border-radius:999px;padding:5px 12px;font-weight:600;background:color-mix(in srgb,var(--tc) 10%,var(--surface))}
 @media (max-width:560px){.cd{width:72px;height:72px}.cd span{font-size:1.6rem}}
 
+/* listen for the clue game */
+.cl-dots{display:flex;gap:5px;margin-top:6px}
+.cl-dots i{width:18px;height:5px;border-radius:3px;background:color-mix(in srgb,var(--bar-fg) 25%,transparent)}
+.cl-dots i.done{background:var(--lagoon)}
+.cl-dots i.cur{background:var(--accent)}
+.cl-q{display:flex;flex-direction:column;gap:12px}
+.cl-q h3{font-size:1.35rem;font-weight:850}
+.cl-opts{grid-template-columns:minmax(0,1fr)}
+.cl-opts .opt{font-size:1rem}
+.cl-intro h3{font-size:1.25rem;font-weight:850;margin:2px 0 6px}
+.cl-next{position:relative;border-radius:999px;background:var(--surface-2);overflow:hidden;padding:8px 14px;font-weight:700;color:var(--lagoon)}
+.cl-next i{position:absolute;inset:0 auto 0 0;background:var(--lagoon-soft);width:0}
+.cl-next span{position:relative}
+
 @media (max-width:1100px){
   .board{grid-template-columns:repeat(3,minmax(0,1fr))}
   .board .cat{display:none}
@@ -531,8 +545,8 @@ span.pchip{display:inline-block}
     <!-- CLUES -->
     <section class="view" id="v-clues" data-title="Listen for the Clue">
       <div class="hd"><div><div class="eyebrow">Activity 4 · 15 min · needs discovery</div><h2>Listen for the Clue</h2>
-        <p>Customers rarely say "I need a product". They mention a life event, how they are paid, something that annoys them, or a goal. Read the customer's words aloud. Send the customer to the team phones. Teams have 45 seconds to type the clue, the need, and the question they would ask next. Show the team answers and tick what each team got right: 10 points each.</p></div>
-        <div class="row"><button class="btn" id="clPrev">Back</button><button class="btn primary" id="clReveal">Reveal next</button><button class="btn" id="clNext">Next customer</button></div></div>
+        <p>Customers rarely say "I need a product". They mention a life event, how they are paid, something that annoys them, or a goal. Press <b>Start</b> and it runs by itself: each customer's words appear on the screen and the phones, and teams answer three timed questions: <b>the clue</b>, <b>the product to lead with</b> and <b>the best next question</b>. 20 points for each correct answer, +10 for the fastest. Read the quote aloud while teams think.</p></div>
+        <div class="row"><button class="btn" id="clPrev" title="Previous customer">◀</button><button class="btn primary" id="clStart">Start</button><button class="btn" id="clPause" hidden>Pause</button><button class="btn" id="clSkip" hidden>Next now</button><button class="btn ghost" id="clStop" hidden>Stop</button><button class="btn" id="clNext" title="Next customer">▶</button></div></div>
       <div class="alll">
         <div><b>ASK</b><span>Open questions about their life, work and plans, not just the transaction.</span></div>
         <div><b>LISTEN</b><span>For four clues: life events, how they are paid, pain points, goals.</span></div>
@@ -636,7 +650,7 @@ const ROS=[
  {t:"0:00",d:"10 min",v:"warmup",h:"True or False warm-up",p:"Wakes the room up and shows what people don't know yet, before any teaching starts.",n:["Ask the 1–5 confidence question first and note the hand count.","Run 6–8 statements. Keep it fast: about 60 seconds each.","Start the session and show the join QR code. Each team joins on one phone (up to 6 teams)."]},
  {t:"0:10",d:"25 min",v:"library",h:"Product Passport: jigsaw teach-back",p:"Staff refresh the products by teaching each other. People remember what they explain far better than what they hear.",n:["Open product picking: each table takes 2 products on its phone, and no two tables can take the same one.","10 minutes to prepare, then 3 minutes per table to teach.","The other tables score each teach-back on their phones. You correct and add detail in under 60 seconds."]},
  {t:"0:35",d:"20 min",v:"challenge",h:"BML Product Challenge quiz",p:"Checks recall across all families straight after the teach-backs. Includes the Islamic structure names customers will now ask about.",n:["Tables take turns choosing a tile. Every team answers on its phone, and every correct team scores.","Leave the 400-point questions until the end to build tension.","After each answer, ask: how would you say that to a customer?"]},
- {t:"0:55",d:"15 min",v:"clues",h:"Listen for the Clue",p:"Moves from knowing products to spotting needs. Introduces ASK · LISTEN · LINK · LEAD.",n:["2 minutes on the four clue types, then 6–8 customer quotes.","Reveal the clue, the need, the product and the next question one at a time.","Tick each table for a correct clue, need and good question: 10 points each, added automatically."]},
+ {t:"0:55",d:"15 min",v:"clues",h:"Listen for the Clue",p:"Moves from knowing products to spotting needs. Introduces ASK · LISTEN · LINK · LEAD.",n:["2 minutes on the four clue types, then press Start.","It runs by itself: each customer gets 3 timed questions on the phones (clue, product, next question), 20 points each, +10 for the fastest.","Read each quote aloud and use the 8-second answer pause to say why the right answer wins."]},
  {t:"1:10",d:"25 min",v:"match",h:"Match the Customer",p:"The core practical exercise. Tables build a complete recommendation, including cross-sells, for a realistic Maldivian customer.",n:["One persona per table, with 4 minutes to prepare.","Send the persona to the team phones. Teams pick products there; Reveal & score marks every team at once.","Discuss the red chips. They aren't always wrong, so ask the table to justify them."]},
  {t:"1:35",d:"15 min",v:"spot",h:"Spot the Opportunity",p:"Cross-selling inside routine service: a cash withdrawal, a statement request, a declined card.",n:["2 minutes per scenario. All tables work at once.","Reveal the opportunities one by one and tick the tables that listed each one.","Stress the difference between a genuine need and pushing a product."]},
  {t:"1:50",d:"10 min",v:"spin",h:"Spin & Explain",p:"Builds confidence through a 30-second product pitch using Feature, Advantage and Benefit.",n:["One volunteer per table. The timer starts automatically after the spin.","The room gives thumbs up or down. Coach in one sentence."]},
@@ -1363,17 +1377,17 @@ function renderQSec(){$("#qSec").innerHTML=`<span>⏱</span>${[15,20,30].map(v=>
 $("#qSec").onclick=e=>{const b=e.target.closest("[data-qsec]");if(!b)return;qSec=+b.dataset.qsec;store.set("qsec",qSec);renderQSec()};
 ROUND_OPENERS.quiz=ref=>{const k=ref.slice(5),[c,r]=k.split("-").map(Number),it=Q[c][r];
   return openRound("choice","quiz",ref,(r+1)*100,{type:"quiz",title:QCATS[c]+" · "+(r+1)*100,text:it.q,options:it.o,seconds:qSec},{correct:it.a})};
-// Rank the correct answers by when they were (last) submitted and award the speed bonus.
-async function speedBonus(k,roundId,correct){
-  const ref="quiz-speed:"+k;
+// Rank the correct answers by when they were (last) submitted and award the speed bonus under ref.
+async function awardSpeed(roundId,correct,ref,bonuses,activity){
   const {data,error}=await sb.rpc("round_answers",{p_session:sess.id,p_key:hostKey,p_round:roundId});
   if(error)return [];
   const right=data.filter(a=>a.answer&&a.answer.choice===correct).sort((a,b)=>Date.parse(a.submitted_at)-Date.parse(b.submitted_at));
-  const winners=right.slice(0,SPEED_BONUS.length).map(a=>a.team_id);
+  const winners=right.slice(0,bonuses.length).map(a=>a.team_id);
   for(const t of teams)if(!winners.includes(t.id)&&findRef(t.id,ref))await revoke(t.id,ref);
-  for(const [i,id] of winners.entries())await award(id,SPEED_BONUS[i],"quiz",ref);
+  for(const [i,id] of winners.entries())await award(id,bonuses[i],activity,ref);
   return winners;
 }
+const speedBonus=(k,roundId,correct)=>awardSpeed(roundId,correct,"quiz-speed:"+k,SPEED_BONUS,"quiz");
 function tick(){try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();const o=actx.createOscillator(),g=actx.createGain();o.frequency.value=660;o.connect(g);g.connect(actx.destination);g.gain.setValueAtTime(.12,actx.currentTime);g.gain.exponentialRampToValueAtTime(.001,actx.currentTime+.08);o.start();o.stop(actx.currentTime+.09)}catch(e){}}
 function renderBoard(){
   const auto=new Set();for(const e of events.values())if(e.ref&&e.ref.startsWith("quiz:"))auto.add(e.ref.slice(5));
@@ -1440,28 +1454,103 @@ $("#ov").addEventListener("click",e=>{if(e.target.id==="ov")closeQ()});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#ov").hidden)closeQ()});
 
 /* ================= CLUES ================= */
-// Teams type the clue, the need and their next question on their phone; the facilitator ticks what is right.
-let clI=0,clStep=0;
+// Runs on its own. Start sends customer 1's first question to every team phone. Each customer has three timed
+// questions: the clue, the product to lead with, and the best next question. Answers lock at zero or once every
+// team phone has answered, the server scores them (20 each, fastest correct team +10), the answer stays up for a
+// few seconds and the next question goes out automatically. Pause holds the game after the current answer.
+const CL_SECS=20,CL_SHOW=8,CL_PTS=20,CL_SPEED=[10];
 const CL_PARTS=[["clue","The clue"],["need","The need"],["lead","Lead with"],["ask","Ask next"]];
-const CL_FIELDS=[["clue","The clue you heard"],["need","The need behind it"],["ask","Your next question"]];
-const clRef=i=>"clue:"+i;
-ROUND_OPENERS.clue=ref=>{const i=+ref.split(":")[1],c=CLUES[i];
-  return openRound("text","clue",ref,0,{type:"text",title:"Listen for the Clue",text:"“"+c.q+"”",sub:c.by,fields:CL_FIELDS.map(f=>f[1])},{})};
-function renderClue(){
-  const c=CLUES[clI],ref=clRef(clI),r=roundFor(ref),closed=r&&r.status==="closed",res=closed&&r.result?r.result.teams||{}:{};
-  $("#clQuote").innerHTML=`<span class="eyebrow">Customer ${clI+1} of ${CLUES.length}</span><p>“${esc(c.q)}”</p><span class="by">${esc(c.by)}</span>`;
-  const answers=!teams.length?noTeams():`<div class="panel tight">
-    <div class="row" style="justify-content:space-between"><div class="eyebrow">Team answers · tick what each team got right (+10 each)</div>${isHost()&&liveRound&&liveRound.ref===ref?`<button class="btn primary" data-clue-show>Show team answers</button>`:""}</div>
-    ${closed||!isHost()?"":roundCtl(ref)}${closed?"":rstatus(ref)}
-    <div class="tans">${sortedTeams().map(t=>{const a=(res[t.id]||{}).answer,f=a&&Array.isArray(a.fields)?a.fields:[];
-      return `<div class="ta" style="--tc:${tcol(t)}"><b>${esc(t.name)}</b>${CL_FIELDS.map(([k,l],j)=>`<div class="ta-row"><span class="muted">${l}</span><span class="ta-txt">${closed?esc(f[j]||"—"):"<i class='muted'>hidden until you show answers</i>"}</span>${mkBtn(t,`clue:${clI}:${k}`,10,"clue","+10")}</div>`).join("")}</div>`}).join("")}</div></div>`;
-  $("#clReveal-grid").innerHTML=CL_PARTS.map((p,i)=>`<div class="rv ${i<clStep?"":"hidden-rv"}"><span class="eyebrow">${p[1]}</span><div>${esc(c[p[0]])}</div></div>`).join("")+answers;
-  $("#clReveal").disabled=clStep>=4;
-  refreshMarks();refreshRoundStatus();
+const CL_STEPS=["What's the clue in what this customer said?","Which product do you lead with?","What's the best next question to ask?"];
+// The one product to lead with for each customer, in CLUES order.
+const CL_PRODUCT=["Kiyavaa Financing","Home Financing for Tourism Employees","Explain the 7:00am reset, or a USD card","Lifestyle Financing","Green Financing","Investment Account","Youth Entrepreneurship Financing","Expatriate Account with app remittance"];
+// Classic weak questions used as wrong answers for "best next question".
+const CL_WEAK=["\"Would you like to open a credit card while you're here today?\"","\"Is there anything else I can help you with today?\"","\"Can you fill in this form first so we can see what you qualify for?\"","\"Why didn't you come to us sooner?\""];
+const clRef=(i,s)=>`clue:${i}:${s}`;
+// Options for customer i, question s: the right answer plus three wrong ones, in a fixed shuffled order.
+function clOptions(i,s){
+  const n=CLUES.length,others=[...Array(n).keys()].filter(x=>x!==i),rot=(i*3+s*5)%others.length,pick=others.slice(rot).concat(others.slice(0,rot));
+  let right,wrong;
+  if(s===0){right=CLUES[i].clue;wrong=pick.slice(0,3).map(x=>CLUES[x].clue)}
+  else if(s===1){right=CL_PRODUCT[i];wrong=pick.slice(0,3).map(x=>CL_PRODUCT[x])}
+  else{right=CLUES[i].ask;wrong=[CLUES[pick[0]].ask,CL_WEAK[(i+s)%CL_WEAK.length],CL_WEAK[(i+s+1)%CL_WEAK.length]]}
+  const correct=(i*2+s+1)%4,options=[...wrong];options.splice(correct,0,right);
+  return {options,correct};
 }
-$("#clReveal-grid").addEventListener("click",async e=>{if(!e.target.closest("[data-clue-show]"))return;try{await closeRound()}catch(_){}renderClue()});
-$("#clReveal").onclick=()=>{if(clStep<4){clStep++;renderClue()}};
-const goClue=d=>{if(isHost()&&liveRound&&liveRound.ref===clRef(clI))cancelRound();clI=(clI+d+CLUES.length)%CLUES.length;clStep=0;renderClue()};
+let clI=0,clStep=0,clPhase="idle",clAuto=false,clPaused=false,clDeadline=0,clNextAt=0,clLast=-1;
+function clPartsShown(){return clPhase==="done"?4:Math.min(4,[0,2,3,4][clStep+(clPhase==="reveal"?1:0)])}
+function renderClue(){
+  const c=CLUES[clI],ref=clRef(clI,clStep),r=roundFor(ref),{options,correct}=clOptions(clI,clStep),shown=clPartsShown();
+  $("#clQuote").innerHTML=`<span class="eyebrow">Customer ${clI+1} of ${CLUES.length}${clAuto||clPhase!=="idle"?` · Question ${clStep+1} of 3`:""}</span><p>“${esc(c.q)}”</p><span class="by">${esc(c.by)}</span>
+    <div class="cl-dots">${CLUES.map((_,i)=>`<i class="${i<clI?"done":i===clI?"cur":""}"></i>`).join("")}</div>`;
+  let h="";
+  if(clPhase==="idle"||clPhase==="done"){
+    h=`<div class="panel tight cl-intro"><div class="eyebrow">${clPhase==="done"?"Game over":"How it works"}</div>
+      <h3>${clPhase==="done"?"All customers done":"Teams answer on their phones. It runs by itself."}</h3>
+      <p class="muted" style="margin:0">${CLUES.length} customers × 3 questions: <b>the clue</b>, <b>the product to lead with</b>, <b>the best next question</b>. ${CL_SECS} seconds each. ${CL_PTS} points for a correct answer, +${CL_SPEED[0]} for the fastest. The answer shows for ${CL_SHOW} seconds, then the next question goes out.</p>
+      ${teams.length?"":noTeams()}</div>`;
+  }else{
+    const reveal=clPhase==="reveal";
+    h=`<div class="panel tight cl-q"><div class="qtop"><div><div class="eyebrow">Question ${clStep+1} of 3</div><h3>${esc(CL_STEPS[clStep])}</h3></div>
+        ${reveal?"":`<div class="cd" id="clCd"><svg viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="22" r="19"/><circle class="arc" cx="22" cy="22" r="19"/></svg><span class="mono" id="clCdN">${CL_SECS}</span></div>`}</div>
+      <div class="opts cl-opts">${options.map((o,i)=>`<div class="opt ${reveal?(i===correct?"right":"dim"):""}"><span class="k">${"ABCD"[i]}</span><span>${esc(o)}</span></div>`).join("")}</div>
+      ${reveal?resultsRow(r,a=>"ABCD"[a.choice]||"?")+speedLineRef(ref+":speed"):rstatus(ref)}
+      ${reveal?`<div class="cl-next"><span id="clNextTxt">${clPaused?"Paused. Press Resume or Next now.":"Next question shortly…"}</span><i id="clNextBar"></i></div>`:""}</div>`;
+  }
+  $("#clReveal-grid").innerHTML=h+CL_PARTS.map((p,i)=>`<div class="rv ${i<shown?"":"hidden-rv"}"><span class="eyebrow">${p[1]}</span><div>${esc(c[p[0]])}</div></div>`).join("");
+  const running=clAuto&&clPhase!=="done";
+  $("#clStart").hidden=running||!isHost();$("#clStart").textContent=clPhase==="done"?"Play again":clI||clStep?`Start from customer ${clI+1}`:"Start";
+  $("#clPause").hidden=!running||!isHost();$("#clPause").textContent=clPaused?"Resume":"Pause";
+  $("#clSkip").hidden=!running||!isHost();$("#clSkip").textContent=clPhase==="ask"?"Lock answers now":"Next now";
+  $("#clStop").hidden=!running||!isHost();
+  $("#clPrev").disabled=$("#clNext").disabled=running;
+  refreshRoundStatus();
+}
+const speedLineRef=ref=>{const w=[...events.values()].filter(x=>x.ref===ref).map(e=>{const t=teamById(e.team_id);return t?`<span class="speed" style="--tc:${tcol(t)}">⚡ Fastest: <b>${esc(t.name)}</b> +${e.points}</span>`:""}).join("");return w?`<div class="speeds">${w}</div>`:""};
+async function clAsk(){
+  const c=CLUES[clI],{options,correct}=clOptions(clI,clStep);
+  clPhase="ask";clDeadline=0;renderClue();
+  try{await openRound("choice","clue",clRef(clI,clStep),CL_PTS,{type:"clue",title:`Listen for the Clue · Customer ${clI+1} · ${clStep+1} of 3`,text:CL_STEPS[clStep],sub:`“${c.q}” (${c.by})`,options,seconds:CL_SECS},{correct})}
+  catch(_){clAuto=false;clPhase="idle";renderClue();return}
+  clDeadline=Date.now()+CL_SECS*1000;clLast=-1;renderClue();
+}
+async function clLock(){
+  if(clPhase!=="ask")return;clPhase="locking";
+  const ref=clRef(clI,clStep),{correct}=clOptions(clI,clStep);
+  if(liveRound&&liveRound.ref===ref){const id=liveRound.id;try{scoredToast(await closeRound());await awardSpeed(id,correct,ref+":speed",CL_SPEED,"clue")}catch(_){}}
+  clPhase="reveal";clNextAt=Date.now()+CL_SHOW*1000;renderClue();
+}
+function clAdvance(){
+  if(clStep<2){clStep++;clAsk()}
+  else if(clI<CLUES.length-1){clI++;clStep=0;clAsk()}
+  else{clPhase="done";clAuto=false;renderClue();finishGame("clue")}
+}
+// One heartbeat drives the countdown, the early lock and the pause between questions.
+setInterval(()=>{
+  if(!clAuto)return;
+  if(clPhase==="ask"&&clDeadline){
+    const left=Math.max(0,clDeadline-Date.now()),n=Math.ceil(left/1000),cd=$("#clCd");
+    if(cd){$("#clCdN").textContent=n;cd.style.setProperty("--p",left/(CL_SECS*1000));cd.classList.toggle("low",n<=5)}
+    if(n!==clLast&&n<=5&&n>0&&!$("#v-clues").hidden&&$("#v-clues").classList.contains("on"))tick();clLast=n;
+    const phones=teams.filter(t=>t.claimed),answered=phones.filter(t=>liveAns[t.id]).length;
+    if(left<=0||(phones.length&&answered>=phones.length&&left<CL_SECS*1000-1500))clLock();
+  }else if(clPhase==="reveal"){
+    const bar=$("#clNextBar"),txt=$("#clNextTxt");
+    if(clPaused){clNextAt=Date.now()+CL_SHOW*1000;if(bar)bar.style.width="0%";return}
+    const left=Math.max(0,clNextAt-Date.now());
+    if(bar)bar.style.width=(100-left/(CL_SHOW*10))+"%";
+    if(txt)txt.textContent=clStep<2||clI<CLUES.length-1?`Next question in ${Math.ceil(left/1000)}…`:`Final scores in ${Math.ceil(left/1000)}…`;
+    if(!left)clAdvance();
+  }
+},200);
+$("#clStart").onclick=()=>{
+  if(!teams.length){toast("No teams yet. Show the join code so teams can join on their phones.",true);return}
+  if(clPhase==="done"){clI=0;clStep=0}
+  clAuto=true;clPaused=false;clAsk();
+};
+$("#clPause").onclick=()=>{clPaused=!clPaused;renderClue();toast(clPaused?"Paused after this answer":"Resumed")};
+$("#clSkip").onclick=()=>{if(clPhase==="ask")clLock();else if(clPhase==="reveal"){clPaused=false;clAdvance()}};
+$("#clStop").onclick=async()=>{clAuto=false;clPaused=false;if(liveRound&&liveRound.ref.startsWith("clue:"))await cancelRound();clPhase="idle";clStep=0;renderClue();toast("Listen for the Clue stopped")};
+const goClue=d=>{clI=(clI+d+CLUES.length)%CLUES.length;clStep=0;clPhase="idle";renderClue()};
 $("#clNext").onclick=()=>goClue(1);
 $("#clPrev").onclick=()=>goClue(-1);
 

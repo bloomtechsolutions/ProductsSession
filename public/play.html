@@ -366,9 +366,11 @@ function startCountdown(r,secs){
 }
 // Speed bonus line on a quiz result: shows once the facilitator's screen has awarded it.
 function speedHtml(){
-  if(!round||!me||!String(round.ref).startsWith("quiz:"))return "";
-  const e=[...events.values()].find(x=>x.team_id===me.team_id&&x.ref==="quiz-speed:"+round.ref.slice(5));
-  return e?`<div class="banner speedb">⚡ ${e.points>=50?"Fastest":"2nd fastest"} correct answer · +${e.points}</div>`:"";
+  if(!round||!me)return "";
+  // Quiz bonuses use "quiz-speed:<tile>" (fastest +50, 2nd +25); other timed games use "<round ref>:speed".
+  const ref=String(round.ref),quiz=ref.startsWith("quiz:"),want=quiz?"quiz-speed:"+ref.slice(5):ref+":speed";
+  const e=[...events.values()].find(x=>x.team_id===me.team_id&&x.ref===want);
+  return e?`<div class="banner speedb">⚡ ${!quiz||e.points>=50?"Fastest":"2nd fastest"} correct answer · +${e.points}</div>`:"";
 }
 async function submit(answer){
   const r=round;if(!r||r.status!=="open"){toast("This question is closed.",true);return}
