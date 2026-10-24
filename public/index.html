@@ -575,7 +575,7 @@ span.pchip{display:inline-block}
     <!-- SPIN -->
     <section class="view" id="v-spin" data-title="Spin & Explain">
       <div class="hd"><div><div class="eyebrow">Activity 5 · 20 min · confidence round</div><h2>Spin &amp; Explain</h2>
-        <p>Teams take turns. The team presses <b>SPIN</b> on its phone: the wheel picks a product and a curveball customer. One volunteer pitches it to that customer in 30 seconds using Feature, Advantage and Benefit, while every other team rates the pitch on its phone. Voting closes 20 seconds after the pitch and the team scores 10 points per average star (up to 50).</p></div></div>
+        <p>Teams take turns. The team presses <b>SPIN</b> on its phone and the wheel picks a product. Press <b>Start pitch timer</b> when the volunteer is ready: 30 seconds using Feature, Advantage and Benefit. Then press <b>Open voting</b>: every other team rates the pitch on its phone, voting closes after 20 seconds, and the team scores 10 points per average star (up to 50).</p></div></div>
       <div class="spinwrap">
         <div class="wheel-box"><div class="pointer" aria-hidden="true"></div><canvas id="wheel" width="1040" height="1040" aria-label="Product wheel"></canvas></div>
         <div class="result" id="spinRes"></div>
@@ -636,7 +636,7 @@ const ROS=[
  {t:"0:10",d:"25 min",v:"library",h:"Product Passport: jigsaw teach-back",p:"Staff refresh the products by teaching each other. People remember what they explain far better than what they hear.",n:["Open product picking: each table takes 2 products on its phone, and no two tables can take the same one.","10 minutes to prepare, then 3 minutes per table to teach.","The other tables score each teach-back on their phones. You correct and add detail in under 60 seconds."]},
  {t:"0:35",d:"20 min",v:"challenge",h:"BML Product Challenge quiz",p:"Checks recall across all families straight after the teach-backs. Includes the Islamic structure names customers will now ask about.",n:["Tables take turns choosing a tile. Every team answers on its phone, and every correct team scores.","Leave the 400-point questions until the end to build tension.","After each answer, ask: how would you say that to a customer?"]},
  {t:"0:55",d:"15 min",v:"clues",h:"Listen for the Clue",p:"Moves from knowing products to spotting needs. Introduces ASK · LISTEN · LINK · LEAD.",n:["2 minutes on the four clue types, then press Start.","It runs by itself: each customer gets 3 timed questions on the phones (clue, product, next question), 20 points each, +10 for the fastest.","Read each quote aloud and use the 8-second answer pause to say why the right answer wins."]},
- {t:"1:10",d:"20 min",v:"spin",h:"Spin & Explain",p:"Builds confidence through a 30-second pitch to a curveball customer, scored by the other teams on their phones.",n:["Each team takes a turn: it presses SPIN on its phone, the wheel picks a product and a customer.","One volunteer pitches using Feature, Advantage and Benefit; the other teams rate it on their phones.","Voting closes by itself; coach in one sentence, then press Next team."]},
+ {t:"1:10",d:"20 min",v:"spin",h:"Spin & Explain",p:"Builds confidence through a 30-second product pitch, scored by the other teams on their phones.",n:["Each team takes a turn: it presses SPIN on its phone and the wheel picks a product.","Start the pitch timer when the volunteer is ready, then open voting: the other teams rate it on their phones.","Voting closes by itself; coach in one sentence, then press Next team."]},
  {t:"1:30",d:"5 min",v:"close",h:"Close and commitments",p:"Winner announced, confidence check repeated, three commitments written on sticky notes.",n:["Ask the confidence question again and compare with the opening count.","Collect the sticky notes for the Day 2 sales simulation."]}
 ];
 
@@ -1486,14 +1486,13 @@ $("#clNext").onclick=()=>goClue(1);
 $("#clPrev").onclick=()=>goClue(-1);
 
 /* ================= SPIN ================= */
-// A turn: the team whose turn it is presses SPIN on its phone (or the facilitator spins for it), the wheel picks a
-// product and a curveball customer, the team pitches for 30 seconds, and every other team rates Feature, Advantage
-// and Benefit on its phone. Voting closes 20 seconds after the pitch (or once every phone has voted), the team
+// A turn: the team whose turn it is presses SPIN on its phone (or the facilitator spins for it) and the wheel picks a
+// product. The facilitator starts the 30-second pitch timer, then opens voting: every other team rates Feature,
+// Advantage and Benefit on its phone. Voting closes after 20 seconds (or once every phone has voted), the team
 // scores 10 points per average star (max 50), and the turn passes to the next team.
 const SP_PITCH=30,SP_VOTE=20,SP_CRIT=["Feature","Advantage","Benefit"];
-const SP_CUSTOMERS=["Retired teacher, 67, nervous about phones","Resort worker paid in US dollars","University student, 19, first job","Expatriate construction worker","Small shop owner in Addu","Newly married couple renting in Hulhumalé","Fisherman with an irregular income","Busy doctor who hates queues"];
 const cv=$("#wheel"),cx=cv.getContext("2d");let ang=0,spinning=false;
-let spPhase="idle",spTeam=null,spTurn=store.get("spturn",0),spPick=null,spCust=null,spPitchEnd=0,spVoteEnd=0,spResult=null,spShuffle=null;
+let spPhase="idle",spTeam=null,spTurn=store.get("spturn",0),spPick=null,spPitchEnd=0,spVoteEnd=0,spResult=null;
 const WCOL=["#c4122f","#0f2238","#0b7f83","#b77900","#4b5fb0","#16794a"];
 function drawWheel(){
   const W=cv.width,R=W/2-10,n=WHEEL.length,seg=2*Math.PI/n;
@@ -1523,26 +1522,26 @@ function renderSpin(){
     h=`<div class="eyebrow">Up next</div><h3 class="sp-team" style="--tc:${t?tcol(t):"var(--line)"}">${esc(t?t.name:"")}</h3>
       ${isHost()?`<div class="marks"><span class="eyebrow">Or choose a team</span>${st.map(x=>`<button class="mk" style="--tc:${tcol(x)}" data-spteam="${x.id}" aria-pressed="${x.id===spTeam}">${esc(x.name)}${[...events.values()].some(e=>e.team_id===x.id&&e.activity==="spin")?" ✓":""}</button>`).join("")}</div>
       <div class="row">${t&&t.claimed?`<button class="btn primary" id="spSend">Send SPIN to ${esc(t.name)}'s phone</button>`:""}<button class="btn ${t&&t.claimed?"":"primary"}" id="spHere">Spin here</button></div>`:`<p class="muted">Waiting for the facilitator.</p>`}
-      <p class="muted" style="margin:0">The team spins for a product and a curveball customer, pitches for ${SP_PITCH} seconds, and the other teams score it on their phones.</p>`;
+      <p class="muted" style="margin:0">The team spins for a product and pitches it for ${SP_PITCH} seconds. You start the pitch timer and open voting; the other teams score it on their phones.</p>`;
   }else if(spPhase==="waiting"){
     h=`<div class="eyebrow">Over to the team</div><h3 class="sp-team" style="--tc:${tcol(t)}">${esc(t.name)}</h3>
       <div class="rs-head"><span class="pulse"></span><b>Waiting for ${esc(t.name)} to press SPIN on their phone…</b></div>
       ${isHost()?`<div class="row"><button class="btn" id="spHere">Spin here instead</button><button class="btn ghost" id="spCancel">Cancel</button></div>`:""}`;
   }else if(spPhase==="spinning"){
     h=`<div class="eyebrow">${esc(t.name)} is spinning</div><h3>Spinning…</h3>`;
-  }else if(spPhase==="customer"){
-    h=`<div class="eyebrow">${esc(t.name)} will pitch</div><h3>${esc(spPick)}</h3><div class="eyebrow">…to this customer</div><div class="sp-cust shuffling" id="spCust">${esc(spCust||"")}</div>`;
-  }else if(spPhase==="pitch"||spPhase==="vote"){
-    const f=FAB[spPick]||["","",""];
-    h=`<div class="eyebrow">${esc(t.name)} · pitch in ${SP_PITCH} seconds</div><h3>${esc(spPick)}</h3>
-      <div class="sp-cust">${esc(spCust)}</div>
-      <div class="sp-clock ${spPhase}"><span class="mono" id="spClock"></span><span id="spClockLbl">${spPhase==="pitch"?"Pitch time":"Vote now on your phones!"}</span></div>
-      ${rstatus(spRateLive()?spRateLive().ref:"")}
-      <details class="sp-notes"><summary>Coaching notes (Feature · Advantage · Benefit)</summary><div class="fab"><div><b>Feature</b><span>${esc(f[0])}</span></div><div><b>Advantage</b><span>${esc(f[1])}</span></div><div><b>Benefit</b><span>${esc(f[2])}</span></div></div></details>
-      ${isHost()?`<div class="row"><button class="btn" id="spSkip">${spPhase==="pitch"?"End pitch now":"Close voting now"}</button></div>`:""}`;
+  }else if(["ready","pitch","pitched","vote"].includes(spPhase)){
+    const f=FAB[spPick]||["","",""],lbl={ready:"Ready when you are",pitch:"Pitch time",pitched:"Time's up",vote:"Vote now on your phones!"}[spPhase];
+    h=`<div class="eyebrow">${esc(t.name)} · ${SP_PITCH}-second pitch</div><h3>${esc(spPick)}</h3>
+      <div class="sp-clock ${spPhase==="vote"?"vote":""}"><span class="mono" id="spClock">${spPhase==="ready"?fmt(SP_PITCH):"00:00"}</span><span id="spClockLbl">${lbl}</span></div>
+      ${spPhase==="vote"?rstatus(spRateLive()?spRateLive().ref:""):""}
+      ${isHost()?`<div class="row">${spPhase==="ready"?`<button class="btn primary" id="spStartPitch">Start pitch timer</button><button class="btn" id="spOpenVote">Skip to voting</button>`
+        :spPhase==="pitch"?`<button class="btn" id="spStopPitch">Stop timer</button><button class="btn primary" id="spOpenVote">Open voting</button>`
+        :spPhase==="pitched"?`<button class="btn primary" id="spOpenVote">Open voting</button><button class="btn" id="spStartPitch">Restart pitch timer</button>`
+        :`<button class="btn" id="spSkip">Close voting now</button>`}</div>`:""}
+      <details class="sp-notes"><summary>Coaching notes (Feature · Advantage · Benefit)</summary><div class="fab"><div><b>Feature</b><span>${esc(f[0])}</span></div><div><b>Advantage</b><span>${esc(f[1])}</span></div><div><b>Benefit</b><span>${esc(f[2])}</span></div></div></details>`;
   }else if(spPhase==="result"&&spResult){
     const sc=tbScore(spResult),rt=teamById(spResult.payload.presenter);
-    h=`<div class="eyebrow">${esc(spResult.payload.products[0])} · for ${esc(spResult.payload.customer)}</div>
+    h=`<div class="eyebrow">Spin &amp; Explain · ${esc(spResult.payload.products[0])}</div>
       <div class="tb-res-top"><h3>${esc(rt?rt.name:spResult.payload.presenterName)}</h3><span class="tb-pts mono">+${sc.pts}</span></div>
       <div class="tb-avgs">${SP_CRIT.map((c,i)=>`<div><span>${c}</span>${stars(sc.avg[i])}<span class="mono">${sc.avg[i].toFixed(1)}</span></div>`).join("")}</div>
       <small class="muted">${sc.n} team${sc.n===1?"":"s"} voted</small>
@@ -1552,7 +1551,7 @@ function renderSpin(){
   el.innerHTML=h;refreshRoundStatus();spDrawClock();
 }
 function spDrawClock(){
-  const c=$("#spClock");if(!c)return;const now=Date.now();
+  const c=$("#spClock");if(!c||(spPhase!=="pitch"&&spPhase!=="vote"))return;const now=Date.now();
   const left=spPhase==="pitch"?Math.max(0,spPitchEnd-now):Math.max(0,spVoteEnd-now);
   c.textContent=fmt(Math.ceil(left/1000));c.parentElement.classList.toggle("low",left<=5000);
 }
@@ -1564,17 +1563,14 @@ async function spSend(){
 function spGo(){
   if(spPhase!=="idle"&&spPhase!=="waiting")return;
   spPhase="spinning";renderSpin();
-  spinWheel(pick=>{
-    spPick=pick;spCust=SP_CUSTOMERS[Math.floor(Math.random()*SP_CUSTOMERS.length)];spPhase="customer";renderSpin();
-    // Shuffle through the customer cards before landing on the curveball.
-    let n=0;clearInterval(spShuffle);spShuffle=setInterval(()=>{const e=$("#spCust");if(e)e.textContent=SP_CUSTOMERS[(n++)%SP_CUSTOMERS.length];
-      if(n>14){clearInterval(spShuffle);if(e){e.textContent=spCust;e.classList.remove("shuffling")}setTimeout(spPitch,1200)}},110);
-  });
+  spinWheel(pick=>{spPick=pick;spPhase="ready";renderSpin()});
 }
-async function spPitch(){
+function spStartPitch(){spPitchEnd=Date.now()+SP_PITCH*1000;spPhase="pitch";renderSpin()}
+// Voting opens only when the facilitator says so; the rating card goes to every other team's phone.
+async function spOpenVote(){
   const t=teamById(spTeam);if(!t){spPhase="idle";renderSpin();return}
-  try{await openRound("text","spin","spinrate:"+Date.now(),0,{type:"rate",title:"Spin & Explain",presenter:t.id,presenterName:t.name,family:"Spin & Explain",criteria:SP_CRIT,products:[spPick],customer:spCust,pitch:SP_PITCH},{})}catch(_){spPhase="idle";renderSpin();return}
-  spPitchEnd=Date.now()+SP_PITCH*1000;spVoteEnd=spPitchEnd+SP_VOTE*1000;spPhase="pitch";renderSpin();
+  try{await openRound("text","spin","spinrate:"+Date.now(),0,{type:"rate",title:"Spin & Explain",presenter:t.id,presenterName:t.name,family:"Spin & Explain",criteria:SP_CRIT,products:[spPick],pitch:SP_PITCH},{})}catch(_){return}
+  spVoteEnd=Date.now()+SP_VOTE*1000;spPhase="vote";renderSpin();
 }
 async function spClose(){
   if(spPhase!=="vote")return;spPhase="closing";
@@ -1585,7 +1581,7 @@ async function spClose(){
 // Heartbeat: notices the team's phone spin, runs the pitch and vote clocks, and closes the vote.
 setInterval(()=>{
   if(spPhase==="waiting"&&liveRound&&liveRound.payload&&liveRound.payload.type==="spin"&&liveAns[spTeam])spGo();
-  else if(spPhase==="pitch"){spDrawClock();if(Date.now()>=spPitchEnd){spPhase="vote";beep();renderSpin()}}
+  else if(spPhase==="pitch"){spDrawClock();if(Date.now()>=spPitchEnd){spPhase="pitched";beep();renderSpin()}}
   else if(spPhase==="vote"){spDrawClock();const raters=teams.filter(x=>x.claimed&&x.id!==spTeam),voted=raters.filter(x=>liveAns[x.id]).length;
     if(Date.now()>=spVoteEnd||(raters.length&&voted>=raters.length))spClose()}
 },200);
@@ -1594,7 +1590,10 @@ $("#spinRes").addEventListener("click",async e=>{
   if(e.target.closest("#spSend"))return spSend();
   if(e.target.closest("#spHere"))return spGo();
   if(e.target.closest("#spCancel")){await cancelRound();spPhase="idle";renderSpin();return}
-  if(e.target.closest("#spSkip")){if(spPhase==="pitch"){spPitchEnd=Date.now()}else if(spPhase==="vote"){spVoteEnd=Date.now()}return}
+  if(e.target.closest("#spStartPitch"))return spStartPitch();
+  if(e.target.closest("#spStopPitch")){spPhase="pitched";renderSpin();return}
+  if(e.target.closest("#spOpenVote")){e.target.disabled=true;return spOpenVote()}
+  if(e.target.closest("#spSkip")){if(spPhase==="vote")spVoteEnd=Date.now();return}
   if(e.target.closest("#spNextTeam")){spPhase="idle";spResult=null;spTeam=null;renderSpin()}
 });
 cv.addEventListener("click",()=>{if(isHost()&&(spPhase==="idle"||spPhase==="waiting"))spGo()});
