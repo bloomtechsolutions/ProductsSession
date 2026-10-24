@@ -782,7 +782,7 @@ async function revoke(team,ref){
 
 async function reload(){
   const [t,e]=await Promise.all([
-    sb.from("teams").select("id,name,color_idx,position,claimed").eq("session_id",sess.id),
+    sb.from("teams").select("*").eq("session_id",sess.id), // "*" keeps working before the claimed column exists
     sb.from("score_events").select("id,team_id,points,activity,ref,created_at").eq("session_id",sess.id).order("id").range(0,4999)]);
   if(t.error||e.error){toast((t.error||e.error).message,true);return}
   teams=t.data;events=new Map(e.data.map(x=>[x.id,x]));

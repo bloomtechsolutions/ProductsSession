@@ -159,11 +159,11 @@ async function checkSeat(){if(me&&!(await stillMine()))dropSeat("Another phone n
 async function stillMine(){if(!me)return false;const {data,error}=await sb.rpc("player_status",{p_team:me.team_id,p_player_key:me.key});return error?true:!!data}
 async function load(){
   const [t,e,r]=await Promise.all([
-    sb.from("teams").select("id,name,color_idx,position,claimed").eq("session_id",sess.id).order("position"),
+    sb.from("teams").select("*").eq("session_id",sess.id).order("position"),
     sb.from("score_events").select("id,team_id,points").eq("session_id",sess.id).range(0,4999),
     sb.from("rounds").select("id,kind,activity,ref,points,payload,status,result").eq("session_id",sess.id).order("id",{ascending:false}).limit(1)]);
-  if(t.error||e.error||r.error){setConn(false);return}
-  teams=t.data;events=new Map(e.data.map(x=>[x.id,x]));setRound(r.data[0]||null);
+  if(t.error||e.error){setConn(false);return}
+  teams=t.data;events=new Map(e.data.map(x=>[x.id,x]));setRound(r.error?null:r.data[0]||null);
   if(me&&!myTeam())dropSeat("Your team was removed by the facilitator.");
   else if(me&&!myTeam().claimed)dropSeat("Your team's seat was released. Join again.");
 }
