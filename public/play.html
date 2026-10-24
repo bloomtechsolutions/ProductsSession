@@ -155,6 +155,7 @@ async function openSession(code){
   if(me&&!(await stillMine())){me=null;store.set("play:"+sess.id,null);toast("Your team's seat was released. Join again.",true)}
   subscribe();render(true);return true;
 }
+async function checkSeat(){if(me&&!(await stillMine()))dropSeat("Another phone now plays for your team. Ask the facilitator if this is wrong.")}
 async function stillMine(){if(!me)return false;const {data,error}=await sb.rpc("player_status",{p_team:me.team_id,p_player_key:me.key});return error?true:!!data}
 async function load(){
   const [t,e,r]=await Promise.all([
@@ -163,8 +164,10 @@ async function load(){
     sb.from("rounds").select("id,kind,activity,ref,points,payload,status,result").eq("session_id",sess.id).order("id",{ascending:false}).limit(1)]);
   if(t.error||e.error||r.error){setConn(false);return}
   teams=t.data;events=new Map(e.data.map(x=>[x.id,x]));setRound(r.data[0]||null);
-  if(me&&!myTeam()){me=null;store.set("play:"+sess.id,null);toast("Your team was removed by the facilitator.",true)}
+  if(me&&!myTeam())dropSeat("Your team was removed by the facilitator.");
+  else if(me&&!myTeam().claimed)dropSeat("Your team's seat was released. Join again.");
 }
+function dropSeat(msg){me=null;store.set("play:"+sess.id,null);shownKey="";toast(msg,true)}
 function setRound(r){if(r&&round&&r.id<round.id)return;round=r}
 async function claim(teamId){
   try{const d=await call("claim_team",{p_session:sess.id,p_team:teamId});me={team_id:d.team.id,key:d.player_key};store.set("play:"+sess.id,me);await load();render(true)}catch(_){await load();render(true)}
@@ -187,10 +190,11 @@ function subscribe(){
     .on("postgres_changes",{event:"INSERT",schema:"public",table:"score_events",filter:f},p=>{events.set(p.new.id,p.new);renderHead()})
     .on("postgres_changes",{event:"UPDATE",schema:"public",table:"score_events",filter:f},p=>{events.set(p.new.id,p.new);renderHead()})
     .on("postgres_changes",{event:"DELETE",schema:"public",table:"score_events"},p=>{if(events.delete(p.old.id))renderHead()})
-    .on("postgres_changes",{event:"*",schema:"public",table:"teams"},async()=>{await load();if(me&&!(await stillMine())){me=null;store.set("play:"+sess.id,null);toast("Your team's seat was released.",true)}render()})
+    .on("postgres_changes",{event:"*",schema:"public",table:"teams"},async()=>{await load();await checkSeat();render()})
     .subscribe(st=>{if(chan!==my)return;setConn(st==="SUBSCRIBED");if(st==="SUBSCRIBED")load().then(()=>render())});
   // Polling backs up the live channel on weak venue Wi-Fi.
-  clearInterval(pollT);pollT=setInterval(async()=>{if(document.visibilityState!=="visible")return;await load();render()},4000);
+  // Every few seconds it also checks this phone still holds its seat (another phone may have taken it after a release).
+  let n=0;clearInterval(pollT);pollT=setInterval(async()=>{if(document.visibilityState!=="visible")return;await load();if(++n%2===0)await checkSeat();render()},4000);
 }
 document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&sess){load().then(()=>render())}});
 window.addEventListener("online",()=>{if(sess)subscribe()});
