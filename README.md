@@ -14,6 +14,7 @@ It is a single static page (`public/index.html`) with no build step, backed by S
   - Match the Customer: teams pick products for the persona; Reveal & score gives 10 per recommended product each team picked.
   - Listen for the Clue and Spot the Opportunity: teams type their answers; the facilitator shows them on screen and ticks what is right.
   - Teach-back ratings and Spin & Explain are judged by the room and ticked by the facilitator.
+  - Finishing a game (the last Next in True or False, or **Finish game & show scores** in any other activity) puts the standings on the projector and every team phone: each team's score in that game, its total, its rank (tied teams share a rank) and its score in every finished game. **Standings** in the top bar shows the table again at any time.
   - Close: the leaderboard picks the winner and shows points by activity.
 - Answer keys go to the server with each question and never reach the team phones, so answers can't be read from the phone page. The server marks True or False, quiz and match answers when the round closes.
 

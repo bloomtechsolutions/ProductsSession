@@ -111,6 +111,18 @@ textarea.field{min-height:92px;resize:vertical}
 .lb .me-row{font-weight:800}
 .foot{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:.85rem;color:var(--muted)}
 .linkbtn{background:none;border:0;color:var(--muted);text-decoration:underline;padding:6px 0}
+.stand{width:100%;border-collapse:collapse;font-size:.95rem}
+.stand th{font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:left;padding:6px;border-bottom:2px solid var(--line)}
+.stand td{padding:8px 6px;border-bottom:1px solid var(--line)}
+.stand td:nth-child(2){border-left:4px solid var(--tc)}
+.stand .num{text-align:right}
+.stand .me-row td{font-weight:800;background:color-mix(in srgb,var(--tc) 10%,transparent)}
+.mine{border-left:6px solid var(--tc)}
+.mine-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;text-align:center}
+.mine-grid .big{display:block;font-size:1.9rem;font-weight:700}
+.mine-grid small{color:var(--muted);font-size:.78rem}
+.games{display:grid;gap:6px}
+.games > div{display:flex;justify-content:space-between;gap:8px;background:var(--good-soft);color:var(--good);border-radius:10px;padding:8px 12px;font-weight:700}
 .toast{position:fixed;z-index:60;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 20px);transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:12px;font-weight:600;font-size:.92rem;box-shadow:var(--shadow);max-width:calc(100vw - 32px)}
 .toast.bad{background:var(--bad);color:#fff}
 @media (prefers-reduced-motion:reduce){*{animation:none!important}}
@@ -139,6 +151,8 @@ let shownKey="";    // what the stage currently shows, so typing is not interrup
 const tcol=t=>TCOL[t.color_idx%TCOL.length];
 const myTeam=()=>me&&teams.find(t=>t.id===me.team_id);
 const score=id=>{let s=0;for(const e of events.values())if(e.team_id===id)s+=e.points;return s};
+// Tied teams share a rank: 1 + the number of teams with a strictly higher score.
+const rankOf=id=>1+teams.filter(x=>score(x.id)>score(id)).length;
 const ranked=()=>[...teams].map(t=>({t,s:score(t.id)})).sort((a,b)=>b.s-a.s);
 function toast(msg,bad){const el=$("#toast");el.textContent=msg;el.classList.toggle("bad",!!bad);el.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>el.hidden=true,bad?5000:2200)}
 async function call(fn,args){const {data,error}=await sb.rpc(fn,args);if(error){toast(error.message||"Could not reach the server. Try again.",true);throw error}return data}
@@ -160,7 +174,7 @@ async function stillMine(){if(!me)return false;const {data,error}=await sb.rpc("
 async function load(){
   const [t,e,r]=await Promise.all([
     sb.from("teams").select("*").eq("session_id",sess.id).order("position"),
-    sb.from("score_events").select("id,team_id,points").eq("session_id",sess.id).range(0,4999),
+    sb.from("score_events").select("id,team_id,points,activity").eq("session_id",sess.id).range(0,4999),
     sb.from("rounds").select("id,kind,activity,ref,points,payload,status,result").eq("session_id",sess.id).order("id",{ascending:false}).limit(1)]);
   if(t.error||e.error){setConn(false);return}
   teams=t.data;events=new Map(e.data.map(x=>[x.id,x]));setRound(r.error?null:r.data[0]||null);
@@ -203,13 +217,14 @@ window.addEventListener("online",()=>{if(sess)subscribe()});
 function renderHead(){
   const t=myTeam();
   if(!t){$("#me").innerHTML=sess?`<span class="mono" style="color:var(--bar-fg)">${esc(sess.code)}</span>`:"";$("#me").style.removeProperty("--tc");return}
-  const r=ranked(),pos=r.findIndex(x=>x.t.id===t.id)+1;
+  const pos=rankOf(t.id);
   $("#me").style.setProperty("--tc",tcol(t));
   $("#me").innerHTML=`<div><b>${esc(t.name)}</b><small>${pos?ordinal(pos)+" of "+teams.length:""}</small></div><span class="sc">${score(t.id)}</span>`;
   const lb=$("#lb");if(lb)lb.innerHTML=lbRows();
+  const st=$("#stand");if(st)st.innerHTML=standRows();
 }
 const ordinal=n=>n+(n===1?"st":n===2?"nd":n===3?"rd":"th");
-const lbRows=()=>ranked().map((x,i)=>`<div class="${me&&x.t.id===me.team_id?"me-row":""}" style="--tc:${tcol(x.t)}"><span class="mono">${i+1}</span><span>${esc(x.t.name)}</span><span class="mono">${x.s}</span></div>`).join("");
+const lbRows=()=>ranked().map(x=>`<div class="${me&&x.t.id===me.team_id?"me-row":""}" style="--tc:${tcol(x.t)}"><span class="mono">${rankOf(x.t.id)}</span><span>${esc(x.t.name)}</span><span class="mono">${x.s}</span></div>`).join("");
 
 function render(force){
   renderHead();
@@ -220,6 +235,7 @@ function render(force){
   if(!force&&key===shownKey)return;
   shownKey=key;
   if(!round||round.status==="cancelled")return renderWait();
+  if(round.payload&&round.payload.type==="standings")return renderStandings();
   if(round.status==="open")return renderQuestion();
   return renderResult();
 }
@@ -273,6 +289,27 @@ function renderQuestion(){
     app.querySelectorAll("[data-f]").forEach(a=>a.oninput=()=>{d.fields[+a.dataset.f]=a.value});
     $("#send").onclick=async()=>{await submit({fields:[...d.fields]});$("#send").textContent="Update answer";$("#sent").textContent="Answer sent. You can update it until the facilitator shows the answers."};
   }
+  bindFoot();
+}
+/* After a game finishes: this team's score in that game and its total, then every team, then the finished games. */
+const gScore=(id,key)=>{let s=0;for(const e of events.values())if(e.team_id===id&&e.activity===key)s+=e.points;return s};
+function standRows(){
+  const p=(round&&round.payload)||{},just=p.just,done=(p.finished||[]).filter(g=>g[0]!==just);
+  const justName=((p.finished||[]).find(g=>g[0]===just)||[just,"Game"])[1];
+  const rows=[...teams].map(t=>({t,tot:score(t.id),g:gScore(t.id,just)})).sort((a,b)=>b.tot-a.tot||b.g-a.g);
+  return `<table class="stand"><thead><tr><th>#</th><th>Team</th><th class="num">${esc(justName)}</th><th class="num">Total</th></tr></thead>
+    <tbody>${rows.map(x=>`<tr class="${me&&x.t.id===me.team_id?"me-row":""}" style="--tc:${tcol(x.t)}"><td class="mono">${1+rows.filter(y=>y.tot>x.tot).length}</td><td>${esc(x.t.name)}</td><td class="num mono">${x.g}</td><td class="num mono"><b>${x.tot}</b></td></tr>`).join("")}</tbody></table>
+    ${done.length?`<div class="eyebrow" style="margin-top:12px">Your earlier games</div><div class="games">${done.map(g=>`<div><span>✓ ${esc(g[1])}</span><span class="mono">${gScore(me.team_id,g[0])}</span></div>`).join("")}</div>`:""}`;
+}
+function renderStandings(){
+  const p=round.payload||{},t=myTeam(),just=p.just;
+  const justName=((p.finished||[]).find(g=>g[0]===just)||[just,"Game"])[1];
+  const pos=rankOf(t.id);
+  app.innerHTML=`<div class="banner info">${esc(p.title||"Game finished")}</div>
+    <div class="card mine" style="--tc:${tcol(t)}"><div class="eyebrow">${esc(t.name)}</div>
+      <div class="mine-grid"><div><span class="mono big">${gScore(t.id,just)}</span><small>${esc(justName)}</small></div><div><span class="mono big">${score(t.id)}</span><small>Total</small></div><div><span class="mono big">${pos?ordinal(pos):"—"}</span><small>of ${teams.length} teams</small></div></div></div>
+    <div class="card"><div class="eyebrow">Standings</div><div id="stand">${standRows()}</div></div>
+    <div class="card"><div class="eyebrow">Games finished</div><div class="games">${(p.finished||[]).map(g=>`<div><span>✓ ${esc(g[1])}</span><span class="mono">${gScore(t.id,g[0])} pts</span></div>`).join("")||"—"}</div><p class="muted" style="margin:0">The next game appears here when the facilitator starts it.</p></div>${foot()}`;
   bindFoot();
 }
 async function submit(answer){

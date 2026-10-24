@@ -355,6 +355,21 @@ body.viewer #teamAdd,body.viewer #resetAll{display:none}
 span.pchip{display:inline-block}
 @media (max-width:560px){.join-box,.bigjoin{grid-template-columns:minmax(0,1fr)}.join-box .qr{max-width:160px}.tl-row{grid-template-columns:8px minmax(0,1fr) auto;}.tl-row .pstat,.tl-row .btn{grid-column:2/-1}}
 
+/* standings */
+.stand-wrap{overflow-x:auto}
+.stand{width:100%;border-collapse:collapse;font-size:1.05rem}
+.stand th{font-family:var(--f-display);font-stretch:115%;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);text-align:left;padding:8px 10px;border-bottom:2px solid var(--line);white-space:nowrap}
+.stand td{padding:10px;border-bottom:1px solid var(--line)}
+.stand tr td:nth-child(2){border-left:5px solid var(--tc)}
+.stand tbody tr:first-child td{font-weight:800}
+.stand .num{text-align:right}
+.stand .hl{background:var(--lagoon-soft);color:var(--lagoon);font-weight:800}
+.stand .tot{font-weight:800;font-size:1.15rem}
+.done-games{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:10px}
+.done-games .eyebrow{margin-right:4px}
+.dg{border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:.8rem;font-weight:600;color:var(--muted)}
+.dg.on{background:var(--good-soft);border-color:var(--good);color:var(--good)}
+
 @media (max-width:1100px){
   .board{grid-template-columns:repeat(3,minmax(0,1fr))}
   .board .cat{display:none}
@@ -401,6 +416,7 @@ span.pchip{display:inline-block}
     </div>
     <div class="row">
       <button class="conn" id="conn" data-s="none" title="Connection to the scoreboard database. Tap to reconnect.">No session</button>
+      <button class="chipbtn" id="standBtn" title="Show every team's total and the score of each finished game">Standings</button>
       <button class="chipbtn solid" id="sessBtn" title="Create, join or manage the session and teams">Session…</button>
       <button class="chipbtn" id="teamAdd" title="Create a team">+ Team</button>
       <button class="chipbtn" id="resetAll" title="Reset scores and used questions">Reset</button>
@@ -854,6 +870,8 @@ function changed(full){
     renderTeams();renderBoard();renderLeader();
     if(f){renderMF();renderTeach();renderClue();renderMatch();renderSpot();if(spinPick&&!spinning)renderSpinRes(spinPick);if(modalKind==="quiz")renderQuizLive()}
     if(modalKind==="sess")renderSess();
+    if(modalKind==="stand")renderStandings();
+    if(f)renderFinishBtns();
     refreshMarks();refreshRoundStatus();
   });
 }
@@ -882,7 +900,7 @@ $("#resetAll").onclick=async e=>{
   if(!isHost()){toast("Only the facilitator's device can reset scores.",true);return}
   if(!resetArm){resetArm=true;e.target.textContent="Tap again to reset";setTimeout(()=>{resetArm=false;e.target.textContent="Reset"},3000);return}
   resetArm=false;e.target.textContent="Reset";
-  try{await rpc("reset_scores",{});stopPoll();events=new Map();rounds=new Map();liveRound=null;used=[];quizTurn=0;store.set("used",used);store.set("turn",0);changed(true);toast("Scores reset")}catch(_){}
+  try{await rpc("reset_scores",{});stopPoll();events=new Map();rounds=new Map();liveRound=null;finished=[];used=[];quizTurn=0;store.set("used",used);store.set("turn",0);changed(true);toast("Scores reset")}catch(_){}
 };
 
 /* ---- marking = scoring: every tick button awards or removes points ---- */
@@ -908,6 +926,8 @@ async function loadRounds(){
   const {data,error}=await sb.from("rounds").select("id,kind,activity,ref,points,payload,status,result").eq("session_id",sess.id).order("id").range(0,1999);
   if(error)return;
   rounds=new Map();for(const r of data)if(r.status!=="cancelled")rounds.set(r.ref,r);
+  const st=data.filter(r=>r.payload&&r.payload.type==="standings"&&r.status!=="cancelled").pop();
+  finished=st&&Array.isArray(st.payload.finished)?st.payload.finished.map(g=>g[0]):[];
   const open=data.filter(r=>r.status==="open").pop()||null;
   if(!open){liveRound=null;liveAns={};stopPoll()}else if(!liveRound||liveRound.id!==open.id){liveRound=open;liveAns={};if(isHost())startPoll()}
 }
@@ -960,6 +980,60 @@ document.addEventListener("click",async e=>{
   const o=e.target.closest("[data-round-open]");if(o){const f=ROUND_OPENERS[o.dataset.roundOpen.split(":")[0]];o.disabled=true;try{await f(o.dataset.roundOpen)}catch(_){}o.disabled=false;return}
   if(e.target.closest("[data-round-cancel]")){await cancelRound();toast("Stopped collecting answers")}
 });
+
+/* ---- finished games and standings ---- */
+// Finishing a game records it as complete and puts the standings on the projector and on every team phone:
+// each team's score in the game just finished, its total, and its score in every finished game so far.
+const GAMES=[["mythfact","True or False","warmup"],["teach","Product Passport","library"],["quiz","Product Challenge","challenge"],
+  ["clue","Listen for the Clue","clues"],["match","Match the Customer","match"],["spot","Spot the Opportunity","spot"],["spin","Spin & Explain","spin"]];
+const gameName=k=>(GAMES.find(g=>g[0]===k)||[k,ACT[k]||k])[1];
+let finished=[];
+const gameScore=(team,key)=>{let s=0;for(const e of events.values())if(e.team_id===team&&e.activity===key)s+=e.points;return s};
+async function finishGame(key){
+  if(!isHost())return;
+  if(!finished.includes(key))finished=[...finished,key];
+  const list=GAMES.filter(g=>finished.includes(g[0])).map(g=>[g[0],g[1]]);
+  try{
+    if(teams.length){
+      await rpc("open_round",{p_kind:"text",p_activity:"standings",p_ref:"standings:"+Date.now(),p_points:0,
+        p_payload:{type:"standings",title:gameName(key)+" finished",just:key,finished:list},p_answer:{}});
+      await loadRounds();await closeRound();
+    }
+  }catch(_){}
+  showStandings(key);renderFinishBtns();
+}
+function standingsHtml(just){
+  const done=GAMES.filter(g=>finished.includes(g[0]));
+  const rows=sortedTeams().map(t=>({t,tot:teamScore(t.id),g:just?gameScore(t.id,just):0})).sort((a,b)=>b.tot-a.tot||b.g-a.g);
+  if(!rows.length)return noTeams();
+  return `<div class="stand-wrap"><table class="stand">
+    <thead><tr><th>#</th><th>Team</th>${just?`<th class="num hl">${esc(gameName(just))}</th>`:""}${done.filter(g=>g[0]!==just).map(g=>`<th class="num">${esc(g[1])}</th>`).join("")}<th class="num">Total</th></tr></thead>
+    <tbody>${rows.map(x=>`<tr style="--tc:${tcol(x.t)}"><td class="mono">${1+rows.filter(y=>y.tot>x.tot).length}</td><td><b>${esc(x.t.name)}</b></td>${just?`<td class="num mono hl">${x.g}</td>`:""}${done.filter(g=>g[0]!==just).map(g=>`<td class="num mono">${gameScore(x.t.id,g[0])}</td>`).join("")}<td class="num mono tot">${x.tot}</td></tr>`).join("")}</tbody></table></div>
+    <div class="done-games"><span class="eyebrow">Games finished</span>${GAMES.map(g=>`<span class="dg ${finished.includes(g[0])?"on":""}">${finished.includes(g[0])?"✓ ":""}${esc(g[1])}</span>`).join("")}</div>`;
+}
+function showStandings(just){
+  modalKind="stand";standJust=just||null;renderStandings();$("#ov").hidden=false;
+}
+let standJust=null;
+function renderStandings(){
+  const m=$("#modal");
+  m.innerHTML=`<div class="row" style="justify-content:space-between"><span class="pill">Standings</span><button class="btn ghost" data-close>Close</button></div>
+   <h2 id="mq" class="sess-h">${standJust?esc(gameName(standJust))+" finished":"Standings"}</h2>
+   <p class="muted">${standJust?`The highlighted column is each team's score in ${esc(gameName(standJust))}. Teams see the same table on their phones.`:"Total score and the score of each finished game."}</p>
+   ${standingsHtml(standJust)}`;
+}
+$("#standBtn").onclick=()=>showStandings(null);
+// "Finish game" button in each activity header (True or False finishes itself from its last Next).
+function renderFinishBtns(){
+  GAMES.forEach(([key,name,view])=>{
+    const hd=$("#v-"+view+" .hd");if(!hd)return;
+    let b=hd.querySelector("[data-finish]");
+    if(!b){if(key==="mythfact")return;b=document.createElement("button");b.className="btn";b.dataset.finish=key;
+      let row=hd.querySelector(":scope > .row");if(!row){row=document.createElement("div");row.className="row";hd.appendChild(row)}row.appendChild(b);
+      b.onclick=()=>finishGame(key)}
+    b.hidden=!isHost();b.textContent=finished.includes(key)?"Show scores again":"Finish game & show scores";
+  });
+}
 
 /* ---- session dialog ---- */
 function openSess(){modalKind="sess";renderSess();$("#ov").hidden=false}
@@ -1016,6 +1090,7 @@ function renderLeader(){
   if(!list.length){$("#leader").innerHTML=`<div class="eyebrow">Final scoreboard</div>${noTeams()}`;return}
   const top=list[0].s,winners=list.filter(x=>x.s===top&&top>0);
   $("#leader").innerHTML=`<div class="eyebrow">Final scoreboard · updates live</div>
+   ${finished.length?`<div class="done-games" style="margin-bottom:8px">${GAMES.filter(g=>finished.includes(g[0])).map(g=>`<span class="dg on">✓ ${esc(g[1])}</span>`).join("")}</div>`:""}
    <h3 class="winner">${winners.length?(winners.length>1?"Tie: ":"Winner: ")+winners.map(x=>esc(x.t.name)).join(" & "):"No points yet"}</h3>
    <div class="lb">${list.map((x,i)=>{const by={};for(const e of events.values())if(e.team_id===x.t.id)by[e.activity]=(by[e.activity]||0)+e.points;
      return `<div class="lb-row" style="--tc:${tcol(x.t)}"><span class="lb-rank mono">${i+1}</span><div class="lb-main"><div class="lb-top"><b>${esc(x.t.name)}</b><span class="mono">${x.s}</span></div>
@@ -1092,7 +1167,7 @@ $("#mfReveal").onclick=async()=>{
 };
 async function goMF(d){
   if(isHost()&&liveRound&&liveRound.ref===mfRef(mfI))await cancelRound();
-  if(mfLive&&d>0&&mfI===MF.length-1){mfLive=false;mfShown=false;renderMF();toast("True or False finished");return}
+  if(mfLive&&d>0&&mfI===MF.length-1){mfLive=false;mfShown=false;renderMF();await finishGame("mythfact");return}
   mfI=(mfI+d+MF.length)%MF.length;mfShown=false;
   if(mfLive)await sendMF();else renderMF();
 }
@@ -1310,7 +1385,7 @@ function renderSpinRes(p){
 cv.addEventListener("click",spin);
 
 /* ================= INIT ================= */
-renderTeams();renderMF();renderLib();renderTeach();renderBoard();renderClue();renderMatch();renderSpot();renderSpinRes(null);renderLeader();drawClock();setConn("none");
+renderFinishBtns();renderTeams();renderMF();renderLib();renderTeach();renderBoard();renderClue();renderMatch();renderSpot();renderSpinRes(null);renderLeader();drawClock();setConn("none");
 const h=(location.hash||"").slice(1);show(VIEWS.some(v=>v[0]===h)?h:store.get("view","plan"));
 document.fonts&&document.fonts.ready.then(drawWheel);
 (async()=>{
