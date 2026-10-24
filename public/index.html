@@ -498,6 +498,7 @@ span.pchip{display:inline-block}
     </div>
     <div class="row">
       <button class="conn" id="conn" data-s="none" title="Connection to the scoreboard database. Tap to reconnect.">No session</button>
+      <button class="chipbtn" id="sndBtn" title="Mute or unmute sounds on the audience screen">Screen sound: on</button>
       <button class="chipbtn" id="standBtn" title="Show every team's total and the score of each finished game">Standings</button>
       <button class="chipbtn solid" id="sessBtn" title="Create, join or manage the session and teams">Session…</button>
       <button class="chipbtn" id="teamAdd" title="Create a team">+ Team</button>
@@ -819,6 +820,7 @@ function subscribe(){
   const upTeam=p=>{if(p.new.session_id!==sid)return;const i=teams.findIndex(t=>t.id===p.new.id);if(i>=0)teams[i]=p.new;else teams.push(p.new);changed(true)};
   setConn("connecting");
   const my=chan=sb.channel("kykp:"+sid)
+    .on("broadcast",{event:"hello"},()=>{lastSent=0;sendScreen()})
     .on("postgres_changes",{event:"INSERT",schema:"public",table:"score_events",filter:f},upEv)
     .on("postgres_changes",{event:"UPDATE",schema:"public",table:"score_events",filter:f},upEv)
     .on("postgres_changes",{event:"DELETE",schema:"public",table:"score_events"},p=>{if(events.delete(p.old.id))changed()})
@@ -878,7 +880,7 @@ function changed(full){
     if(modalKind==="sess")renderSess();
     if(modalKind==="stand")renderStandings();
     if(f)renderFinishBtns();
-    refreshMarks();refreshRoundStatus();
+    refreshMarks();refreshRoundStatus();sendScreen();
   });
 }
 let barSig="";
@@ -1007,6 +1009,7 @@ function renderPicks(){
     <div class="pk-board">${PASS_FAMS.map(([k,name])=>`<div class="pk-fam"><span class="eyebrow">${name}</span><div class="pk-chips">${PRODUCTS.filter(p=>p.f===k).map(p=>{const t=teamById(picks.get(pid(p)));
       return `<button class="pk ${t?"taken":""}" style="${t?`--tc:${tcol(t)}`:""}" data-pk="${pid(p)}" ${t&&isHost()?"":"disabled"} title="${t?(isHost()?"Tap to free this product":"Taken"):"Free"}">${esc(p.n)}${t?`<small>${esc(t.name)}</small>`:""}</button>`}).join("")}</div></div>`).join("")}</div>
     ${st.length?`<div class="pk-teams">${st.map(t=>{const mine=picksOf(t.id);return `<div style="--tc:${tcol(t)}"><b>${esc(t.name)}</b><span>${mine.length?mine.map(p=>esc(p.n)).join(" · "):"<i class='muted'>no products yet</i>"}</span><span class="mono">${mine.length}/2</span></div>`}).join("")}</div>`:noTeams()}`;
+  sendScreen();
 }
 $("#picks").addEventListener("click",async e=>{
   if(e.target.closest("#pkOpen")){e.target.disabled=true;try{await openRound("text","teach","pick:"+Date.now(),0,{type:"pick",title:"Pick 2 products to teach",max:2,families:PASS_FAMS.map(([k,n])=>[n,PRODUCTS.filter(p=>p.f===k).map(p=>[pid(p),p.n])])},{});startPickPoll()}catch(_){}renderPicks();return}
@@ -1048,7 +1051,7 @@ function standingsHtml(just){
     <div class="done-games"><span class="eyebrow">Games finished</span>${GAMES.map(g=>`<span class="dg ${finished.includes(g[0])?"on":""}">${finished.includes(g[0])?"✓ ":""}${esc(g[1])}</span>`).join("")}</div>`;
 }
 function showStandings(just){
-  modalKind="stand";standJust=just||null;renderStandings();$("#ov").hidden=false;
+  modalKind="stand";standJust=just||null;renderStandings();$("#ov").hidden=false;sendScreen();
 }
 let standJust=null;
 function renderStandings(){
@@ -1092,6 +1095,7 @@ function renderSess(){
   m.innerHTML=`<div class="row" style="justify-content:space-between"><span class="pill ${isHost()?"":"sun"}">${isHost()?"Facilitator":"Viewer"}</span><button class="btn ghost" data-close>Close</button></div>
    <div class="sess-top"><div><div class="eyebrow">${esc(sess.name)}</div><h2 id="mq" class="sess-code mono">${esc(sess.code)}</h2></div>
      <div class="sess-links"><div class="join-box"><div class="qr" aria-label="QR code for the team join link">${qrSvg(play)}</div><div><span class="eyebrow">Team phones join here (one phone per team)</span><div class="join-url mono">${esc(play.replace(/^https?:\/\//,""))}</div><div class="row"><button class="btn" data-copy="${esc(play)}">Copy join link</button><button class="btn" data-bigqr>Show on screen</button></div></div></div>
+     <div><span class="eyebrow">Audience screen for the projector</span><div class="row"><input class="search" readonly value="${esc(screenUrl())}" aria-label="Audience screen link"><button class="btn" data-copy="${esc(screenUrl())}">Copy</button><a class="btn" href="${esc(screenUrl())}" target="_blank" rel="noopener">Open</a></div><small class="muted">Shows only the game in progress. Keep this console on your laptop and put the audience screen on the projector.</small></div>
      <div><span class="eyebrow">Scoreboard link (watch only)</span><div class="row"><input class="search" readonly value="${esc(view)}" aria-label="Viewer link"><button class="btn" data-copy="${esc(view)}">Copy</button></div></div>
      ${host?`<div><span class="eyebrow">Facilitator link (keep private)</span><div class="row"><input class="search" readonly value="${esc(host)}" aria-label="Facilitator link"><button class="btn" data-copy="${esc(host)}">Copy</button></div><small class="muted">Opens this session with scoring controls on another device.</small></div>`:""}</div></div>
    <div class="eyebrow">Teams (${teams.length}/${MAX_TEAMS}) · each team plays on one phone</div>
@@ -1114,7 +1118,7 @@ $("#modal").addEventListener("click",async e=>{
 const playUrl=()=>(location.protocol==="file:"?location.href.replace(/[^/]*$/,"")+"play.html":location.origin+location.pathname.replace(/[^/]*$/,"")+"play")+"?s="+(sess?sess.code:"");
 function qrSvg(text){try{const q=qrcode(0,"M");q.addData(text);q.make();return q.createSvgTag({cellSize:4,margin:2,scalable:true})}catch(_){return ""}}
 function showBigQr(){
-  modalKind="qr";const m=$("#modal"),play=playUrl();$("#ov").hidden=false;
+  modalKind="qr";const m=$("#modal"),play=playUrl();$("#ov").hidden=false;sendScreen();
   m.innerHTML=`<div class="row" style="justify-content:space-between"><span class="pill">Join the game</span><button class="btn ghost" data-close>Close</button></div>
    <div class="bigjoin"><div class="qr big">${qrSvg(play)}</div><div><h2 id="mq" class="sess-h">One phone per team</h2><p class="muted">Scan the code, or open the link and enter the code. Pick your team or create one (up to ${MAX_TEAMS} teams).</p>
    <div class="join-url big mono">${esc(play.replace(/^https?:\/\//,"").replace(/\?s=.*/,""))}</div><div class="sess-code mono">${esc(sess.code)}</div></div></div>`;
@@ -1154,7 +1158,7 @@ function show(id){
   if(!VIEWS.some(v=>v[0]===id))id="plan";
   $$(".view").forEach(s=>s.classList.toggle("on",s.id==="v-"+id));
   $$("#rail a").forEach(a=>{if(a.dataset.v===id)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});
-  store.set("view",id);
+  store.set("view",id);curView=id;sendScreen();
   if(id==="spin")drawWheel();
 }
 $("#rail").addEventListener("click",e=>{const a=e.target.closest("a");if(!a)return;e.preventDefault();show(a.dataset.v);try{history.replaceState(null,"","#"+a.dataset.v)}catch(_){}window.scrollTo({top:0})});
@@ -1189,6 +1193,7 @@ function renderMF(){
   $("#mfNext").disabled=mfLive&&!mfShown;
   $("#mfNext").textContent=mfLive&&last?"Finish":"Next";
   refreshMarks();refreshRoundStatus();
+  sendScreen();
 }
 async function sendMF(){if(!isHost())return;try{await ROUND_OPENERS.mf(mfRef(mfI))}catch(_){mfLive=false}renderMF()}
 $("#mfStart").onclick=async()=>{
@@ -1333,6 +1338,7 @@ function renderQuizLive(){
   const live=$("#qLive");if(live&&!qs.revealed)live.innerHTML=teams.length?(liveRound&&liveRound.ref===qRef(qs.k)?rstatus(qRef(qs.k)):roundCtl(qRef(qs.k),"Send to team phones")):noTeams();
   const res=$("#qRes");if(res&&qs.revealed)res.innerHTML=resultsRow(r,a=>"ABCD"[a.choice]||"?")+speedLine(qs.k);
   refreshRoundStatus();refreshMarks();
+  sendScreen();
 }
 const speedLine=k=>{const w=SPEED_BONUS.map((b,i)=>{const e=[...events.values()].find(x=>x.ref==="quiz-speed:"+k&&x.points===b);const t=e&&teamById(e.team_id);return t?`<span class="speed" style="--tc:${tcol(t)}">${i?"⚡ 2nd fastest":"⚡ Fastest"}: <b>${esc(t.name)}</b> +${b}</span>`:""}).join("");return w?`<div class="speeds">${w}</div>`:""};
 function openQ(k){
@@ -1379,7 +1385,7 @@ function closeQ(){
     if(!qs.revealed&&isHost()&&liveRound&&liveRound.ref===qRef(qs.k))cancelRound();
     if(qs.used){quizTurn++;store.set("turn",quizTurn);renderBoard()}
   }
-  modalKind=null;qs=null;
+  modalKind=null;qs=null;sendScreen();
 }
 $("#ov").addEventListener("click",e=>{if(e.target.id==="ov")closeQ()});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#ov").hidden)closeQ()});
@@ -1435,6 +1441,7 @@ function renderClue(){
   $("#clStop").hidden=!running||!isHost();
   $("#clPrev").disabled=$("#clNext").disabled=running;
   refreshRoundStatus();
+  sendScreen();
 }
 const speedLineRef=ref=>{const w=[...events.values()].filter(x=>x.ref===ref).map(e=>{const t=teamById(e.team_id);return t?`<span class="speed" style="--tc:${tcol(t)}">⚡ Fastest: <b>${esc(t.name)}</b> +${e.points}</span>`:""}).join("");return w?`<div class="speeds">${w}</div>`:""};
 async function clAsk(){
@@ -1508,6 +1515,7 @@ function pickAt(a){const n=WHEEL.length,seg=2*Math.PI/n;let p=(-Math.PI/2-a)%(2*
 function spinWheel(done){
   if(spinning)return;spinning=true;
   const start=ang,delta=2*Math.PI*(5+Math.random()*3)+Math.random()*2*Math.PI,dur=matchMedia("(prefers-reduced-motion: reduce)").matches?10:4200,t0=performance.now();
+  spSpin={id:Date.now(),start,delta,dur,t0:Date.now()};sendScreen();
   const step=now=>{const k=Math.min(1,(now-t0)/dur),e=1-Math.pow(1-k,4);ang=start+delta*e;drawWheel();if(k<1)requestAnimationFrame(step);else{spinning=false;done(WHEEL[pickAt(ang)])}};
   requestAnimationFrame(step);
 }
@@ -1549,6 +1557,7 @@ function renderSpin(){
       ${isHost()?`<div class="row"><button class="btn primary" id="spNextTeam">Next team: ${esc((spUp()||{}).name||"")}</button></div>`:""}`;
   }
   el.innerHTML=h;refreshRoundStatus();spDrawClock();
+  sendScreen();
 }
 function spDrawClock(){
   const c=$("#spClock");if(!c||(spPhase!=="pitch"&&spPhase!=="vote"))return;const now=Date.now();
@@ -1598,8 +1607,63 @@ $("#spinRes").addEventListener("click",async e=>{
 });
 cv.addEventListener("click",()=>{if(isHost()&&(spPhase==="idle"||spPhase==="waiting"))spGo()});
 
+/* ================= AUDIENCE SCREEN FEED ================= */
+// The audience screen (/screen) has no controls of its own: this console broadcasts what it should show over the
+// session's realtime channel, on every change and every 2 seconds, and again whenever a screen says hello.
+let curView="plan",screenSound=store.get("screensound",true),spSpin=null,lastSent=0,sendQueued=false;
+const tinfo=t=>({id:t.id,name:t.name,col:tcol(t),score:teamScore(t.id),claimed:!!t.claimed});
+function roundResults(r,label){
+  if(!r||r.status!=="closed"||!r.result)return null;const res=r.result.teams||{};
+  return sortedTeams().map(t=>{const x=res[t.id]||{};return {id:t.id,ans:x.answer?label(x.answer):null,pts:x.points==null?null:x.points}});
+}
+const speedOf=ref=>[...events.values()].filter(e=>e.ref===ref).map(e=>[e.team_id,e.points]);
+function screenModel(){
+  const m={v:curView,sound:screenSound,code:sess?sess.code:"",join:sess?playUrl():"",teams:sortedTeams().map(tinfo),finished:GAMES.filter(g=>finished.includes(g[0])).map(g=>[g[0],g[1]]),
+    answered:liveRound?Object.keys(liveAns):[],at:Date.now()};
+  if(modalKind==="qr")m.modal="qr";
+  if(modalKind==="stand"){m.modal="stand";m.just=standJust;
+    // Scores per finished game, so the screen can show the game column and how places changed.
+    m.by=Object.fromEntries(sortedTeams().map(t=>[t.id,Object.fromEntries(GAMES.map(g=>[g[0],gameScore(t.id,g[0])]))]))}
+  const now=Date.now();
+  if(curView==="warmup"){const s=MF[mfI],r=roundFor(mfRef(mfI));
+    m.mf={i:mfI,n:MF.length,s:s.s,shown:mfShown,live:mfLive,open:!!(liveRound&&liveRound.ref===mfRef(mfI)),
+      answer:mfShown?(s.a?"TRUE":"FALSE"):null,e:mfShown?s.e:null,results:mfShown?roundResults(r,a=>a.choice===0?"True":"False"):null}}
+  if(curView==="library"){const live=liveRound&&String(liveRound.ref).startsWith("teachback:")?liveRound:null,last=tbRounds()[0];
+    m.pp={picking:pickingOpen(),picks:Object.fromEntries(picks),products:PASS_FAMS.map(([k,n])=>[n,PRODUCTS.filter(p=>p.f===k).map(p=>[pid(p),p.n])]),
+      live:live?{team:live.payload.presenter,products:live.payload.products||[]}:null,
+      last:last&&!live?(()=>{const sc=tbScore(last);return {team:last.payload.presenter,products:last.payload.products||[],avg:sc.avg,pts:sc.pts,n:sc.n,notes:sc.notes,crit:TB_CRIT}})():null}}
+  if(curView==="challenge"){
+    const auto=new Set();for(const e of events.values())if(e.ref&&e.ref.startsWith("quiz:"))auto.add(e.ref.slice(5));
+    const st=sortedTeams();
+    m.quiz={cats:QCATS,used:[...new Set([...used,...auto])],turn:st.length?st[quizTurn%st.length].name:""};
+    if(modalKind==="quiz"&&qs){const [c,r]=qs.k.split("-").map(Number),it=Q[c][r];
+      m.quiz.open={k:qs.k,cat:QCATS[c],pts:(r+1)*100,q:it.q,options:it.o,leftMs:qs.deadline?Math.max(0,qs.deadline-now):null,secs:qSec,revealed:qs.revealed,
+        correct:qs.revealed?it.a:null,results:qs.revealed?roundResults(roundFor(qRef(qs.k)),a=>"ABCD"[a.choice]||"?"):null,speed:qs.revealed?speedOf("quiz-speed:"+qs.k):[]}}}
+  if(curView==="clues"){const c=CLUES[clI],ref=clRef(clI,clStep),{options,correct}=clOptions(clI,clStep),rev=clPhase==="reveal";
+    m.cl={i:clI,n:CLUES.length,q:c.q,by:c.by,step:clStep,phase:clPhase,question:CL_STEPS[clStep],options,secs:CL_SECS,
+      leftMs:clPhase==="ask"&&clDeadline?Math.max(0,clDeadline-now):null,nextMs:rev&&!clPaused?Math.max(0,clNextAt-now):null,paused:clPaused,
+      correct:rev?correct:null,results:rev?roundResults(roundFor(ref),a=>"ABCD"[a.choice]||"?"):null,speed:rev?speedOf(ref+":speed"):[],
+      parts:CL_PARTS.slice(0,clPartsShown()).map(([k,l])=>[l,c[k]])}}
+  if(curView==="spin"){const t=teamById(spTeam)||spUp();
+    m.sp={phase:spPhase,team:t?t.id:null,up:(spUp()||{}).id||null,pick:spPick,wheel:WHEEL,spin:spSpin&&spPhase==="spinning"?{...spSpin,elapsed:now-spSpin.t0}:null,
+      pitchLeft:spPhase==="pitch"?Math.max(0,spPitchEnd-now):null,voteLeft:spPhase==="vote"?Math.max(0,spVoteEnd-now):null,secs:SP_PITCH,
+      result:spPhase==="result"&&spResult?(()=>{const sc=tbScore(spResult);return {team:spResult.payload.presenter,pick:spResult.payload.products[0],avg:sc.avg,pts:sc.pts,n:sc.n,notes:sc.notes,crit:SP_CRIT}})():null}}
+  return m;
+}
+function sendScreen(){
+  if(!isHost()||!chan)return;
+  const go=()=>{sendQueued=false;lastSent=Date.now();try{chan.send({type:"broadcast",event:"screen",payload:screenModel()})}catch(_){}};
+  if(Date.now()-lastSent>250)go();else if(!sendQueued){sendQueued=true;setTimeout(go,260)}
+}
+setInterval(sendScreen,2000);
+// Sound plays on the audience screen; this switch mutes it from the console.
+function renderSnd(){const b=$("#sndBtn");if(b){b.textContent=screenSound?"Screen sound: on":"Screen sound: off";b.setAttribute("aria-pressed",screenSound)}}
+$("#sndBtn").onclick=()=>{screenSound=!screenSound;store.set("screensound",screenSound);renderSnd();sendScreen()};
+window.__screenModel=screenModel; // used by the automated tests
+const screenUrl=()=>(location.protocol==="file:"?location.href.replace(/[^/]*$/,"")+"screen.html":location.origin+location.pathname.replace(/[^/]*$/,"")+"screen")+"?s="+(sess?sess.code:"");
+
 /* ================= INIT ================= */
-renderQSec();renderFinishBtns();renderTeams();renderMF();renderPicks();renderLib();renderTeach();renderBoard();renderClue();renderSpin();renderLeader();drawClock();setConn("none");
+renderSnd();renderQSec();renderFinishBtns();renderTeams();renderMF();renderPicks();renderLib();renderTeach();renderBoard();renderClue();renderSpin();renderLeader();drawClock();setConn("none");
 const h=(location.hash||"").slice(1);show(VIEWS.some(v=>v[0]===h)?h:store.get("view","plan"));
 document.fonts&&document.fonts.ready.then(drawWheel);
 (async()=>{

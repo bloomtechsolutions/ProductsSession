@@ -18,6 +18,17 @@ It is a single static page (`public/index.html`) with no build step, backed by S
   - Close: the leaderboard picks the winner and shows points by activity.
 - Answer keys go to the server with each question and never reach the team phones, so answers can't be read from the phone page. The server marks True or False, quiz and match answers when the round closes.
 
+## Audience screen (/screen)
+
+Put `/screen?s=CODE` on the projector (the session dialog has the link) and keep the console on the facilitator's laptop. The screen has no controls: the console broadcasts what to show over the session's realtime channel on every change and every 2 seconds, and answers a new screen's "hello" straight away. The design is a split-flap departures board:
+
+- Home: the title clatters into KNOW YOUR CUSTOMER / KNOW YOUR PRODUCT, teams check in as their phones join, with the QR code and a rotating "Did you know?" product fact.
+- Join (Show on screen): big QR code and code.
+- Each game opens with a round intro card, then shows only the current statement or question, its countdown and who has answered; reveals highlight the answer, show each team's result and speed bonus, and throw confetti in the scoring teams' colours.
+- Spin & Explain replays the console's spin on the same wheel, then shows the product and the pitch and voting timers.
+- Finishing a game shows an animated leaderboard (bars grow, teams move with ▲▼); the Close view shows the winner and a podium.
+- Sound (ticks, reveal chime, applause) plays after one click on the screen; Screen sound on the console mutes it.
+
 ### Data model
 
 `supabase/migrations/` holds the schema. A team's score is the sum of its `score_events`. `rounds` holds each question sent to the phones (readable by everyone), `round_keys` its answer key and `answers` each team's answer (neither readable through the API). `team_secrets` holds each phone's player key as a hash. Automatic awards carry a `ref` (for example `quiz:2-3`), so awarding again replaces the points instead of adding them. Tables are readable by anyone with the publishable key; every write goes through `SECURITY DEFINER` functions that check the session's host key (stored only as a SHA-256 hash). Teams and score events are published to Supabase Realtime so every screen updates live.
