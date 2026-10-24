@@ -113,7 +113,7 @@ nav.rail a[aria-current="page"] .n{color:var(--accent)}
 .kpi b{font-family:var(--f-display);font-stretch:118%;font-size:1.6rem;font-weight:850;display:block}
 .kpi span{color:var(--muted);font-size:.85rem}
 
-/* myth or fact */
+/* true or false */
 .mf{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
 .mf-card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:clamp(20px,4vw,44px);min-height:280px;display:flex;flex-direction:column;gap:18px;box-shadow:var(--shadow)}
 .mf-q{font-family:var(--f-display);font-stretch:108%;font-weight:750;font-size:clamp(1.4rem,3.2vw,2.3rem);line-height:1.18;text-wrap:balance}
@@ -428,9 +428,9 @@ span.pchip{display:inline-block}
     </section>
 
     <!-- WARM UP -->
-    <section class="view" id="v-warmup" data-title="Myth or Fact">
-      <div class="hd"><div><div class="eyebrow">Activity 1 · 10 min · whole room</div><h2>Myth or Fact?</h2>
-        <p>Read the statement aloud. Everyone stands for <b>Fact</b> and stays seated for <b>Myth</b>. Send the statement to the team phones. Each team answers Fact or Myth on its phone; Reveal marks every team and adds 10 points for a correct call. Ask one person who got it right to explain why.</p></div>
+    <section class="view" id="v-warmup" data-title="True or False">
+      <div class="hd"><div><div class="eyebrow">Activity 1 · 10 min · whole room</div><h2>True or False?</h2>
+        <p>Read the statement aloud. Everyone stands for <b>True</b> and stays seated for <b>False</b>. Send the statement to the team phones. Each team answers True or False on its phone; Reveal marks every team and adds 10 points for a correct call. Ask one person who got it right to explain why.</p></div>
         <div class="row"><button class="btn" id="mfPrev">Back</button><button class="btn primary" id="mfReveal">Reveal</button><button class="btn" id="mfNext">Next</button></div></div>
       <div class="mf">
         <div class="mf-card" id="mfCard"></div>
@@ -557,12 +557,12 @@ const store={get(k,d){try{const v=localStorage.getItem("kykp:"+k);return v?JSON.
 
 /* ================= DATA ================= */
 const VIEWS=[
- ["plan","Run of show","Facilitator plan"],["warmup","Myth or Fact","Warm-up · 10 min"],["library","Product Passport","Refresh · 25 min"],
+ ["plan","Run of show","Facilitator plan"],["warmup","True or False","Warm-up · 10 min"],["library","Product Passport","Refresh · 25 min"],
  ["challenge","Product Challenge","Quiz · 20 min"],["clues","Listen for the Clue","Needs · 15 min"],["match","Match the Customer","Matching · 25 min"],
  ["spot","Spot the Opportunity","Cross-sell · 15 min"],["spin","Spin & Explain","Confidence · 10 min"],["close","Close","Commit · 5 min"]];
 
 const ROS=[
- {t:"0:00",d:"10 min",v:"warmup",h:"Myth or Fact warm-up",p:"Wakes the room up and shows what people don't know yet, before any teaching starts.",n:["Ask the 1–5 confidence question first and note the hand count.","Run 6–8 statements. Keep it fast: about 60 seconds each.","Start the session and show the join QR code. Each team joins on one phone (up to 6 teams)."]},
+ {t:"0:00",d:"10 min",v:"warmup",h:"True or False warm-up",p:"Wakes the room up and shows what people don't know yet, before any teaching starts.",n:["Ask the 1–5 confidence question first and note the hand count.","Run 6–8 statements. Keep it fast: about 60 seconds each.","Start the session and show the join QR code. Each team joins on one phone (up to 6 teams)."]},
  {t:"0:10",d:"25 min",v:"library",h:"Product Passport: jigsaw teach-back",p:"Staff refresh the products by teaching each other. People remember what they explain far better than what they hear.",n:["Give each table one family: Accounts, Cards, Financing, Digital, What's New.","10 minutes to prepare, then 3 minutes per table to teach.","You correct and add detail after each teach-back, in under 60 seconds."]},
  {t:"0:35",d:"20 min",v:"challenge",h:"BML Product Challenge quiz",p:"Checks recall across all families straight after the teach-backs. Includes the Islamic structure names customers will now ask about.",n:["Tables take turns choosing a tile. Every team answers on its phone, and every correct team scores.","Leave the 400-point questions until the end to build tension.","After each answer, ask: how would you say that to a customer?"]},
  {t:"0:55",d:"15 min",v:"clues",h:"Listen for the Clue",p:"Moves from knowing products to spotting needs. Introduces ASK · LISTEN · LINK · LEAD.",n:["2 minutes on the four clue types, then 6–8 customer quotes.","Reveal the clue, the need, the product and the next question one at a time.","Tick each table for a correct clue, need and good question: 10 points each, added automatically."]},
@@ -573,16 +573,16 @@ const ROS=[
 ];
 
 const MF=[
- {s:"A Maldivian customer must visit a branch to open their first BML account.",a:false,e:"Myth. Maldivians opening their first BML account can apply online with instant approval. Existing customers add accounts through Internet Banking: Services → Applications → Additional Account."},
- {s:"Lui Financing needs a guarantor or security.",a:false,e:"Myth. Lui is unsecured, with no guarantee or security, from MVR 10,000 up to MVR 1.2 million."},
- {s:"An old-age pension counts as income for Lui Financing.",a:false,e:"Myth. Salary, business income, rental income and early-retirement Government pension count. Old-age pension does not."},
- {s:"Since 13 September 2026, a customer who prefers conventional banking can still ask for it.",a:true,e:"Fact. New personal accounts and financing are now processed under Islamic principles by default, but customers who prefer conventional services can request them directly from the Bank."},
- {s:"The new USD 3,500 monthly ATM limit replaces the USD 1,600 daily limit.",a:false,e:"Myth. Both apply from 1 October 2026: USD 1,600 a day per card, and USD 3,500 a month per customer."},
- {s:"The Visa Infinite is the first metal card in the Maldives.",a:true,e:"Fact. It comes with Priority Pass lounge access, 24/7 Visa concierge and travel insurance, for credit limits above USD 45,000."},
- {s:"Green Financing charges a processing fee.",a:false,e:"Myth. Green Financing has no deposit and no processing fee. Unsecured is 12% p.a. and secured is 10% p.a."},
- {s:"Home Construction Financing can refinance a loan taken from another bank.",a:true,e:"Fact. Existing home construction loans can be refinanced, whether they came from BML or another institution."},
- {s:"Parents can freeze their child's BML Student Card from the app.",a:true,e:"Fact. Parents apply through the BML Mobile App, get real-time alerts, and can freeze or unfreeze the card and change its PIN."},
- {s:"Every new BML account holder automatically gets a virtual prepaid card.",a:true,e:"Fact. Opening an account registers the customer for a virtual MVR Mastercard Prepaid card linked to BML Pay, with free top-ups."}
+ {s:"A Maldivian customer must visit a branch to open their first BML account.",a:false,e:"False. Maldivians opening their first BML account can apply online with instant approval. Existing customers add accounts through Internet Banking: Services → Applications → Additional Account."},
+ {s:"Lui Financing needs a guarantor or security.",a:false,e:"False. Lui is unsecured, with no guarantee or security, from MVR 10,000 up to MVR 1.2 million."},
+ {s:"An old-age pension counts as income for Lui Financing.",a:false,e:"False. Salary, business income, rental income and early-retirement Government pension count. Old-age pension does not."},
+ {s:"Since 13 September 2026, a customer who prefers conventional banking can still ask for it.",a:true,e:"True. New personal accounts and financing are now processed under Islamic principles by default, but customers who prefer conventional services can request them directly from the Bank."},
+ {s:"The new USD 3,500 monthly ATM limit replaces the USD 1,600 daily limit.",a:false,e:"False. Both apply from 1 October 2026: USD 1,600 a day per card, and USD 3,500 a month per customer."},
+ {s:"The Visa Infinite is the first metal card in the Maldives.",a:true,e:"True. It comes with Priority Pass lounge access, 24/7 Visa concierge and travel insurance, for credit limits above USD 45,000."},
+ {s:"Green Financing charges a processing fee.",a:false,e:"False. Green Financing has no deposit and no processing fee. Unsecured is 12% p.a. and secured is 10% p.a."},
+ {s:"Home Construction Financing can refinance a loan taken from another bank.",a:true,e:"True. Existing home construction loans can be refinanced, whether they came from BML or another institution."},
+ {s:"Parents can freeze their child's BML Student Card from the app.",a:true,e:"True. Parents apply through the BML Mobile App, get real-time alerts, and can freeze or unfreeze the card and change its PIN."},
+ {s:"Every new BML account holder automatically gets a virtual prepaid card.",a:true,e:"True. Opening an account registers the customer for a virtual MVR Mastercard Prepaid card linked to BML Pay, with free top-ups."}
 ];
 
 const FAMS=[["all","All"],["acc","Accounts"],["card","Cards"],["fin","Financing"],["dig","Digital"],["new","What's new"]];
@@ -744,7 +744,7 @@ const FAB={
 const SB_URL="https://jtofxcdoyzyyxdlbjrbh.supabase.co", SB_KEY="sb_publishable_UduFSvz4bpmCY41kxjLRww_iufXEQpx";
 const sb=window.supabase?window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:false,autoRefreshToken:false}}):null;
 const TCOL=["#c4122f","#0b7f83","#b77900","#4b5fb0","#7a3fa0","#16794a"],MAX_TEAMS=6;
-const ACT={manual:"Manual",mythfact:"Myth or Fact",teach:"Teach-back",quiz:"Quiz",clue:"Clues",match:"Match",spot:"Spot",spin:"Spin"};
+const ACT={manual:"Manual",mythfact:"True or False",teach:"Teach-back",quiz:"Quiz",clue:"Clues",match:"Match",spot:"Spot",spin:"Spin"};
 let sess=null,hostKey=null,teams=[],events=new Map(),chan=null,modalKind=null;
 const isHost=()=>!!(sess&&hostKey);
 const tcol=t=>TCOL[t.color_idx%TCOL.length];
@@ -1050,18 +1050,18 @@ $("#ros").innerHTML=ROS.map(r=>`<div class="ros-row"><div class="ros-time">${r.t
   <div><h3>${esc(r.h)}</h3><p>${esc(r.p)}</p><div style="margin-top:6px"><a href="#${r.v}" data-go="${r.v}">Open activity →</a></div></div>
   <ul>${r.n.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`).join("");
 
-/* ================= MYTH OR FACT ================= */
+/* ================= TRUE OR FALSE ================= */
 // Send the statement to team phones; Reveal closes the round and the server scores every team that called it right.
 let mfI=0,mfShown=false;
 const mfRef=i=>"mf:"+i;
 ROUND_OPENERS.mf=ref=>{const i=+ref.split(":")[1],m=MF[i];
-  return openRound("choice","mythfact",ref,10,{type:"mf",title:"Myth or Fact?",text:m.s,options:["Fact","Myth"]},{correct:m.a?0:1})};
+  return openRound("choice","mythfact",ref,10,{type:"mf",title:"True or False?",text:m.s,options:["True","False"]},{correct:m.a?0:1})};
 function renderMF(){
   const m=MF[mfI],ref=mfRef(mfI),r=roundFor(ref);
   $("#mfCard").innerHTML=`<div class="eyebrow">Statement ${mfI+1} of ${MF.length}</div><div class="mf-q">${esc(m.s)}</div>`+
-   (mfShown?`<div class="verdict ${m.a?"fact":"myth"}">${m.a?"FACT":"MYTH"}</div><div class="mf-ex">${esc(m.e)}</div>
-      ${resultsRow(r,a=>a.choice===0?"Fact":"Myth")}${markRow(ref,10,"mythfact","Correct the points if needed")}`
-     :`<div class="row"><span class="pill">Fact or Myth?</span><span class="pill red">Teams answer on their phone</span></div>${teams.length?roundCtl(ref):noTeams()}`);
+   (mfShown?`<div class="verdict ${m.a?"fact":"myth"}">${m.a?"TRUE":"FALSE"}</div><div class="mf-ex">${esc(m.e)}</div>
+      ${resultsRow(r,a=>a.choice===0?"True":"False")}${markRow(ref,10,"mythfact","Correct the points if needed")}`
+     :`<div class="row"><span class="pill">True or False?</span><span class="pill red">Teams answer on their phone</span></div>${teams.length?roundCtl(ref):noTeams()}`);
   $("#mfProg").innerHTML=MF.map((_,i)=>`<i class="${i<mfI?"done":i===mfI?"cur":""}"></i>`).join("");
   $("#mfReveal").disabled=mfShown;
   refreshMarks();refreshRoundStatus();
