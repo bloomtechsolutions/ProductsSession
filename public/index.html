@@ -409,6 +409,23 @@ span.pchip{display:inline-block}
 .picked-by{align-self:flex-start;background:var(--tc);color:#fff;border-radius:999px;padding:2px 10px;font-size:.75rem;font-weight:700}
 @media (max-width:900px){.pk-board{grid-template-columns:minmax(0,1fr)}}
 
+/* quiz countdown and speed bonus */
+.qsec{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:999px;padding:2px 4px 2px 10px;background:var(--surface)}
+.qsec button{border:0;background:transparent;border-radius:999px;padding:3px 9px;font-weight:700;font-size:.8rem;color:var(--muted)}
+.qsec button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.qtop{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center}
+.cd{position:relative;width:96px;height:96px;--p:1}
+.cd svg{width:100%;height:100%;transform:rotate(-90deg)}
+.cd circle{fill:none;stroke:var(--line);stroke-width:4}
+.cd .arc{stroke:var(--lagoon);stroke-dasharray:119.4;stroke-dashoffset:calc(119.4 * (1 - var(--p)));stroke-linecap:round;transition:stroke-dashoffset .2s linear}
+.cd span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:2.1rem;font-weight:700}
+.cd.low .arc{stroke:var(--accent)}
+.cd.low span{color:var(--accent);animation:pulse .5s ease-in-out infinite}
+.cd.done{opacity:.35}
+.speeds{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.speed{border:2px solid var(--tc);border-radius:999px;padding:5px 12px;font-weight:600;background:color-mix(in srgb,var(--tc) 10%,var(--surface))}
+@media (max-width:560px){.cd{width:72px;height:72px}.cd span{font-size:1.6rem}}
+
 @media (max-width:1100px){
   .board{grid-template-columns:repeat(3,minmax(0,1fr))}
   .board .cat{display:none}
@@ -505,8 +522,8 @@ span.pchip{display:inline-block}
     <!-- QUIZ -->
     <section class="view" id="v-challenge" data-title="Product Challenge">
       <div class="hd"><div><div class="eyebrow">Activity 3 · 20 min · team quiz</div><h2>BML Product Challenge</h2>
-        <p>Tables take turns choosing a category and a value. The tile goes to every team phone at once. Teams answer on their phone; Reveal marks them all and every correct team scores the tile value.</p></div>
-        <div class="row"><span class="pill sun" id="qTurn"></span><span class="pill" id="qLeft">24 questions left</span></div></div>
+        <p>Tables take turns choosing a category and a value. The tile goes to every team phone at once with a countdown (choose 15, 20 or 30 seconds). Answers lock at zero or as soon as every team has answered. Every correct team scores the tile value, and the fastest correct team gets <b>+50</b>, the second fastest <b>+25</b>.</p></div>
+        <div class="row"><span class="qsec" id="qSec" aria-label="Time per question"></span><span class="pill sun" id="qTurn"></span><span class="pill" id="qLeft">24 questions left</span></div></div>
       <div class="board" id="board"></div>
       <div class="note"><b>Facilitator tip:</b> after each answer, ask "How would you say that to a customer?" A correct fact is only half the point. The other half is being able to explain it in plain words.</div>
     </section>
@@ -1338,8 +1355,26 @@ $("#teach").addEventListener("click",async e=>{
 // The choosing table picks a tile; every team answers on its phone; Reveal scores every correct team.
 let used=store.get("used",[]),quizTurn=store.get("turn",0),qs=null;
 const qRef=k=>"quiz:"+k;
+// Every question runs against a countdown. Answers lock at zero (or once every team phone has answered);
+// correct teams score the tile value, and the fastest correct team gets +50, the second fastest +25.
+const SPEED_BONUS=[50,25];
+let qSec=store.get("qsec",20);
+function renderQSec(){$("#qSec").innerHTML=`<span>⏱</span>${[15,20,30].map(v=>`<button data-qsec="${v}" aria-pressed="${qSec===v}">${v}s</button>`).join("")}`}
+$("#qSec").onclick=e=>{const b=e.target.closest("[data-qsec]");if(!b)return;qSec=+b.dataset.qsec;store.set("qsec",qSec);renderQSec()};
 ROUND_OPENERS.quiz=ref=>{const k=ref.slice(5),[c,r]=k.split("-").map(Number),it=Q[c][r];
-  return openRound("choice","quiz",ref,(r+1)*100,{type:"quiz",title:QCATS[c]+" · "+(r+1)*100,text:it.q,options:it.o},{correct:it.a})};
+  return openRound("choice","quiz",ref,(r+1)*100,{type:"quiz",title:QCATS[c]+" · "+(r+1)*100,text:it.q,options:it.o,seconds:qSec},{correct:it.a})};
+// Rank the correct answers by when they were (last) submitted and award the speed bonus.
+async function speedBonus(k,roundId,correct){
+  const ref="quiz-speed:"+k;
+  const {data,error}=await sb.rpc("round_answers",{p_session:sess.id,p_key:hostKey,p_round:roundId});
+  if(error)return [];
+  const right=data.filter(a=>a.answer&&a.answer.choice===correct).sort((a,b)=>Date.parse(a.submitted_at)-Date.parse(b.submitted_at));
+  const winners=right.slice(0,SPEED_BONUS.length).map(a=>a.team_id);
+  for(const t of teams)if(!winners.includes(t.id)&&findRef(t.id,ref))await revoke(t.id,ref);
+  for(const [i,id] of winners.entries())await award(id,SPEED_BONUS[i],"quiz",ref);
+  return winners;
+}
+function tick(){try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();const o=actx.createOscillator(),g=actx.createGain();o.frequency.value=660;o.connect(g);g.connect(actx.destination);g.gain.setValueAtTime(.12,actx.currentTime);g.gain.exponentialRampToValueAtTime(.001,actx.currentTime+.08);o.start();o.stop(actx.currentTime+.09)}catch(e){}}
 function renderBoard(){
   const auto=new Set();for(const e of events.values())if(e.ref&&e.ref.startsWith("quiz:"))auto.add(e.ref.slice(5));
   let h=QCATS.map(c=>`<div class="cat">${c}</div>`).join(""),n=0;
@@ -1350,37 +1385,52 @@ function renderBoard(){
 $("#board").onclick=e=>{const b=e.target.closest(".tile");if(b)openQ(b.dataset.k)};
 function renderQuizLive(){
   if(!qs)return;const r=roundFor(qRef(qs.k));
-  const live=$("#qLive");if(live&&!qs.revealed)live.innerHTML=teams.length?roundCtl(qRef(qs.k),"Send to team phones"):noTeams();
-  const res=$("#qRes");if(res&&qs.revealed)res.innerHTML=resultsRow(r,a=>"ABCD"[a.choice]||"?");
+  const live=$("#qLive");if(live&&!qs.revealed)live.innerHTML=teams.length?(liveRound&&liveRound.ref===qRef(qs.k)?rstatus(qRef(qs.k)):roundCtl(qRef(qs.k),"Send to team phones")):noTeams();
+  const res=$("#qRes");if(res&&qs.revealed)res.innerHTML=resultsRow(r,a=>"ABCD"[a.choice]||"?")+speedLine(qs.k);
   refreshRoundStatus();refreshMarks();
 }
+const speedLine=k=>{const w=SPEED_BONUS.map((b,i)=>{const e=[...events.values()].find(x=>x.ref==="quiz-speed:"+k&&x.points===b);const t=e&&teamById(e.team_id);return t?`<span class="speed" style="--tc:${tcol(t)}">${i?"⚡ 2nd fastest":"⚡ Fastest"}: <b>${esc(t.name)}</b> +${b}</span>`:""}).join("");return w?`<div class="speeds">${w}</div>`:""};
 function openQ(k){
   const [c,r]=k.split("-").map(Number),it=Q[c][r],pts=(r+1)*100,ref=qRef(k);
-  qs={k,revealed:false,used:false};modalKind="quiz";
+  qs={k,revealed:false,used:false,deadline:0,timer:null};modalKind="quiz";
   const m=$("#modal");
   m.innerHTML=`<div class="row" style="justify-content:space-between"><span class="pill red">${QCATS[c]} · ${pts}</span><button class="btn ghost" data-close>Close</button></div>
-   <div class="q" id="mq">${esc(it.q)}</div>
+   <div class="qtop"><div class="q" id="mq">${esc(it.q)}</div><div class="cd" id="qCd" hidden><svg viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="22" r="19"/><circle class="arc" cx="22" cy="22" r="19"/></svg><span class="mono" id="qCdN"></span></div></div>
    <div class="opts">${it.o.map((o,i)=>`<div class="opt" data-o="${i}"><span class="k">${"ABCD"[i]}</span><span>${esc(o)}</span></div>`).join("")}</div>
    <div id="qLive"></div>
    <div id="qAfter" hidden><div class="explain">${esc(it.e)}</div><div id="qRes"></div><div style="margin-top:12px">${markRow(ref,pts,"quiz","Correct the points if needed")}</div></div>
-   <div class="row" id="qBtns"><button class="btn primary" id="qReveal">Reveal answer &amp; score</button></div>`;
+   <div class="row" id="qBtns"><button class="btn primary" id="qReveal">Reveal answer &amp; score</button><span class="muted" id="qHint">Answers lock when the countdown ends, or as soon as every team has answered.</span></div>`;
   $("#ov").hidden=false;
   renderQuizLive();
-  // Opening a tile sends it to the team phones straight away.
-  if(isHost()&&teams.length&&!(liveRound&&liveRound.ref===ref))ROUND_OPENERS.quiz(ref).catch(()=>{});
-  $("#qReveal").onclick=async()=>{
-    $("#qReveal").disabled=true;
-    if(isHost()&&liveRound&&liveRound.ref===ref){try{scoredToast(await closeRound())}catch(_){$("#qReveal").disabled=false;return}}
-    qs.revealed=true;qs.used=true;
+  const reveal=async()=>{
+    if(qs.revealed||qs.revealing)return;qs.revealing=true;clearInterval(qs.timer);$("#qReveal").disabled=true;
+    if(isHost()&&liveRound&&liveRound.ref===ref){const id=liveRound.id;
+      try{scoredToast(await closeRound());const w=await speedBonus(k,id,it.a);if(w.length){const t=teamById(w[0]);if(t)setTimeout(()=>toast(`⚡ Fastest correct answer: ${t.name} +${SPEED_BONUS[0]}`),1600)}}
+      catch(_){qs.revealing=false;$("#qReveal").disabled=false;return}}
+    qs.revealed=true;qs.used=true;$("#qCd").classList.add("done");
     $$(".opt").forEach((b,i)=>b.classList.add(i===it.a?"right":"dim"));
     $("#qAfter").hidden=false;$("#qBtns").hidden=true;$("#qLive").innerHTML="";
     if(!used.includes(k)){used.push(k);store.set("used",used)}
     renderBoard();renderQuizLive();
   };
+  const startClock=()=>{
+    qs.deadline=Date.now()+qSec*1000;$("#qCd").hidden=false;let last=null;
+    const draw=()=>{if(!qs||qs.revealed)return;const left=Math.max(0,qs.deadline-Date.now()),n=Math.ceil(left/1000);
+      $("#qCdN").textContent=n;$("#qCd").style.setProperty("--p",left/(qSec*1000));$("#qCd").classList.toggle("low",n<=5);
+      if(n!==last&&n<=5&&n>0)tick();last=n;
+      // Lock early once every team with a phone has answered.
+      const phones=teams.filter(t=>t.claimed),answered=phones.filter(t=>liveAns[t.id]).length;
+      if(left<=0||(phones.length&&answered>=phones.length&&qs.deadline-Date.now()<qSec*1000-1500))reveal()};
+    draw();qs.timer=setInterval(draw,200);
+  };
+  // Opening a tile sends it to the team phones straight away and starts the countdown.
+  if(isHost()&&teams.length&&!(liveRound&&liveRound.ref===ref))ROUND_OPENERS.quiz(ref).then(()=>{if(qs&&qs.k===k)startClock()}).catch(()=>{});
+  $("#qReveal").onclick=reveal;
 }
 function closeQ(){
   $("#ov").hidden=true;
   if(modalKind==="quiz"&&qs){
+    clearInterval(qs.timer);
     if(!qs.revealed&&isHost()&&liveRound&&liveRound.ref===qRef(qs.k))cancelRound();
     if(qs.used){quizTurn++;store.set("turn",quizTurn);renderBoard()}
   }
@@ -1520,7 +1570,7 @@ function renderSpinRes(p){
 cv.addEventListener("click",spin);
 
 /* ================= INIT ================= */
-renderFinishBtns();renderTeams();renderMF();renderPicks();renderLib();renderTeach();renderBoard();renderClue();renderMatch();renderSpot();renderSpinRes(null);renderLeader();drawClock();setConn("none");
+renderQSec();renderFinishBtns();renderTeams();renderMF();renderPicks();renderLib();renderTeach();renderBoard();renderClue();renderMatch();renderSpot();renderSpinRes(null);renderLeader();drawClock();setConn("none");
 const h=(location.hash||"").slice(1);show(VIEWS.some(v=>v[0]===h)?h:store.get("view","plan"));
 document.fonts&&document.fonts.ready.then(drawWheel);
 (async()=>{

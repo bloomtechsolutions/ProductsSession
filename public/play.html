@@ -147,6 +147,12 @@ textarea.field{min-height:92px;resize:vertical}
 .pkb.taken span{text-decoration:line-through}
 .pkb:disabled{cursor:default}
 .pkb:disabled:not(.taken){opacity:.55}
+.cdbar{position:relative;height:30px;border-radius:999px;background:var(--surface-2);overflow:hidden;border:1px solid var(--line)}
+.cdbar i{position:absolute;inset:0 auto 0 0;background:var(--lagoon-soft);transition:width .2s linear}
+.cdbar span{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;height:100%;font-weight:700;color:var(--lagoon)}
+.cdbar.low i{background:var(--accent-soft)}
+.cdbar.low span{color:var(--accent)}
+.banner.speedb{background:var(--sun-soft);color:var(--sun);font-size:1.15rem;margin-top:-6px}
 .toast{position:fixed;z-index:60;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 20px);transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:12px;font-weight:600;font-size:.92rem;box-shadow:var(--shadow);max-width:calc(100vw - 32px)}
 .toast.bad{background:var(--bad);color:#fff}
 @media (prefers-reduced-motion:reduce){*{animation:none!important}}
@@ -199,7 +205,7 @@ async function stillMine(){if(!me)return false;const {data,error}=await sb.rpc("
 async function load(){
   const [t,e,r,pk]=await Promise.all([
     sb.from("teams").select("*").eq("session_id",sess.id).order("position"),
-    sb.from("score_events").select("id,team_id,points,activity").eq("session_id",sess.id).range(0,4999),
+    sb.from("score_events").select("id,team_id,points,activity,ref").eq("session_id",sess.id).range(0,4999),
     sb.from("rounds").select("id,kind,activity,ref,points,payload,status,result").eq("session_id",sess.id).order("id",{ascending:false}).limit(1),
     sb.from("product_picks").select("product,team_id").eq("session_id",sess.id)]);
   if(t.error||e.error){setConn(false);return}
@@ -251,6 +257,7 @@ function renderHead(){
   $("#me").innerHTML=`<div><b>${esc(t.name)}</b><small>${pos?ordinal(pos)+" of "+teams.length:""}</small></div><span class="sc">${score(t.id)}</span>`;
   const lb=$("#lb");if(lb)lb.innerHTML=lbRows();
   const st=$("#stand");if(st)st.innerHTML=standRows();
+  const sp=$("#speed");if(sp)sp.innerHTML=speedHtml();
 }
 const ordinal=n=>n+(n===1?"st":n===2?"nd":n===3?"rd":"th");
 const lbRows=()=>ranked().map(x=>`<div class="${me&&x.t.id===me.team_id?"me-row":""}" style="--tc:${tcol(x.t)}"><span class="mono">${rankOf(x.t.id)}</span><span>${esc(x.t.name)}</span><span class="mono">${x.s}</span></div>`).join("");
@@ -300,13 +307,14 @@ function renderQuestion(){
   if(p.type==="rate")return renderRate();
   const d=draft[r.id]||(draft[r.id]=p.type==="match"?{picks:[]}:p.type==="text"?{fields:(p.fields||[]).map(()=>"")}:{});
   if(r.kind==="choice"){
-    app.innerHTML=`<div class="card ${p.type==="mf"?"mf":""}" style="--tc:${col}">${head(p)}<div class="q">${esc(p.text)}</div>
+    app.innerHTML=`<div class="card ${p.type==="mf"?"mf":""}" style="--tc:${col}">${p.seconds?`<div class="cdbar"><span id="cdN" class="mono"></span><i id="cdFill"></i></div>`:""}${head(p)}<div class="q">${esc(p.text)}</div>
       <div class="opts">${(p.options||[]).map((o,i)=>`<button class="opt" data-o="${i}" aria-pressed="${d.choice===i}">${p.type==="mf"?"":`<span class="k">${"ABCD"[i]}</span>`}<span>${esc(o)}</span></button>`).join("")}</div>
       <div class="sent" id="sent">${sentFor[r.id]?"Answer sent. You can change it until the facilitator reveals.":"Tap your team's answer."}</div></div>${foot()}`;
     app.querySelectorAll(".opt").forEach(b=>b.onclick=async()=>{
       const i=+b.dataset.o;d.choice=i;app.querySelectorAll(".opt").forEach(x=>x.setAttribute("aria-pressed",+x.dataset.o===i));
       await submit({choice:i});
     });
+    if(p.seconds)startCountdown(r,p.seconds);
   }else if(r.kind==="multi"){
     const pe=p.persona||{};
     app.innerHTML=`<div class="card" style="--tc:${col}">${head(p)}<div class="persona"><b>${esc(pe.n)}, ${esc(pe.age)}</b> <span class="sub">${esc(pe.place)}</span></div><div>${esc(pe.story)}</div><div class="says">${esc(pe.says)}</div></div>
@@ -344,6 +352,23 @@ function renderStandings(){
     <div class="card"><div class="eyebrow">Standings</div><div id="stand">${standRows()}</div></div>
     <div class="card"><div class="eyebrow">Games finished</div><div class="games">${(p.finished||[]).map(g=>`<div><span>✓ ${esc(g[1])}</span><span class="mono">${gScore(t.id,g[0])} pts</span></div>`).join("")||"—"}</div><p class="muted" style="margin:0">The next game appears here when the facilitator starts it.</p></div>${foot()}`;
   bindFoot();
+}
+/* Countdown for timed questions. It runs from the moment this phone first saw the question (phone clocks
+   can't be trusted to match the server); the facilitator's screen is the one that actually locks answers. */
+let seenAt={},cdTimer=null;
+function startCountdown(r,secs){
+  clearInterval(cdTimer);const start=seenAt[r.id]||(seenAt[r.id]=Date.now()),end=start+secs*1000;
+  const draw=()=>{const n=$("#cdN");if(!n||!round||round.id!==r.id||round.status!=="open"){clearInterval(cdTimer);return}
+    const left=Math.max(0,end-Date.now()),sec=Math.ceil(left/1000);
+    n.textContent=left?sec+"s":"Time's up";$("#cdFill").style.width=(left/(secs*1000)*100)+"%";n.parentElement.classList.toggle("low",sec<=5);
+    if(!left){clearInterval(cdTimer);app.querySelectorAll(".opt").forEach(b=>b.disabled=true);const s=$("#sent");if(s)s.textContent="Time's up. Answers are locked.";}};
+  draw();cdTimer=setInterval(draw,200);
+}
+// Speed bonus line on a quiz result: shows once the facilitator's screen has awarded it.
+function speedHtml(){
+  if(!round||!me||!String(round.ref).startsWith("quiz:"))return "";
+  const e=[...events.values()].find(x=>x.team_id===me.team_id&&x.ref==="quiz-speed:"+round.ref.slice(5));
+  return e?`<div class="banner speedb">⚡ ${e.points>=50?"Fastest":"2nd fastest"} correct answer · +${e.points}</div>`:"";
 }
 async function submit(answer){
   const r=round;if(!r||r.status!=="open"){toast("This question is closed.",true);return}
@@ -430,7 +455,7 @@ function renderResult(){
   const a=mine.answer,pts=mine.points;
   let banner,body="";
   if(r.kind==="text")banner=`<div class="banner info">${a?"Your answer is on the big screen. The facilitator is marking it.":"No answer was sent for this one."}</div>`;
-  else banner=pts>0?`<div class="banner good">+${pts} points</div>`:`<div class="banner bad">${a?"Not this time":"No answer sent"}</div>`;
+  else banner=pts>0?`<div class="banner good">+${pts} points</div><div id="speed">${speedHtml()}</div>`:`<div class="banner bad">${a?"Not this time":"No answer sent"}</div>`;
   if(r.kind==="choice"){
     body=`<div class="q">${esc(p.text)}</div><div class="opts">${(p.options||[]).map((o,i)=>`<button class="opt ${i===key.correct?"right":a&&a.choice===i?"wrong":""}" disabled>${p.type==="mf"?"":`<span class="k">${"ABCD"[i]}</span>`}<span>${esc(o)}</span></button>`).join("")}</div>`;
   }else if(r.kind==="multi"){
