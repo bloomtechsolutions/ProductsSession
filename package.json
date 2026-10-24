@@ -1,0 +1,10 @@
+{
+  "name": "products-session",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Know Your Customer, Know Your Product: facilitator console for the BML retail refresher session",
+  "scripts": {
+    "dev": "npx --yes serve public",
+    "build": "echo 'Static site: nothing to build'"
+  }
+}

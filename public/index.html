@@ -1,0 +1,851 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Know Your Customer, Know Your Product</title>
+<meta name="description" content="Facilitator console for the BML retail refresher session: run of show, team scoreboard, quiz, persona matching and more.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f2238'/%3E%3Ctext x='32' y='43' font-family='Arial' font-weight='900' font-size='30' fill='%23c4122f' text-anchor='middle'%3EKY%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,500..900&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<style>
+/* Layout: a facilitator console for a projector. Sticky top bar (session clock + team scoreboard), activity rail, one big "stage" per activity. */
+:root{
+  --paper:#eef3f6; --surface:#ffffff; --surface-2:#f6f9fb; --ink:#0f2238; --muted:#566779; --line:#d5dfe6;
+  --accent:#c4122f; --accent-ink:#ffffff; --accent-soft:#fbe6ea;
+  --lagoon:#0b7f83; --lagoon-soft:#dff2f2; --sun:#b77900; --sun-soft:#fdf1d8;
+  --good:#16794a; --good-soft:#dcf3e6; --bad:#b42318; --bad-soft:#fde4e1;
+  --shadow:0 1px 2px rgba(15,34,56,.06),0 8px 24px rgba(15,34,56,.07);
+  --bar:#0f2238; --bar-fg:#eef3f6;
+  --f-display:"Archivo","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#0a1522; --surface:#112135; --surface-2:#0e1c2d; --ink:#e6eef5; --muted:#9db0c3; --line:#22374f;
+  --accent:#ff5470; --accent-ink:#1a0308; --accent-soft:#3a1420;
+  --lagoon:#41c7c3; --lagoon-soft:#0f3236; --sun:#f2b84b; --sun-soft:#3a2c10;
+  --good:#4cd38b; --good-soft:#0f3322; --bad:#ff7a6b; --bad-soft:#3d1713;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35); --bar:#050d17; --bar-fg:#e6eef5; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0a1522; --surface:#112135; --surface-2:#0e1c2d; --ink:#e6eef5; --muted:#9db0c3; --line:#22374f;
+  --accent:#ff5470; --accent-ink:#1a0308; --accent-soft:#3a1420;
+  --lagoon:#41c7c3; --lagoon-soft:#0f3236; --sun:#f2b84b; --sun-soft:#3a2c10;
+  --good:#4cd38b; --good-soft:#0f3322; --bad:#ff7a6b; --bad-soft:#3d1713;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35); --bar:#050d17; --bar-fg:#e6eef5; color-scheme:dark}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.5;margin:0}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bar)}
+h1,h2,h3,h4{font-family:var(--f-display);font-stretch:112%;line-height:1.1;margin:0;text-wrap:balance}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(--lagoon);outline-offset:2px}
+.mono{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.eyebrow{font-family:var(--f-display);font-stretch:118%;font-weight:700;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+
+/* ---------- top bar ---------- */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bar);color:var(--bar-fg);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:10px}
+.bar-inner{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;max-width:1400px;margin:0 auto}
+.brand{display:flex;flex-direction:column;min-width:0;margin-right:auto}
+.brand b{font-family:var(--f-display);font-stretch:120%;font-weight:800;font-size:1.05rem;letter-spacing:.01em;color:var(--bar-fg)}
+.brand span{font-size:.78rem;opacity:.75;color:var(--bar-fg)}
+.clock{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.clock .t{font-family:var(--f-mono);font-weight:700;font-size:1.5rem;min-width:4.6ch;text-align:center;color:var(--bar-fg);padding:2px 8px;border-radius:8px;background:color-mix(in srgb,var(--bar-fg) 10%,transparent)}
+.clock .t.low{background:var(--accent);color:var(--accent-ink)}
+.chipbtn{border:1px solid color-mix(in srgb,var(--bar-fg) 30%,transparent);background:transparent;color:var(--bar-fg);border-radius:999px;padding:4px 10px;font-size:.8rem;font-weight:600}
+.chipbtn:hover{background:color-mix(in srgb,var(--bar-fg) 14%,transparent)}
+.chipbtn.solid{background:var(--bar-fg);color:var(--bar);border-color:var(--bar-fg)}
+.teams{display:flex;gap:8px;flex-wrap:wrap;max-width:1400px;margin:10px auto 0;align-items:stretch}
+.team{display:flex;align-items:center;gap:6px;background:color-mix(in srgb,var(--bar-fg) 9%,transparent);border-radius:10px;padding:4px 6px 4px 10px;border-left:4px solid var(--tc)}
+.team input{width:10.5em;background:transparent;border:0;color:var(--bar-fg);font:600 .85rem var(--f-body);padding:2px 0;min-width:0}
+.team .sc{font-family:var(--f-mono);font-weight:700;font-size:1.05rem;min-width:3.2ch;text-align:right;color:var(--bar-fg)}
+.team button{width:26px;height:26px;border-radius:7px;border:0;background:color-mix(in srgb,var(--bar-fg) 14%,transparent);color:var(--bar-fg);font-weight:700;line-height:1}
+.team button:hover{background:color-mix(in srgb,var(--bar-fg) 26%,transparent)}
+.team.lead{box-shadow:0 0 0 2px var(--tc) inset}
+
+/* ---------- shell ---------- */
+.shell{max-width:1400px;margin:0 auto;display:grid;grid-template-columns:240px minmax(0,1fr);gap:24px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 48px}
+nav.rail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 120px);align-self:start;display:flex;flex-direction:column;gap:4px}
+nav.rail a{display:grid;grid-template-columns:2.2em 1fr;align-items:baseline;gap:4px;text-decoration:none;color:var(--ink);padding:9px 10px;border-radius:10px;font-weight:600;font-size:.93rem}
+nav.rail a small{display:block;grid-column:2;font-weight:500;color:var(--muted);font-size:.76rem}
+nav.rail a .n{font-family:var(--f-mono);font-size:.78rem;color:var(--muted)}
+nav.rail a:hover{background:var(--surface)}
+nav.rail a[aria-current="page"]{background:var(--surface);box-shadow:var(--shadow)}
+nav.rail a[aria-current="page"] .n{color:var(--accent)}
+.stage{min-width:0}
+.view{display:none;flex-direction:column;gap:22px}
+.view.on{display:flex}
+.hd{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
+.hd h2{font-size:clamp(1.7rem,3.4vw,2.6rem);font-weight:850}
+.hd p{margin:6px 0 0;color:var(--muted);max-width:68ch}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:20px}
+.note{background:var(--surface-2);border:1px dashed var(--line);border-radius:14px;padding:14px 16px;font-size:.92rem;color:var(--muted)}
+.note b{color:var(--ink)}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:9px 14px;font-weight:650;font-size:.92rem}
+.btn:hover{border-color:var(--ink)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.06)}
+.btn.ghost{background:transparent}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:3px 10px;font-size:.76rem;font-weight:700;background:var(--lagoon-soft);color:var(--lagoon)}
+.pill.red{background:var(--accent-soft);color:var(--accent)}
+.pill.sun{background:var(--sun-soft);color:var(--sun)}
+
+/* run of show */
+.ros{display:grid;gap:0;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--surface)}
+.ros-row{display:grid;grid-template-columns:110px minmax(0,1fr) minmax(0,1.1fr);gap:18px;padding:16px 18px;border-top:1px solid var(--line);align-items:start}
+.ros-row:first-child{border-top:0}
+.ros-time{font-family:var(--f-mono);font-weight:700;font-size:.95rem}
+.ros-time small{display:block;color:var(--muted);font-weight:500;font-size:.75rem}
+.ros-row h3{font-size:1.1rem;font-weight:800;margin-bottom:4px}
+.ros-row p{margin:0;color:var(--muted);font-size:.92rem}
+.ros-row ul{margin:0;padding-left:18px;font-size:.9rem}
+.ros-row ul li+li{margin-top:3px}
+.ros-row a{color:var(--accent);font-weight:700;text-decoration:none;font-size:.85rem}
+.ros-row a:hover{text-decoration:underline}
+.split{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px}
+.kpi b{font-family:var(--f-display);font-stretch:118%;font-size:1.6rem;font-weight:850;display:block}
+.kpi span{color:var(--muted);font-size:.85rem}
+
+/* myth or fact */
+.mf{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+.mf-card{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:clamp(20px,4vw,44px);min-height:280px;display:flex;flex-direction:column;gap:18px;box-shadow:var(--shadow)}
+.mf-q{font-family:var(--f-display);font-stretch:108%;font-weight:750;font-size:clamp(1.4rem,3.2vw,2.3rem);line-height:1.18;text-wrap:balance}
+.verdict{display:inline-flex;align-self:flex-start;font-family:var(--f-display);font-stretch:125%;font-weight:900;font-size:1.4rem;letter-spacing:.06em;padding:6px 16px;border-radius:10px}
+.verdict.fact{background:var(--good-soft);color:var(--good)}
+.verdict.myth{background:var(--bad-soft);color:var(--bad)}
+.mf-ex{font-size:1.05rem;max-width:70ch}
+.progress{display:flex;gap:5px}
+.progress i{width:22px;height:5px;border-radius:3px;background:var(--line)}
+.progress i.done{background:var(--lagoon)}
+.progress i.cur{background:var(--accent)}
+
+/* library */
+.fam-tabs{display:flex;gap:6px;flex-wrap:wrap}
+.fam-tabs button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 14px;font-weight:650;font-size:.88rem}
+.fam-tabs button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.search{flex:1 1 220px;min-width:0;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:9px 12px;font:inherit;color:var(--ink)}
+.lib{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px}
+.pcard{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px 18px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.pcard h3{font-size:1.15rem;font-weight:800}
+.pcard .who{font-size:.88rem;color:var(--muted);margin:0}
+.pcard ul{margin:0;padding-left:18px;font-size:.9rem}
+.pcard ul li+li{margin-top:2px}
+.pcard .pitch{border-top:1px solid var(--line);padding-top:10px;font-size:.92rem;font-style:italic}
+.pcard .pitch b{font-style:normal;font-family:var(--f-display);font-stretch:118%;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:2px}
+.pcard .tags{display:flex;gap:6px;flex-wrap:wrap}
+.pcard.new{border-color:var(--sun)}
+.jig{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.jig div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px;font-size:.86rem}
+.jig b{display:block;font-family:var(--f-display);font-stretch:115%;font-size:.95rem;margin-bottom:2px}
+
+/* quiz board */
+.board{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+.board .cat{font-family:var(--f-display);font-stretch:112%;font-weight:800;font-size:.9rem;text-align:center;padding:12px 6px;background:var(--bar);color:var(--bar-fg);border-radius:10px;display:flex;align-items:center;justify-content:center;min-height:56px;line-height:1.15}
+.tile{font-family:var(--f-display);font-stretch:125%;font-weight:900;font-size:clamp(1.2rem,2.4vw,2rem);color:var(--accent);background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:18px 4px;box-shadow:var(--shadow)}
+.tile:hover{border-color:var(--accent);transform:translateY(-1px)}
+.tile.used{color:var(--line);box-shadow:none;background:var(--surface-2)}
+.overlay{position:fixed;inset:0;z-index:50;background:color-mix(in srgb,var(--ink) 55%,transparent);display:flex;align-items:center;justify-content:center;
+  padding:calc(env(safe-area-inset-top,0px) + 16px) max(16px,env(safe-area-inset-right,0px)) calc(env(safe-area-inset-bottom,0px) + 16px) max(16px,env(safe-area-inset-left,0px))}
+.modal{background:var(--surface);border-radius:20px;max-width:920px;width:100%;max-height:100%;overflow:auto;padding:clamp(18px,3.5vw,36px);display:flex;flex-direction:column;gap:16px;box-shadow:0 30px 80px rgba(0,0,0,.35)}
+.modal .q{font-family:var(--f-display);font-stretch:106%;font-weight:750;font-size:clamp(1.3rem,2.8vw,2rem);line-height:1.2}
+.opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.opt{display:flex;gap:12px;align-items:flex-start;text-align:left;border:2px solid var(--line);background:var(--surface-2);border-radius:14px;padding:14px;font-size:1.05rem;font-weight:600}
+.opt .k{font-family:var(--f-mono);font-weight:700;background:var(--ink);color:var(--paper);border-radius:7px;min-width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;font-size:.85rem;flex:none}
+.opt:hover{border-color:var(--ink)}
+.opt.right{border-color:var(--good);background:var(--good-soft)}
+.opt.right .k{background:var(--good);color:var(--surface)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt.dim{opacity:.55}
+.explain{background:var(--lagoon-soft);border-radius:12px;padding:12px 14px;font-size:1rem}
+.award{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.award button{border:0;border-radius:999px;padding:6px 12px;font-weight:700;font-size:.85rem;background:var(--tc);color:#fff}
+.award button.minus{background:transparent;color:var(--ink);border:1px solid var(--line)}
+
+/* clues */
+.clue-wrap{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:18px;align-items:start}
+.quote{background:var(--bar);color:var(--bar-fg);border-radius:20px;padding:clamp(22px,4vw,40px);display:flex;flex-direction:column;gap:14px;min-height:260px}
+.quote p{font-family:var(--f-display);font-stretch:100%;font-weight:650;font-size:clamp(1.35rem,2.8vw,2rem);line-height:1.22;margin:0;text-wrap:balance}
+.quote .by{font-size:.9rem;opacity:.75}
+.quote .eyebrow{color:color-mix(in srgb,var(--bar-fg) 70%,transparent)}
+.reveal-grid{display:grid;gap:10px}
+.rv{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.rv .eyebrow{display:block;margin-bottom:3px}
+.rv.hidden-rv{color:transparent;background:repeating-linear-gradient(135deg,var(--surface-2) 0 10px,var(--surface) 10px 20px);user-select:none}
+.rv.hidden-rv .eyebrow{color:var(--muted)}
+.rv.hidden-rv *:not(.eyebrow){visibility:hidden}
+.alll{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.alll div{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px}
+.alll b{font-family:var(--f-display);font-stretch:125%;font-weight:900;font-size:1.25rem;color:var(--accent);display:block}
+.alll span{font-size:.88rem;color:var(--muted)}
+
+/* match */
+.match{display:grid;grid-template-columns:260px minmax(0,1fr);gap:18px;align-items:start}
+.plist{display:flex;flex-direction:column;gap:6px}
+.plist button{display:flex;gap:10px;align-items:center;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:8px 10px}
+.plist button[aria-pressed="true"]{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
+.plist .av{width:36px;height:36px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-family:var(--f-display);font-weight:800;color:#fff;font-size:.9rem}
+.plist small{display:block;color:var(--muted);font-size:.76rem}
+.plist .done-mark{margin-left:auto;font-family:var(--f-mono);font-size:.75rem;color:var(--good)}
+.persona{display:grid;grid-template-columns:auto minmax(0,1fr);gap:18px;align-items:start}
+.persona .big-av{width:76px;height:76px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--f-display);font-weight:900;font-size:1.7rem;color:#fff}
+.persona h3{font-size:1.6rem;font-weight:850}
+.persona .meta{color:var(--muted);font-size:.9rem;margin-top:2px}
+.persona .story{font-size:1.08rem;margin:10px 0 0;max-width:70ch}
+.persona .says{margin-top:10px;font-style:italic;border-left:3px solid var(--accent);padding-left:12px}
+.pool{display:flex;flex-direction:column;gap:12px}
+.pool-fam{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.pool-fam > span{font-family:var(--f-display);font-stretch:118%;font-weight:700;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);width:100%}
+.pchip{border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:6px 12px;font-size:.88rem;font-weight:600}
+.pchip:hover{border-color:var(--ink)}
+.pchip[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.pchip.hit{background:var(--good);border-color:var(--good);color:var(--surface)}
+.pchip.miss{border-color:var(--good);border-style:dashed;color:var(--good);background:var(--good-soft)}
+.pchip.okx{background:var(--sun-soft);border-color:var(--sun);color:var(--sun)}
+.pchip.ask{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:.8rem;color:var(--muted)}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:4px;margin-right:5px;vertical-align:-1px}
+.answer{display:grid;gap:8px}
+.answer .ln{display:grid;grid-template-columns:minmax(150px,220px) minmax(0,1fr);gap:12px;padding:10px 12px;border-radius:12px;background:var(--surface-2);font-size:.95rem}
+.answer .ln b{font-weight:750}
+.scoreline{font-family:var(--f-display);font-stretch:118%;font-weight:850;font-size:1.3rem}
+
+/* spot */
+.spot{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start}
+.scn{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:clamp(18px,3vw,30px);display:flex;flex-direction:column;gap:12px}
+.scn h3{font-size:1.5rem;font-weight:850}
+.scn .ticket{font-family:var(--f-mono);font-size:.8rem;color:var(--muted)}
+.scn p{margin:0;font-size:1.08rem}
+.opp{display:grid;gap:8px}
+.opp button.o{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:12px;align-items:start;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:14px;padding:12px}
+.opp .num{font-family:var(--f-mono);font-weight:700;width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:var(--surface-2);border:1px solid var(--line)}
+.opp .o.shown .num{background:var(--lagoon);color:var(--surface);border-color:var(--lagoon)}
+.opp .o .txt b{display:block;font-size:1rem}
+.opp .o .txt span{font-size:.9rem;color:var(--muted)}
+.opp .o:not(.shown) .txt{filter:blur(6px);user-select:none}
+.opp .pts{font-family:var(--f-mono);font-size:.8rem;font-weight:700;color:var(--accent)}
+
+/* spin */
+.spinwrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;align-items:center}
+.wheel-box{position:relative;max-width:520px;width:100%;margin:0 auto;aspect-ratio:1}
+.wheel-box canvas{width:100%;height:100%;display:block}
+.wheel-box .pointer{position:absolute;top:-6px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:16px solid transparent;border-right:16px solid transparent;border-top:28px solid var(--accent);filter:drop-shadow(0 2px 2px rgba(0,0,0,.25))}
+.result{display:flex;flex-direction:column;gap:14px}
+.result h3{font-size:clamp(1.8rem,3.6vw,2.8rem);font-weight:900}
+.fab{display:grid;gap:8px}
+.fab div{display:grid;grid-template-columns:120px minmax(0,1fr);gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:.95rem}
+.fab b{font-family:var(--f-display);font-stretch:118%;font-weight:800;color:var(--lagoon)}
+.bigtimer{font-family:var(--f-mono);font-weight:700;font-size:3.2rem;line-height:1}
+.bigtimer.low{color:var(--accent)}
+
+/* close */
+.commit{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.commit div{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px}
+.commit b{font-family:var(--f-display);font-stretch:118%;font-weight:850;font-size:1.05rem;display:block;margin-bottom:4px}
+.src{font-size:.82rem;color:var(--muted)}
+.src a{color:var(--lagoon)}
+.src ul{padding-left:18px;margin:6px 0 0}
+
+@media (max-width:1100px){
+  .board{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .board .cat{display:none}
+  .tile::before{content:attr(data-cat);display:block;font-size:.62rem;font-stretch:112%;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:2px}
+  .jig{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:900px){
+  .bar{position:static}
+  .shell{grid-template-columns:minmax(0,1fr)}
+  nav.rail{position:static;flex-direction:row;overflow-x:auto;padding-bottom:4px}
+  nav.rail a{flex:none;grid-template-columns:auto;padding:7px 12px}
+  nav.rail a small,nav.rail a .n{display:none}
+  .clue-wrap,.match,.spot,.spinwrap{grid-template-columns:minmax(0,1fr)}
+  .ros-row{grid-template-columns:minmax(0,1fr)}
+  .split,.alll{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .commit{grid-template-columns:minmax(0,1fr)}
+  .plist{flex-direction:row;overflow-x:auto}
+  .plist button{flex:none}
+}
+@media (max-width:560px){
+  .opts{grid-template-columns:minmax(0,1fr)}
+  .board{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .answer .ln{grid-template-columns:minmax(0,1fr)}
+  .persona{grid-template-columns:minmax(0,1fr)}
+  .fab div{grid-template-columns:minmax(0,1fr)}
+  .team input{width:6.5em}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <div class="bar-inner">
+    <div class="brand"><b>Know Your Customer, Know Your Product</b><span>Day 1 · Session 4 · Retail refresher</span></div>
+    <div class="clock" aria-label="Session timer">
+      <span class="t" id="clockT" aria-live="polite">05:00</span>
+      <button class="chipbtn solid" id="clockGo">Start</button>
+      <button class="chipbtn" data-min="0.5">30s</button>
+      <button class="chipbtn" data-min="1">1m</button>
+      <button class="chipbtn" data-min="2">2m</button>
+      <button class="chipbtn" data-min="5">5m</button>
+      <button class="chipbtn" data-min="10">10m</button>
+    </div>
+    <div class="row">
+      <button class="chipbtn" id="teamAdd" title="Add a team">+ Team</button>
+      <button class="chipbtn" id="teamDel" title="Remove last team">− Team</button>
+      <button class="chipbtn" id="resetAll" title="Reset scores and used questions">Reset</button>
+    </div>
+  </div>
+  <div class="teams" id="teams" aria-label="Team scoreboard"></div>
+</header>
+
+<div class="shell">
+  <nav class="rail" id="rail" aria-label="Activities"></nav>
+  <main class="stage" id="stage">
+
+    <!-- RUN OF SHOW -->
+    <section class="view" id="v-plan" data-title="Run of show">
+      <div class="hd"><div><div class="eyebrow">Facilitator view · 120 minutes</div><h2>Run of show</h2>
+        <p>Every block puts the room to work. Teams of 4–6 sit at tables, score points all session, and the winning table takes the prize at the close. Slides are not used; this screen is the only thing on the projector.</p></div></div>
+      <div class="split">
+        <div class="kpi"><b>7</b><span>activities, no lecture longer than 5 minutes</span></div>
+        <div class="kpi"><b>40+</b><span>BML products and updates covered</span></div>
+        <div class="kpi"><b>9</b><span>Maldivian customer personas to match</span></div>
+        <div class="kpi"><b>25 / 50 / 25</b><span>refresh / practice / reflect, as the programme asks</span></div>
+      </div>
+      <div class="ros" id="ros"></div>
+      <div class="note"><b>Before the session:</b> print one set of persona cards per table (or let tables use their phones on this page), put a bell or buzzer on each table, and prepare a small prize. Rename the teams in the bar above. Product facts were taken from bankofmaldives.com.mv on 24 Oct 2026. Rates, limits and fees change, so check each figure against the current Schedule of Charges on the morning of the session.</div>
+    </section>
+
+    <!-- WARM UP -->
+    <section class="view" id="v-warmup" data-title="Myth or Fact">
+      <div class="hd"><div><div class="eyebrow">Activity 1 · 10 min · whole room</div><h2>Myth or Fact?</h2>
+        <p>Read the statement aloud. Everyone stands for <b>Fact</b> and stays seated for <b>Myth</b>. Reveal, then ask one person who got it right to explain why. 10 points to each table where everyone got it right.</p></div>
+        <div class="row"><button class="btn" id="mfPrev">Back</button><button class="btn primary" id="mfReveal">Reveal</button><button class="btn" id="mfNext">Next</button></div></div>
+      <div class="mf">
+        <div class="mf-card" id="mfCard"></div>
+        <div class="progress" id="mfProg"></div>
+      </div>
+    </section>
+
+    <!-- LIBRARY -->
+    <section class="view" id="v-library" data-title="Product Passport">
+      <div class="hd"><div><div class="eyebrow">Activity 2 · 25 min · jigsaw teach-back</div><h2>Product Passport</h2>
+        <p>Each table gets one product family. Spend 10 minutes on its cards below, then teach it to the room in 3 minutes: the two products customers ask about most, one detail people usually get wrong, and a one-line pitch. The room scores each teach-back from 1 to 5 for clarity.</p></div></div>
+      <div class="jig" id="jig"></div>
+      <div class="row"><div class="fam-tabs" id="famTabs"></div><input class="search" id="libSearch" type="search" placeholder="Search products, rates, limits…" aria-label="Search products"></div>
+      <div class="lib" id="lib"></div>
+    </section>
+
+    <!-- QUIZ -->
+    <section class="view" id="v-challenge" data-title="Product Challenge">
+      <div class="hd"><div><div class="eyebrow">Activity 3 · 20 min · team quiz</div><h2>BML Product Challenge</h2>
+        <p>Tables take turns choosing a category and a value. The choosing table answers first. If they miss, the first other table to ring the bell can steal it. Award the points from the question window.</p></div>
+        <div class="row"><span class="pill" id="qLeft">24 questions left</span></div></div>
+      <div class="board" id="board"></div>
+      <div class="note"><b>Facilitator tip:</b> after each answer, ask "How would you say that to a customer?" A correct fact is only half the point. The other half is being able to explain it in plain words.</div>
+    </section>
+
+    <!-- CLUES -->
+    <section class="view" id="v-clues" data-title="Listen for the Clue">
+      <div class="hd"><div><div class="eyebrow">Activity 4 · 15 min · needs discovery</div><h2>Listen for the Clue</h2>
+        <p>Customers rarely say "I need a product". They mention a life event, how they are paid, something that annoys them, or a goal. Read the customer's words aloud. Tables have 45 seconds to write down the clue, the need, and the question they would ask next.</p></div>
+        <div class="row"><button class="btn" id="clPrev">Back</button><button class="btn primary" id="clReveal">Reveal next</button><button class="btn" id="clNext">Next customer</button></div></div>
+      <div class="alll">
+        <div><b>ASK</b><span>Open questions about their life, work and plans, not just the transaction.</span></div>
+        <div><b>LISTEN</b><span>For four clues: life events, how they are paid, pain points, goals.</span></div>
+        <div><b>LINK</b><span>Connect the need to a product, feature first and then the benefit to them.</span></div>
+        <div><b>LEAD</b><span>Agree a next step now, for example "Let's start it on your app together."</span></div>
+      </div>
+      <div class="clue-wrap">
+        <div class="quote" id="clQuote"></div>
+        <div class="reveal-grid" id="clReveal-grid"></div>
+      </div>
+    </section>
+
+    <!-- MATCH -->
+    <section class="view" id="v-match" data-title="Match the Customer">
+      <div class="hd"><div><div class="eyebrow">Activity 5 · 25 min · product matching</div><h2>Match the Customer</h2>
+        <p>Give each table a persona. They have 4 minutes to choose the products that fit best, including at least one cross-sell, and to write the first question they would ask. One table presents. Tap their picks below, then press Check.</p></div>
+        <div class="row"><button class="btn" id="mClear">Clear picks</button><button class="btn primary" id="mCheck">Check</button></div></div>
+      <div class="match">
+        <div class="plist" id="plist"></div>
+        <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
+          <div class="panel persona" id="persona"></div>
+          <div class="panel pool" id="pool"></div>
+          <div class="legend"><span><i style="background:var(--good)"></i>Picked and recommended</span><span><i style="background:var(--good-soft);border:1px dashed var(--good)"></i>Recommended, missed</span><span><i style="background:var(--sun-soft);border:1px solid var(--sun)"></i>Also reasonable</span><span><i style="background:var(--bad-soft);border:1px solid var(--bad)"></i>Ask the table why</span></div>
+          <div class="panel answer" id="answer" hidden></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SPOT -->
+    <section class="view" id="v-spot" data-title="Spot the Opportunity">
+      <div class="hd"><div><div class="eyebrow">Activity 6 · 15 min · cross-selling in routine service</div><h2>Spot the Opportunity</h2>
+        <p>A routine request arrives at the counter. Tables get 2 minutes to list every genuine opportunity hidden in it. Reveal the opportunities one at a time. Each table earns the points shown for every one on their list.</p></div>
+        <div class="row"><button class="btn" id="spPrev">Back</button><button class="btn" id="spNext">Next scenario</button></div></div>
+      <div class="spot">
+        <div class="scn" id="scn"></div>
+        <div class="opp" id="opp"></div>
+      </div>
+    </section>
+
+    <!-- SPIN -->
+    <section class="view" id="v-spin" data-title="Spin & Explain">
+      <div class="hd"><div><div class="eyebrow">Activity 7 · 10 min · confidence round</div><h2>Spin &amp; Explain</h2>
+        <p>One volunteer per table. Spin, then explain the product to an imaginary customer in 30 seconds, using Feature, Advantage and Benefit. The room votes with thumbs up. A clear pitch earns 30 points.</p></div></div>
+      <div class="spinwrap">
+        <div class="wheel-box"><div class="pointer" aria-hidden="true"></div><canvas id="wheel" width="1040" height="1040" aria-label="Product wheel"></canvas></div>
+        <div class="result" id="spinRes"></div>
+      </div>
+    </section>
+
+    <!-- CLOSE -->
+    <section class="view" id="v-close" data-title="Close">
+      <div class="hd"><div><div class="eyebrow">Close · 5 min</div><h2>From knowing to doing</h2>
+        <p>Announce the winning table. Then ask everyone to write three commitments on a sticky note and post it on the wall on their way out. Collect the notes for the Day 2 sales simulation.</p></div></div>
+      <div class="commit">
+        <div><b>One product</b>I will explain more confidently tomorrow, and the one line I will use.</div>
+        <div><b>One question</b>I will ask every customer this week to uncover a need.</div>
+        <div><b>One customer</b>I will move to self-service on the app, with me beside them the first time.</div>
+      </div>
+      <div class="panel">
+        <div class="eyebrow">Confidence check</div>
+        <p style="margin:6px 0 0">Ask the same question at the start and at the end: <b>"On a scale of 1 to 5, how confident are you explaining BML's financing products to a customer?"</b> Count hands for each number and write both counts on the flipchart. The change in the room is your quickest measure of whether the session worked.</p>
+      </div>
+      <div class="src panel">
+        <div class="eyebrow">Sources for product facts (checked 24 Oct 2026)</div>
+        <ul>
+          <li><a href="https://www.bankofmaldives.com.mv/personal/personal-accounts" target="_blank" rel="noopener">Personal accounts</a>, <a href="https://www.bankofmaldives.com.mv/personal/cards" target="_blank" rel="noopener">cards</a> and <a href="https://www.bankofmaldives.com.mv/personal/financing" target="_blank" rel="noopener">financing</a> product pages, bankofmaldives.com.mv</li>
+          <li><a href="https://www.bankofmaldives.com.mv/articles/954/bml-to-transition-personal-banking-accounts-and-financing-to-shariah-compliant-services" target="_blank" rel="noopener">Transition to Shariah-compliant personal banking</a> (13 Sep 2026)</li>
+          <li><a href="https://www.bankofmaldives.com.mv/articles/953/bml-announces-sustainable-and-transparent-limits-for-international-e-commerce-transactions" target="_blank" rel="noopener">International e-commerce limits</a> (13 Sep 2026)</li>
+          <li><a href="https://www.bankofmaldives.com.mv/articles/958/bml-implements-monthly-usd-cash-withdrawal-limit-per-customer-at-atms" target="_blank" rel="noopener">Monthly USD ATM withdrawal limit</a> (from 1 Oct 2026)</li>
+          <li><a href="https://www.bankofmaldives.com.mv/articles/915/bank-of-maldives-introduces-new-home-financing-for-tourism-sector-employees" target="_blank" rel="noopener">Home financing for tourism employees</a> (23 Apr 2026)</li>
+          <li><a href="https://www.bankofmaldives.com.mv/articles/933/bank-of-maldives-launches-youth-entrepreneurship-financing-for-startups-in-partnership-with-sme-digital" target="_blank" rel="noopener">Youth Entrepreneurship Financing</a> (15 Jul 2026)</li>
+          <li><a href="https://www.bankofmaldives.com.mv/articles/927/bank-of-maldives-launches-new-us-dollar-investment-offering-with-competitive-returns" target="_blank" rel="noopener">US Dollar investment offering</a> and <a href="https://www.bankofmaldives.com.mv/articles/748/bank-of-maldives-expanding-digital-banking-services-allowing-customers-to-bank-online-without-visiting-a-branch" target="_blank" rel="noopener">expanded digital banking services</a></li>
+          <li><a href="https://mfr.mv/banking/bml-unveils-the-nation-s-first-islamic-microfinancing-product-with-applications-open-in-january" target="_blank" rel="noopener">Islamic Micro Financing via SME Digital</a> and <a href="https://mfr.mv/banking/bml-launches-the-country-s-first-shariah-compliant-visa-credit-card" target="_blank" rel="noopener">BML Islamic Visa Credit Card</a> (Maldives Financial Review)</li>
+        </ul>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div class="overlay" id="ov" hidden><div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mq"></div></div>
+
+<script>
+(()=>{
+const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const store={get(k,d){try{const v=localStorage.getItem("kykp:"+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem("kykp:"+k,JSON.stringify(v))}catch(e){}}};
+
+/* ================= DATA ================= */
+const VIEWS=[
+ ["plan","Run of show","Facilitator plan"],["warmup","Myth or Fact","Warm-up · 10 min"],["library","Product Passport","Refresh · 25 min"],
+ ["challenge","Product Challenge","Quiz · 20 min"],["clues","Listen for the Clue","Needs · 15 min"],["match","Match the Customer","Matching · 25 min"],
+ ["spot","Spot the Opportunity","Cross-sell · 15 min"],["spin","Spin & Explain","Confidence · 10 min"],["close","Close","Commit · 5 min"]];
+
+const ROS=[
+ {t:"0:00",d:"10 min",v:"warmup",h:"Myth or Fact warm-up",p:"Wakes the room up and shows what people don't know yet, before any teaching starts.",n:["Ask the 1–5 confidence question first and note the hand count.","Run 6–8 statements. Keep it fast: about 60 seconds each.","Explain the scoring: every activity earns table points."]},
+ {t:"0:10",d:"25 min",v:"library",h:"Product Passport: jigsaw teach-back",p:"Staff refresh the products by teaching each other. People remember what they explain far better than what they hear.",n:["Give each table one family: Accounts, Cards, Financing, Digital, What's New.","10 minutes to prepare, then 3 minutes per table to teach.","You correct and add detail after each teach-back, in under 60 seconds."]},
+ {t:"0:35",d:"20 min",v:"challenge",h:"BML Product Challenge quiz",p:"Checks recall across all families straight after the teach-backs. Includes the Islamic structure names customers will now ask about.",n:["Tables take turns choosing. A missed question can be stolen with the bell.","Leave the 400-point questions until the end to build tension.","After each answer, ask: how would you say that to a customer?"]},
+ {t:"0:55",d:"15 min",v:"clues",h:"Listen for the Clue",p:"Moves from knowing products to spotting needs. Introduces ASK · LISTEN · LINK · LEAD.",n:["2 minutes on the four clue types, then 6–8 customer quotes.","Reveal the clue, the need, the product and the next question one at a time.","Award 10 points for a correct clue, 10 for the need and 10 for a good question."]},
+ {t:"1:10",d:"25 min",v:"match",h:"Match the Customer",p:"The core practical exercise. Tables build a complete recommendation, including cross-sells, for a realistic Maldivian customer.",n:["One persona per table, with 4 minutes to prepare.","Two or three tables present. Tap their picks and press Check.","Discuss the red chips. They aren't always wrong, so ask the table to justify them."]},
+ {t:"1:35",d:"15 min",v:"spot",h:"Spot the Opportunity",p:"Cross-selling inside routine service: a cash withdrawal, a statement request, a declined card.",n:["2 minutes per scenario. All tables work at once.","Reveal the opportunities one by one and tables claim points.","Stress the difference between a genuine need and pushing a product."]},
+ {t:"1:50",d:"10 min",v:"spin",h:"Spin & Explain",p:"Builds confidence through a 30-second product pitch using Feature, Advantage and Benefit.",n:["One volunteer per table. The timer starts automatically after the spin.","The room gives thumbs up or down. Coach in one sentence."]},
+ {t:"2:00",d:"5 min",v:"close",h:"Close and commitments",p:"Winner announced, confidence check repeated, three commitments written on sticky notes.",n:["Ask the confidence question again and compare with the opening count.","Collect the sticky notes for the Day 2 sales simulation."]}
+];
+
+const MF=[
+ {s:"A Maldivian customer must visit a branch to open their first BML account.",a:false,e:"Myth. Maldivians opening their first BML account can apply online with instant approval. Existing customers add accounts through Internet Banking: Services → Applications → Additional Account."},
+ {s:"Lui Financing needs a guarantor or security.",a:false,e:"Myth. Lui is unsecured, with no guarantee or security, from MVR 10,000 up to MVR 1.2 million."},
+ {s:"An old-age pension counts as income for Lui Financing.",a:false,e:"Myth. Salary, business income, rental income and early-retirement Government pension count. Old-age pension does not."},
+ {s:"Since 13 September 2026, a customer who prefers conventional banking can still ask for it.",a:true,e:"Fact. New personal accounts and financing are now processed under Islamic principles by default, but customers who prefer conventional services can request them directly from the Bank."},
+ {s:"The new USD 3,500 monthly ATM limit replaces the USD 1,600 daily limit.",a:false,e:"Myth. Both apply from 1 October 2026: USD 1,600 a day per card, and USD 3,500 a month per customer."},
+ {s:"The Visa Infinite is the first metal card in the Maldives.",a:true,e:"Fact. It comes with Priority Pass lounge access, 24/7 Visa concierge and travel insurance, for credit limits above USD 45,000."},
+ {s:"Green Financing charges a processing fee.",a:false,e:"Myth. Green Financing has no deposit and no processing fee. Unsecured is 12% p.a. and secured is 10% p.a."},
+ {s:"Home Construction Financing can refinance a loan taken from another bank.",a:true,e:"Fact. Existing home construction loans can be refinanced, whether they came from BML or another institution."},
+ {s:"Parents can freeze their child's BML Student Card from the app.",a:true,e:"Fact. Parents apply through the BML Mobile App, get real-time alerts, and can freeze or unfreeze the card and change its PIN."},
+ {s:"Every new BML account holder automatically gets a virtual prepaid card.",a:true,e:"Fact. Opening an account registers the customer for a virtual MVR Mastercard Prepaid card linked to BML Pay, with free top-ups."}
+];
+
+const FAMS=[["all","All"],["acc","Accounts"],["card","Cards"],["fin","Financing"],["dig","Digital"],["new","What's new"]];
+const PRODUCTS=[
+ // Accounts
+ {f:"acc",n:"Current Account",tags:["Wadi'ah Yad al-Dhamanah","MVR · USD · EUR · INR · CNY"],who:"Everyday banking for salaries, payments and cards.",k:["Minimum balance MVR 200 / USD 50","Debit cards: Visa, Amex, Mastercard","Cheque book at MVR 5 / USD 0.35 per leaf","First account can be opened online (Maldivians)"],pitch:"Your money is held in safe custody, fully Shariah-compliant, and you can manage it all from your phone."},
+ {f:"acc",n:"Savings Account",tags:["Wakalah bil Isthismar","MVR · USD"],who:"Customers who want their balance to earn a profit.",k:["Minimum balance MVR 200 / USD 50","Earns profit from MVR 5,000 / USD 1,000","Expected profit: MVR 1.5% p.a., USD 1.0–1.25% p.a.","Statements free via Internet Banking"],pitch:"The bank invests your savings as your agent, so your balance earns a share of the profit."},
+ {f:"acc",n:"Kids' Saver Account",tags:["Wakalah bil Isthismar","Under 18"],who:"Parents and guardians saving for a child.",k:["Minimum MVR 100 / USD 10","Earns from MVR 500 / USD 20","Expected profit: 3% MVR, 3.5% USD p.a.","Free scheduled transfers; becomes a savings account at 18","Open online: Services → Applications → Student Applications"],pitch:"Set up a monthly transfer once, and your child's savings grow at 3% without you lifting a finger."},
+ {f:"acc",n:"Investment Account",tags:["Wakalah bil Isthismar","6 or 12 months"],who:"Customers with money they won't need for 6–12 months.",k:["From MVR 10,000 or USD 5,000","MVR 1.60%–2.00% p.a. by amount and tenor","USD 2.70%–3.50% p.a. by amount and tenor","Profit paid out or added at maturity; auto-renewal available"],pitch:"Money sitting idle earns about 1.5%. Lock it in for 12 months and the rate goes up, and it renews by itself."},
+ {f:"acc",n:"Expatriate Account",tags:["Wadi'ah Yad al-Dhamanah","MVR + INR · CNY · EUR"],who:"Foreign workers and residents in the Maldives.",k:["Work-visa holders need a work permit valid for at least 1 more month","Minimum deposit MVR 200; MVR 75 monthly fee","INR, CNY and EUR accounts can be opened online","Apply online at app.bankofmaldives.com.mv/join"],pitch:"Get paid, pay, and send money home from your phone without queuing on your day off."},
+ // Cards
+ {f:"card",n:"Debit Cards",tags:["Visa · Mastercard · Amex","MVR or USD"],who:"Every account holder.",k:["Contactless Visa: no PIN under MVR 750 (PIN after 10 taps a day)","Daily cash: MVR 25,000 or USD 1,600","Works abroad for ATM, POS and online","Delivered to your address; set PIN in Internet Banking"],pitch:"Tap and go for everyday spending, with no cash to carry."},
+ {f:"card",n:"Visa Platinum Debit (USD)",tags:["USD accounts","Islamic version available"],who:"USD account holders who travel or shop abroad.",k:["USD 3,200 local cash withdrawal","USD 5,000 per day foreign transactions","USD 5 fee","Tactile notch for visually impaired users"],pitch:"Spend your dollars abroad directly from your USD account, with a higher daily limit."},
+ {f:"card",n:"BML Islamic Visa Credit Card",tags:["Ujrah (fee-for-service)","Only Islamic credit card in the country"],who:"Customers who want a credit card that is Shariah-compliant.",k:["Tiers: Classic, Gold, Platinum, Signature","Local and foreign use","Earns BML Rewards points","Launched December 2024"],pitch:"All the convenience of a credit card under a fixed-fee Islamic structure. It is the only one in the Maldives."},
+ {f:"card",n:"Credit Cards (tiers)",tags:["Visa · Mastercard · Amex"],who:"Customers whose income has been routed to BML for 6 months.",k:["Minimum income: Classic MVR 4,000 · Gold 23,130 · Platinum 46,260 · World 128,500 · Infinite 231,300","Platinum and above: lounge access and travel insurance","Apply in Internet Banking (Services); ready in 10 working days","Instant limit approval after 12 months of BML payroll"],pitch:"Your salary is already with us, so you may already qualify. Let's check your limit now."},
+ {f:"card",n:"Visa Infinite",tags:["Metal card","USD"],who:"High-income, frequent travellers.",k:["Credit limit above USD 45,000","Priority Pass lounges for cardholder and guests","24/7 Visa concierge and travel insurance","Joining USD 90, annual USD 150"],pitch:"The country's first metal card, with lounges, concierge and insurance wherever you travel."},
+ {f:"card",n:"BML Student Card",tags:["No fees","Parent controls"],who:"Children and teenagers, applied for by parents.",k:["Parents apply in the BML Mobile App","0.5% rebate on spending at BML POS and the BML payment gateway","USD 100/month abroad; USD 1,200 for students living abroad","Becomes a Personal Current Account with Visa Debit at 18"],pitch:"Your child learns to manage money while you see every transaction and can freeze the card any time."},
+ {f:"card",n:"Prepaid Cards",tags:["Mastercard","Free top-ups"],who:"Travellers, online shoppers, fishing industry workers.",k:["Virtual MVR Prepaid issued automatically with every new account (BML Pay)","Travel Card in USD for frequent travellers (USD 3.33)","Masveriyaa Card for fishing industry payments","Top up for free through BML Pay / MobilePay"],pitch:"Load only what you need, which is safer than carrying cash on a trip."},
+ {f:"card",n:"BML Rewards",tags:["Credit cardholders"],who:"Anyone with an active BML credit card.",k:["Automatic enrolment; register on the Rewards site","Redeem for flights (945+ airlines), hotels, car rentals","Gift vouchers from leading brands","Registration details must match the customer's information form"],pitch:"You're already earning points on your card. Let's register so you can use them for your next flight."},
+ // Financing
+ {f:"fin",n:"Lui Financing",tags:["Tawarruq · Murabaha · Musharakah · Ijarah","Unsecured"],who:"Maldivians aged 18–70 with income routed to BML for 12 months.",k:["MVR 10,000 to MVR 1.2 million, up to 5 years","15% p.a.; 1% processing fee","Limit 8× monthly income (12× if MVR 30,000+)","Instant approval with 12 months of BML payroll","Repaid automatically on the 7th of each month"],pitch:"For anything from furniture to a family need, with no guarantor and no collateral. Apply on your phone."},
+ {f:"fin",n:"Home Purchase Financing",tags:["Diminishing Musharakah","Up to 25 years"],who:"Maldivians aged 18–75 buying a flat, apartment, row house or land.",k:["Lease rate up to 9% p.a.; 7.5% for USD earners","Minimum 5% equity, which can come from the Pension Fund (MPAO rules)","Grace period up to 24 months","Application fee MVR 1,000 + 1.5% processing","Bank-approved developers for off-plan projects"],pitch:"5% down, and that 5% can come from your pension. Then up to 25 years to own your home."},
+ {f:"fin",n:"Home Financing for Tourism Employees",tags:["New · April 2026","7.5% p.a."],who:"Maldivians at resorts, guesthouses, hotels or safaris, paid in USD.",k:["7.5% p.a., one of the lowest home financing rates","Salary and service charge both counted","Income must be routed through BML","Apply in the BML Mobile Banking App","Islamic version through BML Islamic"],pitch:"Your service charge finally counts towards your home loan, at 7.5%."},
+ {f:"fin",n:"Home Construction Financing",tags:["Diminishing Musharakah","MVR 50k – 45m"],who:"Landowners, or a child or parent of the landowner.",k:["Up to 25 years, grace up to 24 months","9.5% up to MVR 3m at 5% equity","Above MVR 3m: 10–10.5% depending on equity","Can refinance construction loans from other banks"],pitch:"Build on family land and refinance an older construction loan into one Shariah-compliant facility."},
+ {f:"fin",n:"Lifestyle Financing",tags:["Rental income","No equity"],who:"Property owners who earn regular rental income.",k:["Unsecured MVR 25,000–300,000 at 15% p.a.","Secured MVR 300,000–1.5m at 12% p.a.","Up to 5 years","Unsecured: rental income routed to BML for 12 months"],pitch:"Let your rental income pay for refurbishing the property that earns it."},
+ {f:"fin",n:"Kiyavaa Financing",tags:["Education","Secured or unsecured"],who:"Students and parents funding education anywhere in the world.",k:["Secured: 2.5% p.a., up to 90% of cost, 10 years after studies end, collateral 150%","Unsecured: 10% p.a., up to 100%, professional qualifications only, disbursed in USD","No application or processing fees (unsecured)","Secured study-period grace requires Family Takaful"],pitch:"At 2.5%, with repayments starting after graduation, this is one of the cheapest ways to fund a degree abroad."},
+ {f:"fin",n:"Green Financing",tags:["Renewable energy","No processing fee"],who:"Homes and businesses installing solar or other green technology.",k:["Unsecured MVR 50,000–500,000 at 12% p.a.","Secured up to MVR 20m at 10% p.a. (15% equity)","Up to 5 years (≤ MVR 500k) or 20 years (above)","No deposit, no processing fee"],pitch:"Solar panels that pay for themselves in lower electricity bills, financed with no processing fee."},
+ // Digital
+ {f:"dig",n:"BML Mobile Banking App",tags:["24/7","Most branch tasks"],who:"Every customer with a smartphone.",k:["Open personal accounts online with instant approval","Apply for all financing and cards; manage PIN, freeze, block","Send money abroad (TT) up to USD 5,000","Incoming remittances up to USD 10,000 credited after instant verification","Cards delivered to your home"],pitch:"Almost everything you came to the counter for today, you can do from your sofa tonight. I'll show you."},
+ {f:"dig",n:"BML Mobile Pay wallet",tags:["Inside the app","QR · NFC"],who:"Anyone who pays shops or friends.",k:["Scan to Pay with BML QR codes","Tap to pay with NFC phones","Send money to friends and family with just a phone","Merchants can request payment from the customer"],pitch:"Leave the wallet at home. Scan or tap your phone to pay at shops across the country."},
+ {f:"dig",n:"Aaya, BML's AI assistant",tags:["App + Internet Banking","Upgraded July 2026"],who:"Customers who need help or want to submit a request.",k:["Guides customers through financing and account applications","Resolves queries faster after the July 2026 upgrade","Connects customers to a BML staff member when needed","Banking requests no longer go through the old messaging feature"],pitch:"Stuck on a form at midnight? Ask Aaya. It will walk you through it or connect you to one of us."},
+ {f:"dig",n:"Internet Banking",tags:["Browser"],who:"Customers who prefer a computer.",k:["Services → Applications for accounts, cards and financing","Free statements","Check your Lui credit limit","Update contact details for alerts and Rewards"],pitch:"Your statement, free, any time you need it. No queue, no printing fee."},
+ // What's new
+ {f:"new",n:"Islamic Finance First",tags:["13 Sep 2026"],who:"All personal customers.",k:["All new personal accounts and financing processed under Islamic principles","Existing customers have simple ways to transition","Conventional services available on request","Islamic funds kept separate from conventional operations"],pitch:"Nothing changes about how you bank day to day. Your new account is simply Shariah-compliant. (Detail in Session 5.)"},
+ {f:"new",n:"International e-commerce limits (MVR cards)",tags:["13 Sep 2026","Resets 7:00am"],who:"Customers shopping online abroad with MVR cards.",k:["Bank-wide monthly allocations by category (top merchants, social media, travel, subscriptions, others)","Travel and accommodation: 3 transactions per customer in any 3 months","Health and education have no category limit","If declined: retry after the 7:00am reset, or use a USD card"],pitch:"It's a daily allocation, not a problem with your card. Try again after 7am, or let's look at a USD card if you earn dollars."},
+ {f:"new",n:"Monthly USD ATM limit",tags:["From 1 Oct 2026"],who:"Customers withdrawing USD cash.",k:["USD 3,500 per customer per month","USD 1,600 daily limit per card is unchanged","Encourage card, contactless and app payments instead"],pitch:"You can still withdraw up to USD 3,500 a month, and pay by card for the rest without carrying cash."},
+ {f:"new",n:"Youth Entrepreneurship Financing",tags:["15 Jul 2026","With SME Digital"],who:"Aspiring entrepreneurs and freelancers aged 18–30.",k:["Up to MVR 150,000, unsecured, no equity","7% p.a., up to 5 years with a 6-month grace period","Decision within 24 hours","Mentoring and training from SME Digital"],pitch:"Turn your freelance work into a business: up to MVR 150,000, no collateral, a decision within a day."},
+ {f:"new",n:"Islamic Micro Financing",tags:["Via SME Digital","Since Jan 2026"],who:"New entrepreneurs and underserved communities.",k:["Up to MVR 100,000 at 2.5%","Up to 10 years, grace up to 12 months","No application or processing fees","Applications only through SME Digital, BML's Shariah-compliant subsidiary"],pitch:"For a first small business, this is the lowest-cost start-up finance in the country. Refer them to SME Digital."},
+ {f:"new",n:"US Dollar Investment pools",tags:["From 30 Jun 2026","App + Internet Banking"],who:"Customers with US dollar income.",k:["Invest USD fully online in daily investment pools","MVR equivalent credited to the account immediately","Profit credited to the MVR account the next day","Pools offer different returns; check today's rates before quoting"],pitch:"Explain the mechanics accurately and quote only today's published pool rates. Don't promise returns."},
+ {f:"new",n:"BML Startup Grant 2026",tags:["Applications opened 20 Oct 2026"],who:"Start-up founders.",k:["Applications now open","Check eligibility and deadline on the BML website before referring","Pairs well with Youth Entrepreneurship Financing"],pitch:"If you have an idea but no funds yet, apply for the grant now. I can show you where."}
+];
+
+const QCATS=["Accounts","Cards","Financing","Digital","What's new","Islamic basics"];
+const Q=[
+ // Accounts
+ [{q:"What is the minimum balance to keep an MVR Savings Account open?",o:["MVR 100","MVR 200","MVR 500","MVR 5,000"],a:1,e:"MVR 200 (USD 50). Profit starts from MVR 5,000 (USD 1,000), which is worth mentioning to the customer."},
+  {q:"What is the expected profit rate on an MVR Kids' Saver Account?",o:["1.5% p.a.","3.0% p.a.","3.5% p.a.","1.7% p.a."],a:1,e:"3% for MVR and 3.5% for USD. It earns from a balance of MVR 500, roughly double the adult Savings rate."},
+  {q:"Which correctly describes the Investment Account?",o:["3, 6 or 12 months from MVR 5,000","6 or 12 months from MVR 10,000 / USD 5,000","1 to 5 years from MVR 50,000","12 months only, from MVR 1,000"],a:1,e:"6 or 12 months. MVR rates are 1.60–2.00% and USD rates 2.70–3.50%, rising with amount and tenor. Auto-renewal is available."},
+  {q:"An expatriate on a work visa wants to open an account. What must be true?",o:["Their work permit has at least 1 month of validity left","Their work permit has at least 6 months left","They need a Maldivian guarantor","They must deposit USD 500"],a:0,e:"A work permit with at least one month of validity. Other expatriates need a valid visa. The minimum deposit is MVR 200."}],
+ // Cards
+ [{q:"Below what amount can a customer tap a contactless Visa debit card without a PIN?",o:["MVR 500","MVR 750","MVR 1,000","MVR 2,000"],a:1,e:"MVR 750. After 10 contactless transactions in a day, a PIN is required."},
+  {q:"What is the minimum monthly income for a Gold credit card?",o:["MVR 4,000","MVR 15,000","MVR 23,130","MVR 46,260"],a:2,e:"MVR 23,130. Classic needs 4,000, Platinum 46,260, World 128,500 and Infinite 231,300. Income must be routed to BML for 6 months."},
+  {q:"A student living abroad holds a BML Student Card. What is the overseas monthly limit after registration?",o:["USD 100","USD 1,200","USD 3,000","No limit"],a:1,e:"USD 1,200 a month, registered through the student limit form. The default is USD 100 a month."},
+  {q:"BML's Islamic Visa Credit Card, the only one in the country, works on which principle?",o:["Murabaha","Wadi'ah","Ujrah","Tawarruq"],a:2,e:"Ujrah, a fee-for-service structure. It comes in Classic, Gold, Platinum and Signature tiers and earns BML Rewards points."}],
+ // Financing
+ [{q:"What is the maximum Lui Financing amount?",o:["MVR 500,000","MVR 1.2 million","MVR 2 million","MVR 150,000"],a:1,e:"MVR 1.2 million, capped at 8× monthly income (12× if income is MVR 30,000 or more). Up to 5 years at 15% p.a."},
+  {q:"What is the minimum equity for Home Purchase Financing, and where can it come from?",o:["20%, in cash only","10%, plus a guarantor","5%, which can come from the Pension Fund","No equity needed"],a:2,e:"5% of the total cost, which can be financed through the Pension Fund subject to MPAO rules. The term is up to 25 years."},
+  {q:"What is the profit rate on unsecured Green Financing?",o:["7%","9.5%","12%","15%"],a:2,e:"12% unsecured (MVR 50k–500k) and 10% secured (up to MVR 20m). There is no deposit and no processing fee."},
+  {q:"Which statement about Youth Entrepreneurship Financing is TRUE?",o:["Up to MVR 1m, with collateral","Ages 18–40, at 2.5%","Up to MVR 150,000, 7%, unsecured, ages 18–30","Only for registered companies"],a:2,e:"Up to MVR 150,000 at 7%, up to 5 years with a 6-month grace period, unsecured, with a decision in 24 hours. Freelancers qualify. It was launched with SME Digital in July 2026."}],
+ // Digital
+ [{q:"What is the most a customer can send abroad (TT) through BML Mobile Banking?",o:["USD 1,000","USD 5,000","USD 10,000","No limit"],a:1,e:"USD 5,000 for outward transfers. Incoming remittances up to USD 10,000 are credited after instant verification."},
+  {q:"What is Aaya?",o:["A savings product for children","BML's AI assistant in the app and Internet Banking","The merchant payment terminal","A prepaid card for fishermen"],a:1,e:"Aaya is BML's AI assistant. It guides applications, answers queries and can connect the customer to a staff member. It was upgraded in July 2026."},
+  {q:"What does a customer automatically receive when they open a new BML account?",o:["A free credit card","A cheque book","A virtual MVR Mastercard Prepaid card linked to BML Pay","A USD Travel Card"],a:2,e:"A virtual MVR Mastercard Prepaid card linked to BML Pay, with free top-ups. It's a good way to start a first-time user on digital payments."},
+  {q:"Incoming foreign remittances are credited after instant verification up to what amount?",o:["USD 1,600","USD 3,500","USD 5,000","USD 10,000"],a:3,e:"USD 10,000. The customer no longer has to visit a branch to receive money from abroad."}],
+ // What's new
+ [{q:"From 13 September 2026, all new personal accounts and financing are processed under…",o:["Conventional principles","Islamic banking principles","The customer's choice on a form","SME Digital"],a:1,e:"Islamic principles. Customers who prefer conventional banking can still request it, and existing customers have simple ways to transition."},
+  {q:"What is the new monthly USD ATM cash limit per customer, from 1 October 2026?",o:["USD 1,600","USD 3,500","USD 5,000","USD 10,000"],a:1,e:"USD 3,500 per customer per month. The USD 1,600 daily limit per card still applies."},
+  {q:"A customer's MVR card is declined on an international shopping site because a category limit was reached. What is the best advice?",o:["Apply for a new card","Raise the limit through Aaya","Retry after the 7:00am daily reset, or use a USD card if they earn USD","Nothing can be done until next month"],a:2,e:"The limits are daily allocations within a monthly total, and they reset at 7:00am. A USD card is the alternative for customers who earn USD. Stay calm and explain that their card is not faulty."},
+  {q:"Home financing for tourism-sector employees (April 2026) offers which rate and feature?",o:["5%, with no income check","7.5%, counting salary and service charge routed through BML","9%, for resort owners only","7.5%, counting salary only"],a:1,e:"7.5% p.a., counting both salary and service charge, with income routed through BML. Customers apply in the Mobile Banking App."}],
+ // Islamic basics
+ [{q:"When explaining Islamic financing to a customer, which phrase should you use instead of 'interest'?",o:["Bank charge","Profit rate or lease rate","Service tax","Penalty"],a:1,e:"Profit rate, or lease rate for home financing under Diminishing Musharakah. Using the right words builds trust, and Session 5 goes deeper."},
+  {q:"The Current Account and Expatriate Account are based on which principle?",o:["Wadi'ah Yad al-Dhamanah (guaranteed safe custody)","Wakalah bil Isthismar (investment agency)","Murabaha (cost-plus sale)","Ijarah (lease)"],a:0,e:"Wadi'ah Yad al-Dhamanah: the bank keeps the money in guaranteed safe custody."},
+  {q:"The Savings, Kids' Saver and Investment Accounts are based on which principle?",o:["Wadi'ah","Wakalah bil Isthismar","Tawarruq","Ujrah"],a:1,e:"Wakalah bil Isthismar: the bank invests as the customer's agent, which is why these accounts earn an expected profit."},
+  {q:"Home Purchase and Home Construction Financing use which structure?",o:["Tawarruq","Diminishing Musharakah","Wadi'ah","Ujrah"],a:1,e:"Diminishing Musharakah: the bank and customer co-own the home, and the customer buys out the bank's share over time while paying a lease on it."}]
+];
+
+const CLUES=[
+ {q:"My son just got into a university in Kuala Lumpur. He starts in February.",by:"Mother, 46, government employee",clue:"Life event: overseas study",need:"Fund tuition and living costs; give the son a way to spend safely abroad",lead:"Kiyavaa Financing (secured 2.5%, repayments start after studies) · BML Student Card (USD 1,200/month for students abroad) · Travel Card",ask:"\"Have you worked out how you'll cover tuition and living costs together, across all the years of the course?\""},
+ {q:"I'm paid in dollars at the resort, and the service charge is good these days.",by:"Resort F&B supervisor, 30",clue:"How they're paid: USD income plus service charge",need:"Use USD income well; likely a home goal",lead:"Home Financing for Tourism Employees (7.5%, service charge counted) · USD account · Visa Platinum Debit (USD)",ask:"\"What's your next big goal? Many of our resort customers are buying homes with their service charge now.\""},
+ {q:"My card keeps getting declined on Shein late at night. So annoying.",by:"Customer, 25, office worker",clue:"Pain point: e-commerce decline",need:"Understand the limits; a way to complete purchases",lead:"Explain category limits and the 7:00am reset · USD card if they earn USD · Check the card in the app",ask:"\"Do you have any income in US dollars? That opens up another option for online shopping.\""},
+ {q:"We finished renovating, and now we rent out the ground floor.",by:"Homeowner, 52, Hithadhoo",clue:"Income type: new rental income",need:"Put surplus income to work; future upgrades",lead:"Investment Account for surplus · Lifestyle Financing for the next refurbishment · Route rent into BML",ask:"\"Is the rent paid into your BML account? Twelve months of rent through us opens up Lifestyle Financing.\""},
+ {q:"Our electricity bill is ridiculous. My neighbour put solar on his roof.",by:"Guesthouse owner, 44, Maafushi",clue:"Pain point and goal: energy cost",need:"Cut running costs with renewable energy",lead:"Green Financing (12% unsecured / 10% secured, no processing fee)",ask:"\"Roughly how much do you spend on electricity a month? Let's see how quickly panels would pay for themselves.\""},
+ {q:"I have about 50,000 just sitting in savings. I don't touch it.",by:"Customer, 39, teacher",clue:"Goal: idle money",need:"A better return without risk",lead:"Investment Account (MVR 10,000–50,000: 1.60% for 6 months, 1.70% for 12 months, auto-renew)",ask:"\"Is there a date when you might need it? That tells us whether 6 or 12 months fits.\""},
+ {q:"I've been freelancing as a video editor for two years. I really need proper gear.",by:"Freelancer, 24",clue:"Goal and life stage: young self-employed",need:"Start-up capital without collateral",lead:"Youth Entrepreneurship Financing (up to MVR 150,000, 7%, decision in 24h) · Startup Grant 2026",ask:"\"Is your freelance income coming into a BML account? And have you thought about registering the business?\""},
+ {q:"Every month I come here on Friday to send money to my family in Dhaka.",by:"Expatriate worker, 33",clue:"Pain point: repeated branch visits",need:"Remit easily and cheaply without queuing",lead:"Expatriate Account · Mobile Banking outward TT up to USD 5,000 · Debit card",ask:"\"Shall we set up the app together now, so next month you can send it from your room?\""}
+];
+
+const POOL=[
+ ["Accounts",[["cur","Current Account"],["sav","Savings Account"],["kids","Kids' Saver"],["inv","Investment Account"],["expat","Expatriate Account"],["usdacc","USD Account"]]],
+ ["Cards",[["debit","Debit Card"],["usddebit","Visa Platinum Debit (USD)"],["credit","Islamic Visa Credit Card"],["infinite","Visa Infinite"],["student","BML Student Card"],["travel","Travel Card (USD prepaid)"],["masv","Masveriyaa Card"]]],
+ ["Financing",[["lui","Lui Financing"],["homep","Home Purchase"],["hometour","Home Financing – Tourism Employees"],["homec","Home Construction"],["life","Lifestyle Financing"],["kiyavaa","Kiyavaa Financing"],["green","Green Financing"],["yef","Youth Entrepreneurship Financing"],["micro","Islamic Micro Financing (SME Digital)"],["grant","Startup Grant 2026"]]],
+ ["Digital",[["app","Mobile Banking & Mobile Pay"],["remit","Online remittance (TT)"],["aaya","Aaya assistant"]]]
+];
+const PNAME=Object.fromEntries(POOL.flatMap(g=>g[1]));
+
+const PERSONAS=[
+ {id:"ahmed",n:"Ahmed",age:29,place:"Works in Baa Atoll, family in Hulhumalé",col:"#0b7f83",story:"F&B supervisor at a resort, paid in US dollars plus service charge. He has been sending money home by cash through a colleague. He came in to deposit USD cash.",says:"\"I want to buy a flat in Hulhumalé before I'm 32.\"",ideal:{hometour:"7.5% p.a., and his service charge counts. The income must be routed through BML, which is the reason to move his salary.",usdacc:"Keeps USD income in USD, and is needed for USD cards.",usddebit:"Spend USD directly. USD 5,000 a day abroad.",app:"Apply for home financing in the app, and stop sending cash through colleagues."},ok:["homep","remit","inv"],q:"\"Is your salary paid into a BML account at the moment, or somewhere else?\""},
+ {id:"aishath",n:"Aishath",age:34,place:"Malé",col:"#c4122f",story:"Mother of two (8 and 13). She came to deposit MVR 20,000 in cash gifts the children received at Eid. Her 13-year-old wants to start shopping online.",says:"\"I just want it somewhere safe for the kids.\"",ideal:{kids:"3% p.a. on MVR, versus 1.5% in her own savings. One account per child.",student:"For the 13-year-old: no fees, a 0.5% rebate and full parent control.",app:"Set up free scheduled monthly transfers and see the student card alerts."},ok:["inv","sav"],q:"\"Would you like to keep adding to it every month, even a small amount?\""},
+ {id:"raju",n:"Raju",age:31,place:"Construction site, Hulhumalé",col:"#b77900",story:"Indian construction supervisor on a new work permit valid for 2 years. He is paid in cash at the moment and sends money to his family in Kerala every month.",says:"\"My employer says they want to pay us by bank now.\"",ideal:{expat:"His permit qualifies (more than 1 month of validity). He can open an INR account online too.",debit:"Pay and withdraw without carrying salary in cash.",remit:"Send home up to USD 5,000 from the app, with no Friday queue.",app:"The whole relationship runs from his phone."},ok:["aaya"],q:"\"How do you send money home now, and how long does it take you each month?\""},
+ {id:"hassan",n:"Hassan",age:50,place:"Owns land in Malé",col:"#4b5fb0",story:"His daughter Mariyam has been accepted to an ACCA programme in Colombo, starting in March. Hassan owns family land and has a steady salary.",says:"\"I want her to focus on studying, not on money.\"",ideal:{kiyavaa:"Secured: 2.5%, repayments 10 years after studies, collateral 150%, Family Takaful needed. Unsecured is also possible for ACCA (10%, disbursed in USD).",student:"USD 1,200 a month for a student living abroad, with Hassan watching every transaction.",travel:"A USD prepaid card for her first trip and emergencies."},ok:["app","remit"],q:"\"Would you prefer the lowest rate using your land as security, or to keep the land free?\""},
+ {id:"shifa",n:"Shifa",age:26,place:"Hulhumalé",col:"#7a3fa0",story:"Freelance graphic designer for two years, earning from local clients into her BML account. She wants to open a small studio with a printer and two laptops.",says:"\"Banks always ask for collateral. I don't have any.\"",ideal:{yef:"Up to MVR 150,000, unsecured, 7%, a decision in 24h, plus SME Digital mentoring. Built for her age group.",grant:"Applications opened 20 Oct 2026. Check eligibility before referring.",cur:"Keep business income separate from personal spending."},ok:["micro","app","credit"],q:"\"What would the studio cost to set up, and how much do you earn in a typical month?\""},
+ {id:"moosa",n:"Moosa",age:58,place:"Owns a building in Malé",col:"#16794a",story:"Rents out three floors, with rent paid into BML for years. He wants to refurbish the top floor and has been reading about solar panels for the roof.",says:"\"The rent comes in, but the building is getting old.\"",ideal:{life:"Built for rental income. Secured up to MVR 1.5m at 12%, with no equity required.",green:"Solar on the roof. No processing fee, 10% secured.",inv:"Park surplus rent at up to 2.0% while the refurbishment is planned."},ok:["homec","app"],q:"\"Do you have a valid rental agreement for each floor? We'll need those.\""},
+ {id:"zuha",n:"Zuha",age:38,place:"Fuvahmulah",col:"#c4122f",story:"Government employee whose salary (MVR 26,000) has been paid into BML for 5 years. She wants a new sofa set and fridge for Eid, travels to Bangkok twice a year, and complains her card fails online.",says:"\"I hate carrying cash when I travel.\"",ideal:{lui:"Buy from an Authorized Dealer under Murabaha. With 12 months of BML payroll she may get instant approval.",credit:"Her income qualifies for Gold (MVR 23,130+). The Islamic Visa Credit Card earns Rewards for flights.",travel:"A USD Travel Card for Bangkok trips, safer than cash."},ok:["app","usddebit"],q:"\"Would you rather pay for the furniture over time, or is this a one-off purchase you'd like to clear quickly?\""},
+ {id:"hawwa",n:"Hawwa",age:67,place:"Kulhudhuffushi",col:"#0b7f83",story:"Retired, with MVR 800,000 from the sale of a house in her Savings Account. She visits the service centre every week to check her balance and asks staff to help.",says:"\"I don't trust phones with my money.\"",ideal:{inv:"The MVR 50,001–1m tier earns 1.70% (6 months) or 1.80% (12 months), with auto-renewal.",app:"Assisted onboarding: show her the balance on her own phone and do it with her the first time.",aaya:"Help is available any time, and she can reach a staff member through it."},ok:["sav"],q:"\"Will you need some of this money soon? We can keep part of it available and invest the rest.\""},
+ {id:"ibrahim",n:"Ibrahim",age:45,place:"Fisherman, Gaafu Dhaalu",col:"#4b5fb0",story:"Skipper on a pole-and-line vessel. His income comes in irregular catches and he pays his crew in cash. His boat engine needs an overhaul.",says:"\"When the fish are good, the money is good. When not, nothing.\"",ideal:{masv:"Made for the fishing industry: collect and make payments, top up free with MobilePay.",sav:"Build a buffer in the good months, earning profit from MVR 5,000.",app:"Pay the crew digitally instead of in cash."},ok:["lui","micro"],q:"\"How do you pay your crew today, and how do you get paid for the catch?\""}
+];
+
+const SPOT=[
+ {h:"Cash at the counter",tk:"Service request · Cash withdrawal",p:"Fathimath, 41, wants to withdraw MVR 15,000 in cash to pay the deposit on a dining set at a furniture shop. Her salary has been paid into BML for 3 years.",o:[
+  ["Lui Financing through an Authorized Dealer","She doesn't have to drain her savings. With 3 years of BML payroll she may get instant approval.",20],
+  ["Pay digitally instead of in cash","Transfer to the shop or pay by card. It's safer than carrying MVR 15,000.",10],
+  ["Credit card eligibility","Income routed for 6+ months: check her tier and BML Rewards.",20],
+  ["Activate the app if she isn't using it","Most of her next visit could happen on her phone.",10],
+  ["Ask about the bigger picture","\"New furniture: are you moving?\" might open a Home Purchase conversation.",30]]},
+ {h:"Statement for a visa",tk:"Service request · Printed statement",p:"Ali, 33, needs a printed bank statement for a Schengen visa. He is visiting Europe with his wife in two months.",o:[
+  ["Statements are free in Internet Banking","Show him how, now. Next time he won't need to come in.",10],
+  ["Travel Card (USD prepaid)","Load euros' worth in USD for the trip, safer than cash.",20],
+  ["Platinum credit card benefits","If his income qualifies: lounge access and travel insurance.",20],
+  ["Foreign transaction limits","Make sure his card's travel limits suit a two-week trip.",10],
+  ["Ask the purpose of travel","Holiday, family, studies or medical? Each one points to different products.",20]]},
+ {h:"Declined online",tk:"Complaint · Card declined",p:"Nadha, 27, is upset. Her MVR debit card was declined while she was booking a flight on an airline website last night.",o:[
+  ["Explain the e-commerce allocation calmly","Her card isn't faulty. The travel category has a daily allocation that resets at 7:00am.",20],
+  ["The travel rule: 3 transactions in 3 months","Help her plan her travel bookings within it.",10],
+  ["USD card if she earns USD","A USD card is the alternative the bank recommends.",20],
+  ["Show her the card controls in the app","Check status and limits without calling.",10],
+  ["Turn the complaint into trust","Acknowledge it, explain, offer a next step. She leaves with a solution.",30]]},
+ {h:"First salary",tk:"Service request · Card collection",p:"Hamdhan, 21, is collecting his first debit card. He just joined a company that pays salaries through BML. He mentions he edits videos on weekends.",o:[
+  ["Set up the app and Mobile Pay now","Make digital his default from the first day.",10],
+  ["Savings Account goal","Profit from MVR 5,000. Help him set a monthly transfer.",10],
+  ["Credit card after 6 months of routing","Classic tier from MVR 4,000 a month. Tell him when he'll qualify.",20],
+  ["Youth Entrepreneurship Financing","The weekend editing is a business idea. He could get up to MVR 150,000.",30],
+  ["Lui Financing after 12 months of payroll","Explain how BML payroll leads to instant approval later.",10]]},
+ {h:"New address after marriage",tk:"Service request · Update details",p:"Leena and Faisal, both 28, want to update their address. They just married and are renting a flat in Hulhumalé. Both work in the private sector.",o:[
+  ["Home Purchase Financing","5% equity, which can come from the Pension Fund, and up to 25 years. They can apply jointly.",30],
+  ["Joint account","For shared household expenses.",10],
+  ["Lui for furnishing","Unsecured, with no guarantor.",10],
+  ["Approved developer projects","Over 30 bank-approved projects. Share the list.",20]]}
+];
+
+const WHEEL=["Kids' Saver","Investment Account","Expatriate Account","Islamic Visa Credit Card","BML Student Card","Visa Infinite","Lui Financing","Home Purchase","Green Financing","Kiyavaa Financing","Youth Entrepreneurship","Mobile Pay & Aaya"];
+const FAB={
+ "Kids' Saver":["Expected profit of 3% (MVR) with free scheduled transfers","About twice the adult savings rate, and it runs automatically","Your child's savings grow every month without you remembering"],
+ "Investment Account":["6 or 12 months from MVR 10,000, auto-renewal","A higher rate than savings, with no effort","Idle money works harder and is still there on the date you need it"],
+ "Expatriate Account":["Open online; INR, CNY and EUR accounts; app remittance up to USD 5,000","No branch queue on your day off","Your family gets the money faster and you keep your Friday"],
+ "Islamic Visa Credit Card":["Ujrah-based, the only Islamic credit card in the Maldives, Rewards points","Shariah-compliant credit with points on every purchase","Shop and travel with peace of mind and earn towards a flight"],
+ "BML Student Card":["No fees, 0.5% rebate, parent controls and alerts","Children learn to spend safely","You see every transaction and can freeze the card in a second"],
+ "Visa Infinite":["Metal card, Priority Pass, concierge, travel insurance","Premium travel benefits in one card","Relax in the lounge, and someone is always on call when you travel"],
+ "Lui Financing":["Up to MVR 1.2m, unsecured, apply in the app, instant approval for payroll customers","No guarantor and no paperwork chase","Get what your family needs now and pay it back monthly from your salary"],
+ "Home Purchase":["Diminishing Musharakah, 5% equity (pension usable), up to 25 years","A low entry cost and a long, manageable term","You can own your home years sooner than you thought"],
+ "Green Financing":["Solar and renewables, no processing fee, 10–12%","The panels pay for themselves through lower bills","You cut your electricity bill and help the islands"],
+ "Kiyavaa Financing":["2.5% secured, repay after studies, up to 90% of cost","Very low cost, with no repayments during study","Your child can focus on graduating, not on money"],
+ "Youth Entrepreneurship":["Up to MVR 150,000, unsecured, 7%, 24-hour decision, SME Digital mentoring","Start-up capital without collateral","Turn your side hustle into a real business this year"],
+ "Mobile Pay & Aaya":["Scan or tap to pay, send to friends, AI help 24/7","No cash, no queues, help at midnight","Bank on your own time, wherever you are"]
+};
+
+/* ================= TEAMS & SCORE ================= */
+const TCOL=["#c4122f","#0b7f83","#b77900","#4b5fb0","#7a3fa0","#16794a"];
+let teams=store.get("teams",[{n:"Team Hulhumalé",s:0},{n:"Team Addu",s:0},{n:"Team Kulhudhuffushi",s:0},{n:"Team Fuvahmulah",s:0}]);
+const saveTeams=()=>store.set("teams",teams);
+function renderTeams(){
+  const max=Math.max(...teams.map(t=>t.s));
+  $("#teams").innerHTML=teams.map((t,i)=>`<div class="team ${t.s>0&&t.s===max?"lead":""}" style="--tc:${TCOL[i]}">
+    <input id="tn${i}" value="${esc(t.n)}" aria-label="Team ${i+1} name"><span class="sc" id="ts${i}">${t.s}</span>
+    <button data-d="-10" data-i="${i}" aria-label="Minus 10 for ${esc(t.n)}">−</button><button data-d="10" data-i="${i}" aria-label="Plus 10 for ${esc(t.n)}">+</button></div>`).join("");
+}
+function award(i,d){teams[i].s+=d;saveTeams();renderTeams();}
+$("#teams").addEventListener("click",e=>{const b=e.target.closest("button[data-i]");if(b)award(+b.dataset.i,+b.dataset.d)});
+$("#teams").addEventListener("input",e=>{const m=e.target.id.match(/^tn(\d)$/);if(m){teams[+m[1]].n=e.target.value;saveTeams()}});
+$("#teamAdd").onclick=()=>{if(teams.length<6){teams.push({n:"Team "+(teams.length+1),s:0});saveTeams();renderTeams()}};
+$("#teamDel").onclick=()=>{if(teams.length>2){teams.pop();saveTeams();renderTeams()}};
+let resetArm=false;
+$("#resetAll").onclick=e=>{
+  if(!resetArm){resetArm=true;e.target.textContent="Tap again to reset";setTimeout(()=>{resetArm=false;e.target.textContent="Reset"},3000);return}
+  teams.forEach(t=>t.s=0);used=[];matched={};saveTeams();store.set("used",used);store.set("matched",matched);renderTeams();renderBoard();renderPlist();
+  resetArm=false;e.target.textContent="Reset";
+};
+const awardRow=(pts)=>`<div class="award"><span class="eyebrow" style="margin-right:4px">Award ${pts}</span>${teams.map((t,i)=>`<button style="--tc:${TCOL[i]}" data-aw="${i}" data-pts="${pts}">${esc(t.n)}</button>`).join("")}<button class="minus" data-undo="1">Undo last</button></div>`;
+let lastAward=null;
+document.addEventListener("click",e=>{
+  const b=e.target.closest("[data-aw]");if(b){const i=+b.dataset.aw,p=+b.dataset.pts;award(i,p);lastAward=[i,p];b.textContent="+"+p+" ✓";setTimeout(()=>{b.textContent=teams[i].n},900);return}
+  const u=e.target.closest("[data-undo]");if(u&&lastAward){award(lastAward[0],-lastAward[1]);lastAward=null;u.textContent="Undone";setTimeout(()=>u.textContent="Undo last",900)}
+});
+
+/* ================= TIMER ================= */
+let tLeft=300,tRun=false,tInt=null,actx=null;
+const fmt=s=>String(Math.floor(s/60)).padStart(2,"0")+":"+String(Math.floor(s%60)).padStart(2,"0");
+function beep(){try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();[0,.25,.5].forEach(d=>{const o=actx.createOscillator(),g=actx.createGain();o.frequency.value=880;o.connect(g);g.connect(actx.destination);g.gain.setValueAtTime(.2,actx.currentTime+d);g.gain.exponentialRampToValueAtTime(.001,actx.currentTime+d+.22);o.start(actx.currentTime+d);o.stop(actx.currentTime+d+.23)})}catch(e){}}
+function drawClock(){const el=$("#clockT");el.textContent=fmt(tLeft);el.classList.toggle("low",tLeft<=10&&tLeft>0||tLeft===0&&!tRun&&tInt===-1);$("#clockGo").textContent=tRun?"Pause":"Start"}
+function clockSet(m){clearInterval(tInt);tRun=false;tLeft=Math.round(m*60);drawClock()}
+function clockToggle(){
+  try{actx=actx||new (window.AudioContext||window.webkitAudioContext)()}catch(e){}
+  if(tRun){clearInterval(tInt);tRun=false;drawClock();return}
+  if(tLeft<=0)tLeft=60;tRun=true;drawClock();
+  tInt=setInterval(()=>{tLeft--;if(tLeft<=0){tLeft=0;clearInterval(tInt);tRun=false;tInt=-1;beep()}drawClock()},1000);
+}
+$("#clockGo").onclick=clockToggle;
+$$(".clock [data-min]").forEach(b=>b.onclick=()=>clockSet(+b.dataset.min));
+
+/* ================= NAV ================= */
+$("#rail").innerHTML=VIEWS.map((v,i)=>`<a href="#${v[0]}" data-v="${v[0]}"><span class="n">${i===0?"··":String(i).padStart(2,"0")}</span><span>${v[1]}<small>${v[2]}</small></span></a>`).join("");
+function show(id){
+  if(!VIEWS.some(v=>v[0]===id))id="plan";
+  $$(".view").forEach(s=>s.classList.toggle("on",s.id==="v-"+id));
+  $$("#rail a").forEach(a=>{if(a.dataset.v===id)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});
+  store.set("view",id);
+  if(id==="spin")drawWheel();
+}
+$("#rail").addEventListener("click",e=>{const a=e.target.closest("a");if(!a)return;e.preventDefault();show(a.dataset.v);try{history.replaceState(null,"","#"+a.dataset.v)}catch(_){}window.scrollTo({top:0})});
+document.addEventListener("click",e=>{const a=e.target.closest("a[data-go]");if(a){e.preventDefault();show(a.dataset.go);window.scrollTo({top:0})}});
+
+/* ================= RUN OF SHOW ================= */
+$("#ros").innerHTML=ROS.map(r=>`<div class="ros-row"><div class="ros-time">${r.t}<small>${r.d}</small></div>
+  <div><h3>${esc(r.h)}</h3><p>${esc(r.p)}</p><div style="margin-top:6px"><a href="#${r.v}" data-go="${r.v}">Open activity →</a></div></div>
+  <ul>${r.n.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`).join("");
+
+/* ================= MYTH OR FACT ================= */
+let mfI=0,mfShown=false;
+function renderMF(){
+  const m=MF[mfI];
+  $("#mfCard").innerHTML=`<div class="eyebrow">Statement ${mfI+1} of ${MF.length}</div><div class="mf-q">${esc(m.s)}</div>`+
+   (mfShown?`<div class="verdict ${m.a?"fact":"myth"}">${m.a?"FACT":"MYTH"}</div><div class="mf-ex">${esc(m.e)}</div>${awardRow(10)}`:`<div class="row"><span class="pill">Stand = Fact</span><span class="pill red">Sit = Myth</span></div>`);
+  $("#mfProg").innerHTML=MF.map((_,i)=>`<i class="${i<mfI?"done":i===mfI?"cur":""}"></i>`).join("");
+  $("#mfReveal").disabled=mfShown;
+}
+$("#mfReveal").onclick=()=>{mfShown=true;renderMF()};
+$("#mfNext").onclick=()=>{mfI=(mfI+1)%MF.length;mfShown=false;renderMF()};
+$("#mfPrev").onclick=()=>{mfI=(mfI-1+MF.length)%MF.length;mfShown=false;renderMF()};
+
+/* ================= LIBRARY ================= */
+let fam="all",q="";
+$("#jig").innerHTML=[["Accounts","Current, Savings, Kids' Saver, Investment, Expatriate"],["Cards","Debit, credit tiers, Islamic credit, Infinite, Student, Prepaid, Rewards"],["Financing","Lui, Home Purchase, Tourism Home, Construction, Lifestyle, Kiyavaa, Green"],["Digital","Mobile app, Mobile Pay, Aaya, Internet Banking"],["What's new","Islamic First, e-commerce limits, USD ATM limit, youth and micro financing, USD pools, grant"]].map((x,i)=>`<div><span class="eyebrow">Table ${i+1}</span><b>${x[0]}</b>${x[1]}</div>`).join("");
+$("#famTabs").innerHTML=FAMS.map(f=>`<button data-f="${f[0]}" aria-pressed="${f[0]===fam}">${f[1]}</button>`).join("");
+$("#famTabs").onclick=e=>{const b=e.target.closest("button");if(!b)return;fam=b.dataset.f;$$("#famTabs button").forEach(x=>x.setAttribute("aria-pressed",x===b));renderLib()};
+$("#libSearch").oninput=e=>{q=e.target.value.toLowerCase();renderLib()};
+function renderLib(){
+  const list=PRODUCTS.filter(p=>(fam==="all"||p.f===fam)&&(!q||JSON.stringify(p).toLowerCase().includes(q)));
+  $("#lib").innerHTML=list.length?list.map(p=>`<article class="pcard ${p.f==="new"?"new":""}">
+    <div class="tags">${p.tags.map((t,i)=>`<span class="pill ${p.f==="new"&&i===0?"sun":""}">${esc(t)}</span>`).join("")}</div>
+    <h3>${esc(p.n)}</h3><p class="who">${esc(p.who)}</p>
+    <ul>${p.k.map(k=>`<li>${esc(k)}</li>`).join("")}</ul>
+    <div class="pitch"><b>Say it in one line</b>${esc(p.pitch)}</div></article>`).join(""):`<div class="note">No products match "${esc(q)}". Try a product name, a rate such as "7.5%", or a word such as "USD".</div>`;
+}
+
+/* ================= QUIZ BOARD ================= */
+let used=store.get("used",[]);
+function renderBoard(){
+  let h=QCATS.map(c=>`<div class="cat">${c}</div>`).join("");
+  for(let r=0;r<4;r++)for(let c=0;c<6;c++){const k=c+"-"+r,u=used.includes(k);h+=`<button class="tile ${u?"used":""}" data-k="${k}" data-cat="${QCATS[c]}" aria-label="${QCATS[c]} for ${(r+1)*100}${u?" (used)":""}">${(r+1)*100}</button>`}
+  $("#board").innerHTML=h;$("#qLeft").textContent=(24-used.length)+" questions left";
+}
+$("#board").onclick=e=>{const b=e.target.closest(".tile");if(b)openQ(b.dataset.k)};
+function openQ(k){
+  const [c,r]=k.split("-").map(Number),it=Q[c][r],pts=(r+1)*100;
+  const m=$("#modal");
+  m.innerHTML=`<div class="row" style="justify-content:space-between"><span class="pill red">${QCATS[c]} · ${pts}</span><button class="btn ghost" id="qClose">Close</button></div>
+   <div class="q" id="mq">${esc(it.q)}</div>
+   <div class="opts">${it.o.map((o,i)=>`<button class="opt" data-o="${i}"><span class="k">${"ABCD"[i]}</span><span>${esc(o)}</span></button>`).join("")}</div>
+   <div id="qAfter" hidden><div class="explain">${esc(it.e)}</div><div style="margin-top:12px">${awardRow(pts)}</div></div>
+   <div class="row"><button class="btn" id="qShow">Show answer</button></div>`;
+  $("#ov").hidden=false;
+  const done=()=>{if(!used.includes(k)){used.push(k);store.set("used",used);renderBoard()}};
+  const reveal=(pick)=>{$$(".opt").forEach((b,i)=>{b.disabled=true;b.classList.add(i===it.a?"right":(i===pick?"wrong":"dim"))});$("#qAfter").hidden=false;$("#qShow").hidden=true;done()};
+  m.querySelectorAll(".opt").forEach(b=>b.onclick=()=>reveal(+b.dataset.o));
+  $("#qShow").onclick=()=>reveal(-1);
+  $("#qClose").onclick=closeQ;
+  m.querySelector(".opt").focus();
+}
+function closeQ(){$("#ov").hidden=true}
+$("#ov").addEventListener("click",e=>{if(e.target.id==="ov")closeQ()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#ov").hidden)closeQ()});
+
+/* ================= CLUES ================= */
+let clI=0,clStep=0;
+const CL_PARTS=[["clue","The clue"],["need","The need"],["lead","Lead with"],["ask","Ask next"]];
+function renderClue(){
+  const c=CLUES[clI];
+  $("#clQuote").innerHTML=`<span class="eyebrow">Customer ${clI+1} of ${CLUES.length}</span><p>“${esc(c.q)}”</p><span class="by">${esc(c.by)}</span>`;
+  $("#clReveal-grid").innerHTML=CL_PARTS.map((p,i)=>`<div class="rv ${i<clStep?"":"hidden-rv"}"><span class="eyebrow">${p[1]}</span><div>${esc(c[p[0]])}</div></div>`).join("")+(clStep>=4?awardRow(10):"");
+  $("#clReveal").disabled=clStep>=4;
+}
+$("#clReveal").onclick=()=>{if(clStep<4){clStep++;renderClue()}};
+$("#clNext").onclick=()=>{clI=(clI+1)%CLUES.length;clStep=0;renderClue()};
+$("#clPrev").onclick=()=>{clI=(clI-1+CLUES.length)%CLUES.length;clStep=0;renderClue()};
+
+/* ================= MATCH ================= */
+let pI=0,picks=new Set(),checked=false,matched=store.get("matched",{});
+const ini=n=>n.slice(0,1);
+function renderPlist(){
+  $("#plist").innerHTML=PERSONAS.map((p,i)=>`<button data-p="${i}" aria-pressed="${i===pI}"><span class="av" style="background:${p.col}">${ini(p.n)}</span><span>${esc(p.n)}, ${p.age}<small>${esc(p.place)}</small></span>${matched[p.id]!=null?`<span class="done-mark">${matched[p.id]}/${Object.keys(p.ideal).length}</span>`:""}</button>`).join("");
+}
+$("#plist").onclick=e=>{const b=e.target.closest("button");if(!b)return;pI=+b.dataset.p;picks=new Set();checked=false;renderMatch()};
+function renderMatch(){
+  renderPlist();
+  const p=PERSONAS[pI];
+  $("#persona").innerHTML=`<div class="big-av" style="background:${p.col}">${ini(p.n)}</div><div style="min-width:0"><div class="eyebrow">Persona ${pI+1} of ${PERSONAS.length}</div><h3>${esc(p.n)}, ${p.age}</h3><div class="meta">${esc(p.place)}</div><p class="story">${esc(p.story)}</p><div class="says">${esc(p.says)}</div></div>`;
+  $("#pool").innerHTML=POOL.map(g=>`<div class="pool-fam"><span>${g[0]}</span>${g[1].map(([id,n])=>{
+    let cls="";if(checked){const inI=id in p.ideal,inO=p.ok.includes(id),pk=picks.has(id);cls=inI&&pk?"hit":inI?"miss":pk&&inO?"okx":pk?"ask":""}
+    return `<button class="pchip ${cls}" data-id="${id}" aria-pressed="${picks.has(id)}" ${checked?"disabled":""}>${esc(n)}</button>`}).join("")}</div>`).join("");
+  const ans=$("#answer");
+  if(!checked){ans.hidden=true;$("#mCheck").disabled=false;return}
+  const hits=Object.keys(p.ideal).filter(id=>picks.has(id)).length,tot=Object.keys(p.ideal).length;
+  const extra=[...picks].filter(id=>!(id in p.ideal)&&!p.ok.includes(id));
+  ans.hidden=false;$("#mCheck").disabled=true;
+  ans.innerHTML=`<div class="row" style="justify-content:space-between"><div class="scoreline">${hits} of ${tot} recommended products found</div><span class="pill">${hits*10} points</span></div>
+   ${Object.entries(p.ideal).map(([id,why])=>`<div class="ln"><b>${picks.has(id)?"✓ ":""}${esc(PNAME[id])}</b><span>${esc(why)}</span></div>`).join("")}
+   ${p.ok.length?`<div class="ln"><b>Also reasonable</b><span>${p.ok.map(id=>esc(PNAME[id])).join(", ")}</span></div>`:""}
+   ${extra.length?`<div class="ln"><b>Ask the table why</b><span>${extra.map(id=>esc(PNAME[id])).join(", ")}. Is there a real need, or is this a product push?</span></div>`:""}
+   <div class="ln"><b>A strong first question</b><span>${esc(p.q)}</span></div>
+   ${awardRow(hits*10||10)}`;
+  matched[p.id]=hits;store.set("matched",matched);renderPlist();
+}
+$("#pool").onclick=e=>{const b=e.target.closest(".pchip");if(!b||checked)return;const id=b.dataset.id;picks.has(id)?picks.delete(id):picks.add(id);b.setAttribute("aria-pressed",picks.has(id))};
+$("#mCheck").onclick=()=>{checked=true;renderMatch()};
+$("#mClear").onclick=()=>{picks=new Set();checked=false;renderMatch()};
+
+/* ================= SPOT ================= */
+let sI=0,sShown=new Set();
+function renderSpot(){
+  const s=SPOT[sI];
+  $("#scn").innerHTML=`<span class="ticket">Scenario ${sI+1} of ${SPOT.length} · ${esc(s.tk)}</span><h3>${esc(s.h)}</h3><p>${esc(s.p)}</p>
+   <div class="row"><button class="btn primary" id="spTimer">Start 2-minute timer</button><button class="btn" id="spAll">Reveal all</button></div>
+   <div class="note">Total available: <b class="mono">${s.o.reduce((a,o)=>a+o[2],0)}</b> points per table. Award with the + buttons in the scoreboard or below.</div>
+   ${awardRow(10)}`;
+  $("#opp").innerHTML=s.o.map((o,i)=>`<button class="o ${sShown.has(i)?"shown":""}" data-i="${i}" aria-label="${sShown.has(i)?esc(o[0]):"Reveal opportunity "+(i+1)}"><span class="num">${i+1}</span><span class="txt"><b>${esc(o[0])}</b><span>${esc(o[1])}</span></span><span class="pts">+${o[2]}</span></button>`).join("");
+  $("#spTimer").onclick=()=>{clockSet(2);clockToggle()};
+  $("#spAll").onclick=()=>{s.o.forEach((_,i)=>sShown.add(i));renderSpot()};
+}
+$("#opp").onclick=e=>{const b=e.target.closest("button.o");if(!b)return;sShown.add(+b.dataset.i);renderSpot()};
+$("#spNext").onclick=()=>{sI=(sI+1)%SPOT.length;sShown=new Set();renderSpot()};
+$("#spPrev").onclick=()=>{sI=(sI-1+SPOT.length)%SPOT.length;sShown=new Set();renderSpot()};
+
+/* ================= SPIN ================= */
+const cv=$("#wheel"),cx=cv.getContext("2d");let ang=0,spinning=false,spinPick=null,spT=30,spInt=null;
+const WCOL=["#c4122f","#0f2238","#0b7f83","#b77900","#4b5fb0","#16794a"];
+function drawWheel(){
+  const W=cv.width,R=W/2-10,n=WHEEL.length,seg=2*Math.PI/n;
+  cx.clearRect(0,0,W,W);cx.save();cx.translate(W/2,W/2);cx.rotate(ang);
+  for(let i=0;i<n;i++){cx.beginPath();cx.moveTo(0,0);cx.arc(0,0,R,i*seg,(i+1)*seg);cx.closePath();cx.fillStyle=WCOL[i%WCOL.length];cx.fill();cx.strokeStyle="rgba(255,255,255,.85)";cx.lineWidth=4;cx.stroke();
+    cx.save();cx.rotate(i*seg+seg/2);cx.textAlign="right";cx.textBaseline="middle";cx.fillStyle="#ffffff";cx.font="700 34px Figtree, system-ui, sans-serif";
+    const t=WHEEL[i];cx.fillText(t.length>20?t.slice(0,19)+"…":t,R-28,0);cx.restore()}
+  cx.beginPath();cx.arc(0,0,64,0,2*Math.PI);cx.fillStyle="#ffffff";cx.fill();cx.lineWidth=6;cx.strokeStyle="#0f2238";cx.stroke();
+  cx.fillStyle="#0f2238";cx.font="900 30px Archivo, system-ui, sans-serif";cx.textAlign="center";cx.textBaseline="middle";cx.fillText("SPIN",0,2);
+  cx.restore();
+}
+function pickAt(a){const n=WHEEL.length,seg=2*Math.PI/n;let p=(-Math.PI/2-a)%(2*Math.PI);if(p<0)p+=2*Math.PI;return Math.floor(p/seg)%n}
+function spin(){
+  if(spinning)return;spinning=true;clearInterval(spInt);
+  const start=ang,delta=2*Math.PI*(5+Math.random()*3)+Math.random()*2*Math.PI,dur=matchMedia("(prefers-reduced-motion: reduce)").matches?10:4200,t0=performance.now();
+  renderSpinRes(null);
+  const step=now=>{const k=Math.min(1,(now-t0)/dur),e=1-Math.pow(1-k,4);ang=start+delta*e;drawWheel();if(k<1)requestAnimationFrame(step);else{spinning=false;spinPick=WHEEL[pickAt(ang)];renderSpinRes(spinPick);startSpinTimer()}};
+  requestAnimationFrame(step);
+}
+function startSpinTimer(){spT=30;clearInterval(spInt);const el=()=>$("#spT");spInt=setInterval(()=>{spT--;if(el()){el().textContent=fmt(spT);el().classList.toggle("low",spT<=5)}if(spT<=0){clearInterval(spInt);beep()}},1000)}
+function renderSpinRes(p){
+  if(!p){$("#spinRes").innerHTML=`<div class="eyebrow">Ready</div><h3>${spinning?"Spinning…":"Tap the wheel or Spin"}</h3>
+    <p style="margin:0;color:var(--muted)">Structure the 30 seconds as Feature, then Advantage, then Benefit ("which means for you…"). End with a next step.</p>
+    <div class="row"><button class="btn primary" id="spinBtn" ${spinning?"disabled":""}>Spin</button></div>`;
+    const b=$("#spinBtn");if(b)b.onclick=spin;return}
+  const f=FAB[p];
+  $("#spinRes").innerHTML=`<div class="eyebrow">Explain in 30 seconds</div><h3>${esc(p)}</h3><div class="bigtimer" id="spT">00:30</div>
+   <div class="fab"><div><b>Feature</b><span>${esc(f[0])}</span></div><div><b>Advantage</b><span>${esc(f[1])}</span></div><div><b>Benefit</b><span>${esc(f[2])}</span></div></div>
+   <p style="margin:0;color:var(--muted);font-size:.9rem">These are coaching notes. Compare them with the pitch once the volunteer has finished.</p>
+   ${awardRow(30)}<div class="row"><button class="btn primary" id="spinBtn">Spin again</button></div>`;
+  $("#spinBtn").onclick=spin;
+}
+cv.addEventListener("click",spin);
+
+/* ================= INIT ================= */
+renderTeams();renderMF();renderLib();renderBoard();renderClue();renderMatch();renderSpot();renderSpinRes(null);drawClock();
+const h=(location.hash||"").slice(1);show(VIEWS.some(v=>v[0]===h)?h:store.get("view","plan"));
+document.fonts&&document.fonts.ready.then(drawWheel);
+})();
+</script>
+
+</body>
+</html>
