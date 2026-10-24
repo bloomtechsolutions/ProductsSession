@@ -314,6 +314,47 @@ body.viewer #teamAdd,body.viewer #resetAll{display:none}
 .lb-bar i{display:block;height:100%;background:var(--tc);border-radius:5px}
 @media (max-width:560px){.sess-top{grid-template-columns:minmax(0,1fr)}.mg-row{grid-template-columns:minmax(0,1fr)}.mg-sum{text-align:left}.vote b{min-width:0;flex:1}}
 
+/* team phones and rounds */
+.team .pl{width:8px;height:8px;border-radius:50%;background:color-mix(in srgb,var(--bar-fg) 30%,transparent);flex:none}
+.team .pl.on{background:#4cd38b}
+.pstat{font-size:.78rem;font-weight:700;color:var(--muted);white-space:nowrap}
+.pstat.on{color:var(--good)}
+.tl-row{grid-template-columns:8px minmax(0,1fr) auto auto auto auto}
+.join-box{display:grid;grid-template-columns:120px minmax(0,1fr);gap:14px;align-items:center;background:var(--surface-2);border:1px solid var(--line);border-radius:14px;padding:10px}
+.qr svg{display:block;width:100%;height:auto;background:#fff;border-radius:8px}
+.qr path{fill:#000}
+.join-url{font-weight:700;font-size:.95rem;overflow-wrap:anywhere;margin:2px 0 6px}
+.join-url.big{font-size:clamp(1.1rem,2.6vw,1.6rem)}
+.bigjoin{display:grid;grid-template-columns:minmax(200px,340px) minmax(0,1fr);gap:28px;align-items:center}
+.rstat:empty{display:none}
+.rstat{display:grid;gap:8px;background:var(--lagoon-soft);border-radius:12px;padding:10px 12px}
+.rs-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.rs-head .mono{margin-left:auto;font-weight:700}
+.pulse{width:10px;height:10px;border-radius:50%;background:var(--lagoon);animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.25}}
+.rs-teams{display:flex;flex-wrap:wrap;gap:6px}
+.rs-t{border:1.5px solid var(--tc);border-radius:999px;padding:4px 10px;font-weight:700;font-size:.82rem;background:var(--surface)}
+.rs-t.in{background:var(--tc);color:#fff}
+.rs-t small{font-weight:500}
+.results{display:flex;flex-wrap:wrap;gap:8px}
+.res{display:flex;gap:8px;align-items:center;border-left:4px solid var(--tc);background:var(--surface-2);border-radius:10px;padding:6px 10px;font-size:.9rem}
+.res.ok{background:var(--good-soft)}
+.res.no{background:var(--bad-soft)}
+.res .mono{font-weight:700}
+.tans{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+.ta{border-left:4px solid var(--tc);background:var(--surface);border:1px solid var(--line);border-left-width:4px;border-left-color:var(--tc);border-radius:12px;padding:10px 12px;display:grid;gap:6px}
+.ta-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 8px;align-items:center;font-size:.9rem}
+.ta-row .muted{grid-column:1/-1;font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+.ta-txt{overflow-wrap:anywhere}
+.pre{white-space:pre-wrap;font-size:.92rem}
+.tag{display:inline-block;border-radius:999px;padding:1px 8px;font-size:.8rem;font-weight:600;margin:1px 0;border:1px solid var(--line)}
+.tag.hit{background:var(--good-soft);border-color:var(--good);color:var(--good)}
+.tag.okx{background:var(--sun-soft);border-color:var(--sun);color:var(--sun)}
+.tag.ask{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.team-ln{border-left:4px solid var(--tc)}
+span.pchip{display:inline-block}
+@media (max-width:560px){.join-box,.bigjoin{grid-template-columns:minmax(0,1fr)}.join-box .qr{max-width:160px}.tl-row{grid-template-columns:8px minmax(0,1fr) auto;}.tl-row .pstat,.tl-row .btn{grid-column:2/-1}}
+
 @media (max-width:1100px){
   .board{grid-template-columns:repeat(3,minmax(0,1fr))}
   .board .cat{display:none}
@@ -383,13 +424,13 @@ body.viewer #teamAdd,body.viewer #resetAll{display:none}
         <div class="kpi"><b>25 / 50 / 25</b><span>refresh / practice / reflect, as the programme asks</span></div>
       </div>
       <div class="ros" id="ros"></div>
-      <div class="note"><b>Before the session:</b> print one set of persona cards per table (or let tables use their phones on this page), put a bell or buzzer on each table, and prepare a small prize. Press <b>Session…</b> in the bar to start the session and create the teams. Scores are saved online and every activity scores automatically as you mark it. Share the scoreboard link so tables can follow the scores on their phones. Product facts were taken from bankofmaldives.com.mv on 24 Oct 2026. Rates, limits and fees change, so check each figure against the current Schedule of Charges on the morning of the session.</div>
+      <div class="note"><b>Before the session:</b> print one set of persona cards per table (or let tables use their phones on this page), put a bell or buzzer on each table, and prepare a small prize. Press <b>Session…</b> in the bar to start the session, then <b>Show on screen</b> to put the join QR code on the projector. Each team joins on <b>one phone</b> (up to 6 teams) and answers there; answers are marked automatically. Product facts were taken from bankofmaldives.com.mv on 24 Oct 2026. Rates, limits and fees change, so check each figure against the current Schedule of Charges on the morning of the session.</div>
     </section>
 
     <!-- WARM UP -->
     <section class="view" id="v-warmup" data-title="Myth or Fact">
       <div class="hd"><div><div class="eyebrow">Activity 1 · 10 min · whole room</div><h2>Myth or Fact?</h2>
-        <p>Read the statement aloud. Everyone stands for <b>Fact</b> and stays seated for <b>Myth</b>. Tap each table's call below, then Reveal: every table that called it right gets 10 points automatically. Ask one person who got it right to explain why.</p></div>
+        <p>Read the statement aloud. Everyone stands for <b>Fact</b> and stays seated for <b>Myth</b>. Send the statement to the team phones. Each team answers Fact or Myth on its phone; Reveal marks every team and adds 10 points for a correct call. Ask one person who got it right to explain why.</p></div>
         <div class="row"><button class="btn" id="mfPrev">Back</button><button class="btn primary" id="mfReveal">Reveal</button><button class="btn" id="mfNext">Next</button></div></div>
       <div class="mf">
         <div class="mf-card" id="mfCard"></div>
@@ -410,7 +451,7 @@ body.viewer #teamAdd,body.viewer #resetAll{display:none}
     <!-- QUIZ -->
     <section class="view" id="v-challenge" data-title="Product Challenge">
       <div class="hd"><div><div class="eyebrow">Activity 3 · 20 min · team quiz</div><h2>BML Product Challenge</h2>
-        <p>Tables take turns choosing a category and a value. The choosing table answers first. Tap the answer they give: a correct answer scores automatically. If they miss, tap the table that rings the bell first, then its answer, to steal.</p></div>
+        <p>Tables take turns choosing a category and a value. The tile goes to every team phone at once. Teams answer on their phone; Reveal marks them all and every correct team scores the tile value.</p></div>
         <div class="row"><span class="pill sun" id="qTurn"></span><span class="pill" id="qLeft">24 questions left</span></div></div>
       <div class="board" id="board"></div>
       <div class="note"><b>Facilitator tip:</b> after each answer, ask "How would you say that to a customer?" A correct fact is only half the point. The other half is being able to explain it in plain words.</div>
@@ -419,7 +460,7 @@ body.viewer #teamAdd,body.viewer #resetAll{display:none}
     <!-- CLUES -->
     <section class="view" id="v-clues" data-title="Listen for the Clue">
       <div class="hd"><div><div class="eyebrow">Activity 4 · 15 min · needs discovery</div><h2>Listen for the Clue</h2>
-        <p>Customers rarely say "I need a product". They mention a life event, how they are paid, something that annoys them, or a goal. Read the customer's words aloud. Tables have 45 seconds to write down the clue, the need, and the question they would ask next. Tick what each table got right: 10 points each, added automatically.</p></div>
+        <p>Customers rarely say "I need a product". They mention a life event, how they are paid, something that annoys them, or a goal. Read the customer's words aloud. Send the customer to the team phones. Teams have 45 seconds to type the clue, the need, and the question they would ask next. Show the team answers and tick what each team got right: 10 points each.</p></div>
         <div class="row"><button class="btn" id="clPrev">Back</button><button class="btn primary" id="clReveal">Reveal next</button><button class="btn" id="clNext">Next customer</button></div></div>
       <div class="alll">
         <div><b>ASK</b><span>Open questions about their life, work and plans, not just the transaction.</span></div>
@@ -436,8 +477,8 @@ body.viewer #teamAdd,body.viewer #resetAll{display:none}
     <!-- MATCH -->
     <section class="view" id="v-match" data-title="Match the Customer">
       <div class="hd"><div><div class="eyebrow">Activity 5 · 25 min · product matching</div><h2>Match the Customer</h2>
-        <p>Give each table a persona. They have 4 minutes to choose the products that fit best, including at least one cross-sell, and to write the first question they would ask. Choose the presenting table, tap their picks, then press Check: the table gets 10 points for every recommended product it found.</p></div>
-        <div class="row"><button class="btn" id="mClear">Clear picks</button><button class="btn primary" id="mCheck">Check</button></div></div>
+        <p>Give each table a persona. They have 4 minutes to choose the products that fit best, including at least one cross-sell, and to write the first question they would ask. Send the persona to the team phones: each team picks its products there. Press Reveal &amp; score: every team gets 10 points for each recommended product it picked.</p></div>
+        <div class="row"><button class="btn primary" id="mCheck">Reveal &amp; score</button></div></div>
       <div class="match">
         <div class="plist" id="plist"></div>
         <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
@@ -453,7 +494,7 @@ body.viewer #teamAdd,body.viewer #resetAll{display:none}
     <!-- SPOT -->
     <section class="view" id="v-spot" data-title="Spot the Opportunity">
       <div class="hd"><div><div class="eyebrow">Activity 6 · 15 min · cross-selling in routine service</div><h2>Spot the Opportunity</h2>
-        <p>A routine request arrives at the counter. Tables get 2 minutes to list every genuine opportunity hidden in it. Reveal the opportunities one at a time and tick the tables that listed each one; their points are added automatically.</p></div>
+        <p>A routine request arrives at the counter. Tables get 2 minutes to list every genuine opportunity hidden in it. Teams type their list on their phone. Show the team lists, reveal the opportunities one at a time, and tick the teams that spotted each one; the points are added automatically.</p></div>
         <div class="row"><button class="btn" id="spPrev">Back</button><button class="btn" id="spNext">Next scenario</button></div></div>
       <div class="spot">
         <div class="scn" id="scn"></div>
@@ -507,6 +548,7 @@ body.viewer #teamAdd,body.viewer #resetAll{display:none}
 <div class="overlay" id="ov" hidden><div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mq"></div></div>
 
 <script src="vendor/supabase-2.117.3.js"></script>
+<script src="vendor/qrcode-generator-2.0.4.js"></script>
 <script>
 (()=>{
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
@@ -520,11 +562,11 @@ const VIEWS=[
  ["spot","Spot the Opportunity","Cross-sell · 15 min"],["spin","Spin & Explain","Confidence · 10 min"],["close","Close","Commit · 5 min"]];
 
 const ROS=[
- {t:"0:00",d:"10 min",v:"warmup",h:"Myth or Fact warm-up",p:"Wakes the room up and shows what people don't know yet, before any teaching starts.",n:["Ask the 1–5 confidence question first and note the hand count.","Run 6–8 statements. Keep it fast: about 60 seconds each.","Start the session and create the teams first. Every activity scores automatically as you mark it."]},
+ {t:"0:00",d:"10 min",v:"warmup",h:"Myth or Fact warm-up",p:"Wakes the room up and shows what people don't know yet, before any teaching starts.",n:["Ask the 1–5 confidence question first and note the hand count.","Run 6–8 statements. Keep it fast: about 60 seconds each.","Start the session and show the join QR code. Each team joins on one phone (up to 6 teams)."]},
  {t:"0:10",d:"25 min",v:"library",h:"Product Passport: jigsaw teach-back",p:"Staff refresh the products by teaching each other. People remember what they explain far better than what they hear.",n:["Give each table one family: Accounts, Cards, Financing, Digital, What's New.","10 minutes to prepare, then 3 minutes per table to teach.","You correct and add detail after each teach-back, in under 60 seconds."]},
- {t:"0:35",d:"20 min",v:"challenge",h:"BML Product Challenge quiz",p:"Checks recall across all families straight after the teach-backs. Includes the Islamic structure names customers will now ask about.",n:["Tables take turns choosing. A missed question can be stolen with the bell.","Leave the 400-point questions until the end to build tension.","After each answer, ask: how would you say that to a customer?"]},
+ {t:"0:35",d:"20 min",v:"challenge",h:"BML Product Challenge quiz",p:"Checks recall across all families straight after the teach-backs. Includes the Islamic structure names customers will now ask about.",n:["Tables take turns choosing a tile. Every team answers on its phone, and every correct team scores.","Leave the 400-point questions until the end to build tension.","After each answer, ask: how would you say that to a customer?"]},
  {t:"0:55",d:"15 min",v:"clues",h:"Listen for the Clue",p:"Moves from knowing products to spotting needs. Introduces ASK · LISTEN · LINK · LEAD.",n:["2 minutes on the four clue types, then 6–8 customer quotes.","Reveal the clue, the need, the product and the next question one at a time.","Tick each table for a correct clue, need and good question: 10 points each, added automatically."]},
- {t:"1:10",d:"25 min",v:"match",h:"Match the Customer",p:"The core practical exercise. Tables build a complete recommendation, including cross-sells, for a realistic Maldivian customer.",n:["One persona per table, with 4 minutes to prepare.","Two or three tables present. Choose the presenting table, tap its picks and press Check to score it.","Discuss the red chips. They aren't always wrong, so ask the table to justify them."]},
+ {t:"1:10",d:"25 min",v:"match",h:"Match the Customer",p:"The core practical exercise. Tables build a complete recommendation, including cross-sells, for a realistic Maldivian customer.",n:["One persona per table, with 4 minutes to prepare.","Send the persona to the team phones. Teams pick products there; Reveal & score marks every team at once.","Discuss the red chips. They aren't always wrong, so ask the table to justify them."]},
  {t:"1:35",d:"15 min",v:"spot",h:"Spot the Opportunity",p:"Cross-selling inside routine service: a cash withdrawal, a statement request, a declined card.",n:["2 minutes per scenario. All tables work at once.","Reveal the opportunities one by one and tick the tables that listed each one.","Stress the difference between a genuine need and pushing a product."]},
  {t:"1:50",d:"10 min",v:"spin",h:"Spin & Explain",p:"Builds confidence through a 30-second product pitch using Feature, Advantage and Benefit.",n:["One volunteer per table. The timer starts automatically after the spin.","The room gives thumbs up or down. Coach in one sentence."]},
  {t:"2:00",d:"5 min",v:"close",h:"Close and commitments",p:"Winner announced, confidence check repeated, three commitments written on sticky notes.",n:["Ask the confidence question again and compare with the opening count.","Collect the sticky notes for the Day 2 sales simulation."]}
@@ -701,7 +743,7 @@ const FAB={
 // (for example "quiz:2-3"), so awarding again replaces the points and unticking removes them.
 const SB_URL="https://jtofxcdoyzyyxdlbjrbh.supabase.co", SB_KEY="sb_publishable_UduFSvz4bpmCY41kxjLRww_iufXEQpx";
 const sb=window.supabase?window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:false,autoRefreshToken:false}}):null;
-const TCOL=["#c4122f","#0b7f83","#b77900","#4b5fb0","#7a3fa0","#16794a","#d0541a","#5a6b7d"];
+const TCOL=["#c4122f","#0b7f83","#b77900","#4b5fb0","#7a3fa0","#16794a"],MAX_TEAMS=6;
 const ACT={manual:"Manual",mythfact:"Myth or Fact",teach:"Teach-back",quiz:"Quiz",clue:"Clues",match:"Match",spot:"Spot",spin:"Spin"};
 let sess=null,hostKey=null,teams=[],events=new Map(),chan=null,modalKind=null;
 const isHost=()=>!!(sess&&hostKey);
@@ -740,10 +782,11 @@ async function revoke(team,ref){
 
 async function reload(){
   const [t,e]=await Promise.all([
-    sb.from("teams").select("id,name,color_idx,position").eq("session_id",sess.id),
+    sb.from("teams").select("id,name,color_idx,position,claimed").eq("session_id",sess.id),
     sb.from("score_events").select("id,team_id,points,activity,ref,created_at").eq("session_id",sess.id).order("id").range(0,4999)]);
   if(t.error||e.error){toast((t.error||e.error).message,true);return}
-  teams=t.data;events=new Map(e.data.map(x=>[x.id,x]));changed(true);
+  teams=t.data;events=new Map(e.data.map(x=>[x.id,x]));
+  await loadRounds();changed(true);
 }
 function subscribe(){
   const old=chan;chan=null;if(old)sb.removeChannel(old);
@@ -783,18 +826,18 @@ async function createSession(name){
   const {data,error}=await sb.rpc("create_session",{p_name:name});
   if(error){toast(error.message,true);return}
   store.set("host:"+data.session_id,data.host_key);
-  used=[];matched={};mfVotes={};quizTurn=0;store.set("used",used);store.set("matched",matched);store.set("turn",0);
+  used=[];quizTurn=0;store.set("used",used);store.set("turn",0);
   if(await joinSession(data.code))renderSess();
 }
 function leaveSession(){
   clearTimeout(retryT);retryT=null;
-  const old=chan;chan=null;if(old)sb.removeChannel(old);sess=null;hostKey=null;teams=[];events=new Map();store.set("sess",null);
+  const old=chan;chan=null;if(old)sb.removeChannel(old);stopPoll();sess=null;hostKey=null;teams=[];events=new Map();rounds=new Map();liveRound=null;store.set("sess",null);
   try{const u=new URL(location.href);u.searchParams.delete("s");history.replaceState(null,"",u)}catch(_){}
   $("#sessBtn").textContent="Session…";document.body.classList.remove("viewer");setConn("none");changed(true);
 }
 async function addTeam(name){
   if(!sess){openSess();return}
-  if(teams.length>=8){toast("A session can have at most 8 teams.",true);return}
+  if(teams.length>=MAX_TEAMS){toast("A session can have at most "+MAX_TEAMS+" teams.",true);return}
   const row=await rpc("add_team",{p_name:name||("Team "+(teams.length+1))});
   if(!teamById(row.id))teams.push(row);changed(true);return row;
 }
@@ -805,21 +848,21 @@ function changed(full){
   chFull=chFull||!!full;if(chQueued)return;chQueued=true;
   queueMicrotask(()=>{chQueued=false;const f=chFull;chFull=false;
     renderTeams();renderBoard();renderLeader();
-    if(f){renderMF();renderTeach();renderClue();renderPresent();renderSpot();if(spinPick&&!spinning)renderSpinRes(spinPick);if(modalKind==="quiz")renderWho()}
+    if(f){renderMF();renderTeach();renderClue();renderMatch();renderSpot();if(spinPick&&!spinning)renderSpinRes(spinPick);if(modalKind==="quiz")renderQuizLive()}
     if(modalKind==="sess")renderSess();
-    refreshMarks();
+    refreshMarks();refreshRoundStatus();
   });
 }
 let barSig="";
 function renderTeams(){
   const list=sortedTeams(),max=Math.max(0,...list.map(t=>teamScore(t.id)));
-  const sig=(isHost()?"h":"v")+list.map(t=>t.id+t.name+t.color_idx).join("|");
+  const sig=(isHost()?"h":"v")+list.map(t=>t.id+t.name+t.color_idx+t.claimed).join("|");
   if(sig===barSig&&list.length){list.forEach(t=>{const box=$("#teams").querySelector(`[data-team-box="${t.id}"]`);if(!box)return;const s=teamScore(t.id);box.querySelector(".sc").textContent=s;box.classList.toggle("lead",s>0&&s===max)});return}
   barSig=sig;
   $("#teams").innerHTML=list.length?list.map(t=>{const s=teamScore(t.id);return `<div class="team ${s>0&&s===max?"lead":""}" data-team-box="${t.id}" style="--tc:${tcol(t)}">
-    <input data-tn="${t.id}" value="${esc(t.name)}" aria-label="Team name" ${isHost()?"":"readonly"}><span class="sc">${s}</span>
+    <span class="pl ${t.claimed?"on":""}" title="${t.claimed?"Team phone connected":"No team phone yet"}"></span><input data-tn="${t.id}" value="${esc(t.name)}" aria-label="Team name" ${isHost()?"":"readonly"}><span class="sc">${s}</span>
     ${isHost()?`<button data-d="-10" data-t="${t.id}" aria-label="Minus 10 for ${esc(t.name)}">−</button><button data-d="10" data-t="${t.id}" aria-label="Plus 10 for ${esc(t.name)}">+</button>`:""}</div>`}).join("")
-   :`<span class="teams-empty">${sess?(isHost()?"No teams yet. Press + Team to create the first one.":"Waiting for the facilitator to add teams…"):"Start or join a session with the Session button."}</span>`;
+   :`<span class="teams-empty">${sess?(isHost()?"No teams yet. Show the join code (Session button) so each team joins on one phone, or press + Team.":"Waiting for the facilitator to add teams…"):"Start or join a session with the Session button."}</span>`;
 }
 $("#teams").addEventListener("click",async e=>{const b=e.target.closest("button[data-t]");if(!b)return;b.disabled=true;try{await award(b.dataset.t,+b.dataset.d,"manual")}catch(_){}b.disabled=false});
 async function renameFrom(input){
@@ -835,11 +878,11 @@ $("#resetAll").onclick=async e=>{
   if(!isHost()){toast("Only the facilitator's device can reset scores.",true);return}
   if(!resetArm){resetArm=true;e.target.textContent="Tap again to reset";setTimeout(()=>{resetArm=false;e.target.textContent="Reset"},3000);return}
   resetArm=false;e.target.textContent="Reset";
-  try{await rpc("reset_scores",{});events=new Map();used=[];matched={};mfVotes={};quizTurn=0;store.set("used",used);store.set("matched",matched);store.set("turn",0);changed(true);renderPlist();toast("Scores reset")}catch(_){}
+  try{await rpc("reset_scores",{});stopPoll();events=new Map();rounds=new Map();liveRound=null;used=[];quizTurn=0;store.set("used",used);store.set("turn",0);changed(true);toast("Scores reset")}catch(_){}
 };
 
 /* ---- marking = scoring: every tick button awards or removes points ---- */
-const noTeams=()=>`<div class="note">${sess?(isHost()?"Add teams with <b>+ Team</b> to start scoring.":"Waiting for the facilitator to add teams."):"Start a session with the <b>Session</b> button to score automatically."}</div>`;
+const noTeams=()=>`<div class="note">${sess?(isHost()?"No teams yet. Open <b>Session</b> and show the join code so each team joins on one phone.":"Waiting for teams to join."):"Start a session with the <b>Session</b> button to score automatically."}</div>`;
 const mkBtn=(t,ref,pts,act,label)=>`<button class="mk" style="--tc:${tcol(t)}" data-mk="${esc(ref)}" data-pts="${pts}" data-act="${act}" data-team="${t.id}" aria-pressed="false" ${isHost()?"":"disabled"}>${esc(label)}</button>`;
 const markRow=(ref,pts,act,label)=>teams.length?`<div class="marks"><span class="eyebrow">${esc(label)}</span>${sortedTeams().map(t=>mkBtn(t,ref,pts,act,t.name)).join("")}</div>`:noTeams();
 const markGrid=(base,cols,act)=>teams.length?`<div class="mgrid">${sortedTeams().map(t=>`<div class="mg-row" style="--tc:${tcol(t)}"><b>${esc(t.name)}</b><span class="mg-cells">${cols.map(([k,l,p])=>mkBtn(t,base+k,p,act,l)).join("")}</span><span class="mg-sum mono" data-sum="${esc(base)}" data-team="${t.id}"></span></div>`).join("")}</div>`:noTeams();
@@ -851,6 +894,67 @@ document.addEventListener("click",async e=>{
   const b=e.target.closest("button[data-mk]");if(!b||b.disabled)return;
   const team=b.dataset.team,ref=b.dataset.mk,pts=+b.dataset.pts,on=b.getAttribute("aria-pressed")==="true";
   b.disabled=true;try{if(on)await revoke(team,ref);else await award(team,pts,b.dataset.act,ref)}catch(_){}b.disabled=!isHost();
+});
+
+/* ---- rounds: questions teams answer on their phones; the server marks them ---- */
+// The answer key goes to the server with the round and never reaches the team phones.
+let rounds=new Map(),liveRound=null,liveAns={},pollT=null;
+const roundFor=ref=>rounds.get(ref)||null;
+async function loadRounds(){
+  const {data,error}=await sb.from("rounds").select("id,kind,activity,ref,points,payload,status,result").eq("session_id",sess.id).order("id").range(0,1999);
+  if(error)return;
+  rounds=new Map();for(const r of data)if(r.status!=="cancelled")rounds.set(r.ref,r);
+  const open=data.filter(r=>r.status==="open").pop()||null;
+  if(!open){liveRound=null;liveAns={};stopPoll()}else if(!liveRound||liveRound.id!==open.id){liveRound=open;liveAns={};if(isHost())startPoll()}
+}
+async function openRound(kind,activity,ref,points,payload,answer){
+  if(!teams.length){toast("No teams yet. Show the join code so teams can join on their phones.",true);throw new Error("no teams")}
+  await rpc("open_round",{p_kind:kind,p_activity:activity,p_ref:ref,p_points:points,p_payload:payload,p_answer:answer});
+  await loadRounds();changed(true);toast("Sent to team phones");
+}
+async function closeRound(){
+  if(!liveRound)return null;
+  const id=liveRound.id;stopPoll();
+  const res=await rpc("close_round",{p_round:id});
+  liveRound=null;liveAns={};await reload();return res.round;
+}
+async function cancelRound(){if(!liveRound)return;const id=liveRound.id;stopPoll();try{await rpc("cancel_round",{p_round:id})}catch(_){}await loadRounds();changed(true)}
+function startPoll(){
+  stopPoll();
+  const tick=async()=>{if(!liveRound||!isHost())return;const id=liveRound.id;
+    const {data,error}=await sb.rpc("round_answers",{p_session:sess.id,p_key:hostKey,p_round:id});
+    if(!error&&liveRound&&liveRound.id===id){liveAns={};for(const a of data)liveAns[a.team_id]=a;refreshRoundStatus()}};
+  tick();pollT=setInterval(tick,1500);
+}
+function stopPoll(){clearInterval(pollT);pollT=null}
+// Live "who has answered" strip for a round; answers stay hidden until the reveal.
+const rstatus=ref=>`<div class="rstat" data-rstat="${esc(ref)}"></div>`;
+function refreshRoundStatus(){
+  $$("[data-rstat]").forEach(el=>{
+    const ref=el.dataset.rstat;
+    if(!liveRound||liveRound.ref!==ref){el.innerHTML="";return}
+    const st=sortedTeams(),n=st.filter(t=>liveAns[t.id]).length;
+    el.innerHTML=`<div class="rs-head"><span class="pulse"></span><b>Waiting for team phones</b><span class="mono">${n} of ${st.length} answered</span></div>
+     <div class="rs-teams">${st.map(t=>`<span class="rs-t ${liveAns[t.id]?"in":""}" style="--tc:${tcol(t)}">${liveAns[t.id]?"✓ ":""}${esc(t.name)}${t.claimed?"":" <small>(no phone)</small>"}</span>`).join("")}</div>`;
+  });
+}
+// After a round closes: what each team answered and what it scored.
+function resultsRow(r,show){
+  if(!r||r.status!=="closed"||!r.result)return "";
+  const res=r.result.teams||{};
+  return `<div class="results">${sortedTeams().map(t=>{const x=res[t.id]||{},a=x.answer,p=x.points;
+    return `<div class="res ${p>0?"ok":a?"no":"none"}" style="--tc:${tcol(t)}"><b>${esc(t.name)}</b><span>${a?show(a):"No answer"}</span>${p==null?"":`<span class="mono">${p>0?"+"+p:"0"}</span>`}</div>`}).join("")}</div>`;
+}
+// Facilitator controls for a round tied to one activity item.
+function roundCtl(ref,sendLabel){
+  if(!isHost())return rstatus(ref);
+  const r=roundFor(ref),open=liveRound&&liveRound.ref===ref;
+  return `<div class="row rctl">${open?`<button class="btn" data-round-cancel>Stop collecting</button>`:`<button class="btn primary" data-round-open="${esc(ref)}">${r&&r.status==="closed"?"Ask teams again":sendLabel||"Send to team phones"}</button>`}</div>${rstatus(ref)}`;
+}
+const ROUND_OPENERS={};
+document.addEventListener("click",async e=>{
+  const o=e.target.closest("[data-round-open]");if(o){const f=ROUND_OPENERS[o.dataset.roundOpen.split(":")[0]];o.disabled=true;try{await f(o.dataset.roundOpen)}catch(_){}o.disabled=false;return}
+  if(e.target.closest("[data-round-cancel]")){await cancelRound();toast("Stopped collecting answers")}
 });
 
 /* ---- session dialog ---- */
@@ -869,15 +973,16 @@ function renderSess(){
     $("#sjForm").onsubmit=async e=>{e.preventDefault();if(await joinSession($("#sjCode").value))renderSess()};
     return;
   }
-  const base=location.origin+location.pathname,view=base+"?s="+sess.code,host=hostKey?view+"&k="+hostKey:"";
+  const base=location.origin+location.pathname,view=base+"?s="+sess.code,host=hostKey?view+"&k="+hostKey:"",play=playUrl();
   const recent=[...events.values()].sort((a,b)=>b.id-a.id).slice(0,10);
   m.innerHTML=`<div class="row" style="justify-content:space-between"><span class="pill ${isHost()?"":"sun"}">${isHost()?"Facilitator":"Viewer"}</span><button class="btn ghost" data-close>Close</button></div>
    <div class="sess-top"><div><div class="eyebrow">${esc(sess.name)}</div><h2 id="mq" class="sess-code mono">${esc(sess.code)}</h2></div>
-     <div class="sess-links"><div><span class="eyebrow">Scoreboard link for tables</span><div class="row"><input class="search" readonly value="${esc(view)}" aria-label="Viewer link"><button class="btn" data-copy="${esc(view)}">Copy</button></div></div>
+     <div class="sess-links"><div class="join-box"><div class="qr" aria-label="QR code for the team join link">${qrSvg(play)}</div><div><span class="eyebrow">Team phones join here (one phone per team)</span><div class="join-url mono">${esc(play.replace(/^https?:\/\//,""))}</div><div class="row"><button class="btn" data-copy="${esc(play)}">Copy join link</button><button class="btn" data-bigqr>Show on screen</button></div></div></div>
+     <div><span class="eyebrow">Scoreboard link (watch only)</span><div class="row"><input class="search" readonly value="${esc(view)}" aria-label="Viewer link"><button class="btn" data-copy="${esc(view)}">Copy</button></div></div>
      ${host?`<div><span class="eyebrow">Facilitator link (keep private)</span><div class="row"><input class="search" readonly value="${esc(host)}" aria-label="Facilitator link"><button class="btn" data-copy="${esc(host)}">Copy</button></div><small class="muted">Opens this session with scoring controls on another device.</small></div>`:""}</div></div>
-   <div class="eyebrow">Teams (${teams.length}/8)</div>
-   <div class="tlist">${sortedTeams().map(t=>`<div class="tl-row" style="--tc:${tcol(t)}"><i></i><input data-tn="${t.id}" value="${esc(t.name)}" aria-label="Team name" ${isHost()?"":"readonly"}><span class="mono">${teamScore(t.id)} pts</span>${isHost()?`<button class="btn ghost" data-rm="${t.id}">Remove</button>`:""}</div>`).join("")||`<div class="muted">No teams yet.</div>`}</div>
-   ${isHost()?`<form class="row" id="stForm"><input class="search" id="stName" placeholder="New team name, e.g. Team Hulhumalé" maxlength="60" aria-label="New team name"><button class="btn primary" ${teams.length>=8?"disabled":""}>Add team</button></form>`:""}
+   <div class="eyebrow">Teams (${teams.length}/${MAX_TEAMS}) · each team plays on one phone</div>
+   <div class="tlist">${sortedTeams().map(t=>`<div class="tl-row" style="--tc:${tcol(t)}"><i></i><input data-tn="${t.id}" value="${esc(t.name)}" aria-label="Team name" ${isHost()?"":"readonly"}><span class="mono">${teamScore(t.id)} pts</span><span class="pstat ${t.claimed?"on":""}">${t.claimed?"Phone joined":"No phone yet"}</span>${isHost()?`${t.claimed?`<button class="btn ghost" data-release="${t.id}" title="Free this team's seat so another phone can take it">Release phone</button>`:""}<button class="btn ghost" data-rm="${t.id}">Remove</button>`:""}</div>`).join("")||`<div class="muted">No teams yet. Teams can create their own team when they join, up to ${MAX_TEAMS}.</div>`}</div>
+   ${isHost()?`<form class="row" id="stForm"><input class="search" id="stName" placeholder="Or add a team yourself, e.g. Team Hulhumalé" maxlength="60" aria-label="New team name"><button class="btn" ${teams.length>=MAX_TEAMS?"disabled":""}>Add team</button></form>`:""}
    <div class="eyebrow">Latest points</div>
    <div class="elog">${recent.map(e=>{const t=teamById(e.team_id);return `<div><span class="dot" style="background:${t?tcol(t):"var(--line)"}"></span><b>${esc(t?t.name:"Removed team")}</b><span class="mono ${e.points<0?"neg":""}">${e.points>0?"+":""}${e.points}</span><span class="muted">${esc(ACT[e.activity]||e.activity)}</span>${isHost()?`<button class="btn ghost" data-undo="${e.id}">Undo</button>`:""}</div>`}).join("")||`<div class="muted">No points yet.</div>`}</div>
    <div class="row"><button class="btn" id="sLeave">Leave session</button>${isHost()?"":`<span class="muted">This device can only watch. Open the facilitator link to score.</span>`}</div>`;
@@ -888,8 +993,18 @@ $("#modal").addEventListener("click",async e=>{
   if(e.target.closest("[data-close]")){closeQ();return}
   const c=e.target.closest("[data-copy]");if(c){try{await navigator.clipboard.writeText(c.dataset.copy);toast("Link copied")}catch(_){toast("Copy failed. Select the link and copy it.",true)}return}
   const r=e.target.closest("[data-rm]");if(r){if(r.dataset.armed){try{await rpc("remove_team",{p_team:r.dataset.rm});teams=teams.filter(t=>t.id!==r.dataset.rm);for(const [k,ev] of events)if(ev.team_id===r.dataset.rm)events.delete(k);barSig="";changed(true)}catch(_){}}else{r.dataset.armed=1;r.textContent="Tap to confirm";setTimeout(()=>{if(r.isConnected){delete r.dataset.armed;r.textContent="Remove"}},3000)}return}
-  const u=e.target.closest("[data-undo]");if(u){try{await rpc("undo_event",{p_event:+u.dataset.undo});events.delete(+u.dataset.undo);changed()}catch(_){}}
+  const u=e.target.closest("[data-undo]");if(u){try{await rpc("undo_event",{p_event:+u.dataset.undo});events.delete(+u.dataset.undo);changed()}catch(_){}return}
+  const rl=e.target.closest("[data-release]");if(rl){if(rl.dataset.armed){try{await rpc("release_team",{p_team:rl.dataset.release});const t=teamById(rl.dataset.release);if(t)t.claimed=false;barSig="";changed(true);toast("Seat released. Another phone can join as this team.")}catch(_){}}else{rl.dataset.armed=1;rl.textContent="Tap to confirm";setTimeout(()=>{if(rl.isConnected){delete rl.dataset.armed;rl.textContent="Release phone"}},3000)}return}
+  if(e.target.closest("[data-bigqr]")){showBigQr()}
 });
+const playUrl=()=>(location.protocol==="file:"?location.href.replace(/[^/]*$/,"")+"play.html":location.origin+location.pathname.replace(/[^/]*$/,"")+"play")+"?s="+(sess?sess.code:"");
+function qrSvg(text){try{const q=qrcode(0,"M");q.addData(text);q.make();return q.createSvgTag({cellSize:4,margin:2,scalable:true})}catch(_){return ""}}
+function showBigQr(){
+  modalKind="qr";const m=$("#modal"),play=playUrl();$("#ov").hidden=false;
+  m.innerHTML=`<div class="row" style="justify-content:space-between"><span class="pill">Join the game</span><button class="btn ghost" data-close>Close</button></div>
+   <div class="bigjoin"><div class="qr big">${qrSvg(play)}</div><div><h2 id="mq" class="sess-h">One phone per team</h2><p class="muted">Scan the code, or open the link and enter the code. Pick your team or create one (up to ${MAX_TEAMS} teams).</p>
+   <div class="join-url big mono">${esc(play.replace(/^https?:\/\//,"").replace(/\?s=.*/,""))}</div><div class="sess-code mono">${esc(sess.code)}</div></div></div>`;
+}
 
 /* ---- leaderboard (Close view) ---- */
 function renderLeader(){
@@ -936,28 +1051,34 @@ $("#ros").innerHTML=ROS.map(r=>`<div class="ros-row"><div class="ros-time">${r.t
   <ul>${r.n.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`).join("");
 
 /* ================= MYTH OR FACT ================= */
-// Before the reveal, record each table's call. Reveal awards 10 to every table that called it right.
-let mfI=0,mfShown=false,mfVotes={};
+// Send the statement to team phones; Reveal closes the round and the server scores every team that called it right.
+let mfI=0,mfShown=false;
+const mfRef=i=>"mf:"+i;
+ROUND_OPENERS.mf=ref=>{const i=+ref.split(":")[1],m=MF[i];
+  return openRound("choice","mythfact",ref,10,{type:"mf",title:"Myth or Fact?",text:m.s,options:["Fact","Myth"]},{correct:m.a?0:1})};
 function renderMF(){
-  const m=MF[mfI],v=mfVotes[mfI]||{};
-  const votes=teams.length?`<div class="votes"><span class="eyebrow">Each table's call</span>${sortedTeams().map(t=>`<div class="vote" style="--tc:${tcol(t)}"><b>${esc(t.name)}</b><button class="vbtn" data-vt="${t.id}" data-vv="1" aria-pressed="${v[t.id]===true}" ${isHost()?"":"disabled"}>Fact</button><button class="vbtn" data-vt="${t.id}" data-vv="0" aria-pressed="${v[t.id]===false}" ${isHost()?"":"disabled"}>Myth</button></div>`).join("")}</div>`:noTeams();
+  const m=MF[mfI],ref=mfRef(mfI),r=roundFor(ref);
   $("#mfCard").innerHTML=`<div class="eyebrow">Statement ${mfI+1} of ${MF.length}</div><div class="mf-q">${esc(m.s)}</div>`+
-   (mfShown?`<div class="verdict ${m.a?"fact":"myth"}">${m.a?"FACT":"MYTH"}</div><div class="mf-ex">${esc(m.e)}</div>${markRow("mf:"+mfI,10,"mythfact","Tables that called it right (+10)")}`
-     :`<div class="row"><span class="pill">Stand = Fact</span><span class="pill red">Sit = Myth</span></div>${votes}`);
+   (mfShown?`<div class="verdict ${m.a?"fact":"myth"}">${m.a?"FACT":"MYTH"}</div><div class="mf-ex">${esc(m.e)}</div>
+      ${resultsRow(r,a=>a.choice===0?"Fact":"Myth")}${markRow(ref,10,"mythfact","Correct the points if needed")}`
+     :`<div class="row"><span class="pill">Fact or Myth?</span><span class="pill red">Teams answer on their phone</span></div>${teams.length?roundCtl(ref):noTeams()}`);
   $("#mfProg").innerHTML=MF.map((_,i)=>`<i class="${i<mfI?"done":i===mfI?"cur":""}"></i>`).join("");
   $("#mfReveal").disabled=mfShown;
-  refreshMarks();
+  refreshMarks();refreshRoundStatus();
 }
-$("#mfCard").addEventListener("click",e=>{const b=e.target.closest("[data-vt]");if(!b)return;const v=mfVotes[mfI]=mfVotes[mfI]||{},t=b.dataset.vt,val=b.dataset.vv==="1";if(v[t]===val)delete v[t];else v[t]=val;renderMF()});
 $("#mfReveal").onclick=async()=>{
-  const i=mfI,m=MF[i],v=mfVotes[i]||{};mfShown=true;renderMF();
-  if(!isHost())return;
-  const right=teams.filter(t=>v[t.id]===m.a),wrong=teams.filter(t=>t.id in v&&v[t.id]!==m.a&&findRef(t.id,"mf:"+i));
-  try{await Promise.all([...right.map(t=>award(t.id,10,"mythfact","mf:"+i)),...wrong.map(t=>revoke(t.id,"mf:"+i))]);
-    if(Object.keys(v).length)toast(right.length?"+10 to "+right.map(t=>t.name).join(", "):"No table called it right")}catch(_){}
+  const ref=mfRef(mfI);
+  if(isHost()&&liveRound&&liveRound.ref===ref){try{const r=await closeRound();scoredToast(r)}catch(_){}}
+  mfShown=true;renderMF();
 };
-$("#mfNext").onclick=()=>{mfI=(mfI+1)%MF.length;mfShown=false;renderMF()};
-$("#mfPrev").onclick=()=>{mfI=(mfI-1+MF.length)%MF.length;mfShown=false;renderMF()};
+const goMF=d=>{if(isHost()&&liveRound&&liveRound.ref===mfRef(mfI))cancelRound();mfI=(mfI+d+MF.length)%MF.length;mfShown=false;renderMF()};
+$("#mfNext").onclick=()=>goMF(1);
+$("#mfPrev").onclick=()=>goMF(-1);
+function scoredToast(r){
+  if(!r||!r.result)return;const res=r.result.teams||{};
+  const won=sortedTeams().filter(t=>res[t.id]&&res[t.id].points>0);
+  toast(won.length?won.map(t=>`${t.name} +${res[t.id].points}`).join(" · "):"No team scored on this one");
+}
 
 /* ================= LIBRARY ================= */
 let fam="all",q="";
@@ -980,8 +1101,11 @@ function renderTeach(){
 }
 
 /* ================= QUIZ BOARD ================= */
-// Tap the answering table's answer: a correct answer scores automatically. A miss opens a steal for the other tables.
+// The choosing table picks a tile; every team answers on its phone; Reveal scores every correct team.
 let used=store.get("used",[]),quizTurn=store.get("turn",0),qs=null;
+const qRef=k=>"quiz:"+k;
+ROUND_OPENERS.quiz=ref=>{const k=ref.slice(5),[c,r]=k.split("-").map(Number),it=Q[c][r];
+  return openRound("choice","quiz",ref,(r+1)*100,{type:"quiz",title:QCATS[c]+" · "+(r+1)*100,text:it.q,options:it.o},{correct:it.a})};
 function renderBoard(){
   const auto=new Set();for(const e of events.values())if(e.ref&&e.ref.startsWith("quiz:"))auto.add(e.ref.slice(5));
   let h=QCATS.map(c=>`<div class="cat">${c}</div>`).join(""),n=0;
@@ -990,126 +1114,139 @@ function renderBoard(){
   const st=sortedTeams();$("#qTurn").textContent=st.length?"Choosing next: "+st[quizTurn%st.length].name:"";
 }
 $("#board").onclick=e=>{const b=e.target.closest(".tile");if(b)openQ(b.dataset.k)};
-function renderWho(){
-  if(!qs||!$("#qWho"))return;
-  const el=$("#qWho");
-  if(qs.done||!teams.length){el.innerHTML=teams.length?"":noTeams();return}
-  const left=sortedTeams().filter(t=>!qs.tried.has(t.id));
-  el.innerHTML=`<span class="eyebrow">${qs.tried.size?"Steal: who rang first?":"Answering"}</span>${left.map(t=>`<button class="mk" style="--tc:${tcol(t)}" data-who="${t.id}" aria-pressed="${qs.answering===t.id}" ${isHost()?"":"disabled"}>${esc(t.name)}</button>`).join("")}`;
+function renderQuizLive(){
+  if(!qs)return;const r=roundFor(qRef(qs.k));
+  const live=$("#qLive");if(live&&!qs.revealed)live.innerHTML=teams.length?roundCtl(qRef(qs.k),"Send to team phones"):noTeams();
+  const res=$("#qRes");if(res&&qs.revealed)res.innerHTML=resultsRow(r,a=>"ABCD"[a.choice]||"?");
+  refreshRoundStatus();refreshMarks();
 }
 function openQ(k){
-  const [c,r]=k.split("-").map(Number),it=Q[c][r],pts=(r+1)*100,st=sortedTeams();
-  qs={k,it,pts,tried:new Set(),done:false,used:false,answering:st.length?st[quizTurn%st.length].id:null};
-  modalKind="quiz";
+  const [c,r]=k.split("-").map(Number),it=Q[c][r],pts=(r+1)*100,ref=qRef(k);
+  qs={k,revealed:false,used:false};modalKind="quiz";
   const m=$("#modal");
   m.innerHTML=`<div class="row" style="justify-content:space-between"><span class="pill red">${QCATS[c]} · ${pts}</span><button class="btn ghost" data-close>Close</button></div>
    <div class="q" id="mq">${esc(it.q)}</div>
-   <div class="answering" id="qWho"></div>
-   <div class="opts">${it.o.map((o,i)=>`<button class="opt" data-o="${i}"><span class="k">${"ABCD"[i]}</span><span>${esc(o)}</span></button>`).join("")}</div>
-   <div class="qstatus" id="qStatus" aria-live="polite"></div>
-   <div id="qAfter" hidden><div class="explain">${esc(it.e)}</div><div style="margin-top:12px">${markRow("quiz:"+k,pts,"quiz","Points for this question (tap to correct)")}</div></div>
-   <div class="row"><button class="btn" id="qShow">Show answer</button></div>`;
+   <div class="opts">${it.o.map((o,i)=>`<div class="opt" data-o="${i}"><span class="k">${"ABCD"[i]}</span><span>${esc(o)}</span></div>`).join("")}</div>
+   <div id="qLive"></div>
+   <div id="qAfter" hidden><div class="explain">${esc(it.e)}</div><div id="qRes"></div><div style="margin-top:12px">${markRow(ref,pts,"quiz","Correct the points if needed")}</div></div>
+   <div class="row" id="qBtns"><button class="btn primary" id="qReveal">Reveal answer &amp; score</button></div>`;
   $("#ov").hidden=false;
-  renderWho();refreshMarks();
-  const status=(t,cls)=>{const s=$("#qStatus");s.textContent=t;s.className="qstatus "+(cls||"")};
-  const reveal=()=>{qs.done=true;qs.used=true;$$(".opt").forEach((b,i)=>{b.disabled=true;if(i===it.a)b.classList.add("right");else if(!b.classList.contains("wrong"))b.classList.add("dim")});$("#qAfter").hidden=false;$("#qShow").hidden=true;renderWho();
-    if(!used.includes(k)){used.push(k);store.set("used",used)}renderBoard()};
-  m.querySelectorAll(".opt").forEach(b=>b.onclick=async()=>{
-    if(qs.done)return;const i=+b.dataset.o;
-    if(!isHost()||!teams.length){reveal();return}
-    if(!qs.answering){status("Tap the table that is answering first.","bad");return}
-    const t=teamById(qs.answering);
-    if(i===it.a){reveal();try{await award(t.id,pts,"quiz","quiz:"+k);status(`Correct! +${pts} to ${t.name}${qs.tried.size?" (steal)":""}`,"good")}catch(_){status("Correct, but the points could not be saved. Tap the team below to retry.","bad")}}
-    else{b.classList.add("wrong");b.disabled=true;qs.tried.add(t.id);qs.answering=null;
-      if(qs.tried.size>=teams.length){reveal();status(`${t.name} missed it. No table got it, so no points.`,"bad")}
-      else{renderWho();status(`${t.name} missed it. Steal: tap the table that rang first, then its answer.`,"bad")}}
-  });
-  $("#qShow").onclick=()=>{reveal();status("Answer shown. No points awarded.")};
-  m.querySelector(".opt").focus();
+  renderQuizLive();
+  // Opening a tile sends it to the team phones straight away.
+  if(isHost()&&teams.length&&!(liveRound&&liveRound.ref===ref))ROUND_OPENERS.quiz(ref).catch(()=>{});
+  $("#qReveal").onclick=async()=>{
+    $("#qReveal").disabled=true;
+    if(isHost()&&liveRound&&liveRound.ref===ref){try{scoredToast(await closeRound())}catch(_){$("#qReveal").disabled=false;return}}
+    qs.revealed=true;qs.used=true;
+    $$(".opt").forEach((b,i)=>b.classList.add(i===it.a?"right":"dim"));
+    $("#qAfter").hidden=false;$("#qBtns").hidden=true;$("#qLive").innerHTML="";
+    if(!used.includes(k)){used.push(k);store.set("used",used)}
+    renderBoard();renderQuizLive();
+  };
 }
-$("#modal").addEventListener("click",e=>{const b=e.target.closest("[data-who]");if(!b||!qs)return;qs.answering=b.dataset.who;renderWho()});
 function closeQ(){
   $("#ov").hidden=true;
-  if(modalKind==="quiz"&&qs&&qs.used){quizTurn++;store.set("turn",quizTurn);renderBoard()}
+  if(modalKind==="quiz"&&qs){
+    if(!qs.revealed&&isHost()&&liveRound&&liveRound.ref===qRef(qs.k))cancelRound();
+    if(qs.used){quizTurn++;store.set("turn",quizTurn);renderBoard()}
+  }
   modalKind=null;qs=null;
 }
 $("#ov").addEventListener("click",e=>{if(e.target.id==="ov")closeQ()});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#ov").hidden)closeQ()});
 
 /* ================= CLUES ================= */
+// Teams type the clue, the need and their next question on their phone; the facilitator ticks what is right.
 let clI=0,clStep=0;
 const CL_PARTS=[["clue","The clue"],["need","The need"],["lead","Lead with"],["ask","Ask next"]];
+const CL_FIELDS=[["clue","The clue you heard"],["need","The need behind it"],["ask","Your next question"]];
+const clRef=i=>"clue:"+i;
+ROUND_OPENERS.clue=ref=>{const i=+ref.split(":")[1],c=CLUES[i];
+  return openRound("text","clue",ref,0,{type:"text",title:"Listen for the Clue",text:"“"+c.q+"”",sub:c.by,fields:CL_FIELDS.map(f=>f[1])},{})};
 function renderClue(){
-  const c=CLUES[clI];
+  const c=CLUES[clI],ref=clRef(clI),r=roundFor(ref),closed=r&&r.status==="closed",res=closed&&r.result?r.result.teams||{}:{};
   $("#clQuote").innerHTML=`<span class="eyebrow">Customer ${clI+1} of ${CLUES.length}</span><p>“${esc(c.q)}”</p><span class="by">${esc(c.by)}</span>`;
-  $("#clReveal-grid").innerHTML=CL_PARTS.map((p,i)=>`<div class="rv ${i<clStep?"":"hidden-rv"}"><span class="eyebrow">${p[1]}</span><div>${esc(c[p[0]])}</div></div>`).join("")+
-    (clStep>=1?`<div class="panel tight"><div class="eyebrow">Tick what each table wrote down (+10 each)</div>${markGrid("clue:"+clI+":",[["clue","Clue",10],["need","Need",10],["ask","Question",10]],"clue")}</div>`:"");
+  const answers=!teams.length?noTeams():`<div class="panel tight">
+    <div class="row" style="justify-content:space-between"><div class="eyebrow">Team answers · tick what each team got right (+10 each)</div>${isHost()&&liveRound&&liveRound.ref===ref?`<button class="btn primary" data-clue-show>Show team answers</button>`:""}</div>
+    ${closed||!isHost()?"":roundCtl(ref)}${closed?"":rstatus(ref)}
+    <div class="tans">${sortedTeams().map(t=>{const a=(res[t.id]||{}).answer,f=a&&Array.isArray(a.fields)?a.fields:[];
+      return `<div class="ta" style="--tc:${tcol(t)}"><b>${esc(t.name)}</b>${CL_FIELDS.map(([k,l],j)=>`<div class="ta-row"><span class="muted">${l}</span><span class="ta-txt">${closed?esc(f[j]||"—"):"<i class='muted'>hidden until you show answers</i>"}</span>${mkBtn(t,`clue:${clI}:${k}`,10,"clue","+10")}</div>`).join("")}</div>`}).join("")}</div></div>`;
+  $("#clReveal-grid").innerHTML=CL_PARTS.map((p,i)=>`<div class="rv ${i<clStep?"":"hidden-rv"}"><span class="eyebrow">${p[1]}</span><div>${esc(c[p[0]])}</div></div>`).join("")+answers;
   $("#clReveal").disabled=clStep>=4;
-  refreshMarks();
+  refreshMarks();refreshRoundStatus();
 }
+$("#clReveal-grid").addEventListener("click",async e=>{if(!e.target.closest("[data-clue-show]"))return;try{await closeRound()}catch(_){}renderClue()});
 $("#clReveal").onclick=()=>{if(clStep<4){clStep++;renderClue()}};
-$("#clNext").onclick=()=>{clI=(clI+1)%CLUES.length;clStep=0;renderClue()};
-$("#clPrev").onclick=()=>{clI=(clI-1+CLUES.length)%CLUES.length;clStep=0;renderClue()};
+const goClue=d=>{if(isHost()&&liveRound&&liveRound.ref===clRef(clI))cancelRound();clI=(clI+d+CLUES.length)%CLUES.length;clStep=0;renderClue()};
+$("#clNext").onclick=()=>goClue(1);
+$("#clPrev").onclick=()=>goClue(-1);
 
 /* ================= MATCH ================= */
-// Check awards the presenting table 10 points per recommended product it picked.
-let pI=0,picks=new Set(),checked=false,matched=store.get("matched",{}),mPresent=null;
+// Every team picks products for the persona on its phone; Check scores 10 per recommended product picked.
+let pI=0;
 const ini=n=>n.slice(0,1);
+const mRef=p=>"match:"+p.id;
+ROUND_OPENERS.match=ref=>{const p=PERSONAS.find(x=>"match:"+x.id===ref);
+  return openRound("multi","match",ref,10,{type:"match",title:"Match the Customer",persona:{n:p.n,age:p.age,place:p.place,story:p.story,says:p.says},pool:POOL},{ideal:Object.keys(p.ideal)})};
 function renderPlist(){
-  $("#plist").innerHTML=PERSONAS.map((p,i)=>`<button data-p="${i}" aria-pressed="${i===pI}"><span class="av" style="background:${p.col}">${ini(p.n)}</span><span>${esc(p.n)}, ${p.age}<small>${esc(p.place)}</small></span>${matched[p.id]!=null?`<span class="done-mark">${matched[p.id]}/${Object.keys(p.ideal).length}</span>`:""}</button>`).join("");
+  $("#plist").innerHTML=PERSONAS.map((p,i)=>{const r=roundFor(mRef(p));return `<button data-p="${i}" aria-pressed="${i===pI}"><span class="av" style="background:${p.col}">${ini(p.n)}</span><span>${esc(p.n)}, ${p.age}<small>${esc(p.place)}</small></span>${r&&r.status==="closed"?`<span class="done-mark">✓</span>`:""}</button>`}).join("");
 }
-function renderPresent(){
-  if(mPresent&&!teamById(mPresent))mPresent=null;
-  $("#mPresent").innerHTML=teams.length?`<span class="eyebrow">Presenting table</span>${sortedTeams().map(t=>`<button class="mk" style="--tc:${tcol(t)}" data-pres="${t.id}" aria-pressed="${mPresent===t.id}" ${checked||!isHost()?"disabled":""}>${esc(t.name)}</button>`).join("")}`:noTeams();
-}
-$("#mPresent").addEventListener("click",e=>{const b=e.target.closest("[data-pres]");if(!b||b.disabled)return;mPresent=b.dataset.pres;renderPresent()});
-$("#plist").onclick=e=>{const b=e.target.closest("button");if(!b)return;pI=+b.dataset.p;picks=new Set();checked=false;renderMatch()};
+$("#plist").onclick=e=>{const b=e.target.closest("button");if(!b)return;if(isHost()&&liveRound&&liveRound.ref===mRef(PERSONAS[pI]))cancelRound();pI=+b.dataset.p;renderMatch()};
 function renderMatch(){
-  renderPlist();renderPresent();
-  const p=PERSONAS[pI];
+  renderPlist();
+  const p=PERSONAS[pI],ref=mRef(p),r=roundFor(ref),checked=r&&r.status==="closed";
+  $("#mPresent").innerHTML=teams.length?(checked?"":roundCtl(ref,"Send persona to team phones")):noTeams();
   $("#persona").innerHTML=`<div class="big-av" style="background:${p.col}">${ini(p.n)}</div><div style="min-width:0"><div class="eyebrow">Persona ${pI+1} of ${PERSONAS.length}</div><h3>${esc(p.n)}, ${p.age}</h3><div class="meta">${esc(p.place)}</div><p class="story">${esc(p.story)}</p><div class="says">${esc(p.says)}</div></div>`;
   $("#pool").innerHTML=POOL.map(g=>`<div class="pool-fam"><span>${g[0]}</span>${g[1].map(([id,n])=>{
-    let cls="";if(checked){const inI=id in p.ideal,inO=p.ok.includes(id),pk=picks.has(id);cls=inI&&pk?"hit":inI?"miss":pk&&inO?"okx":pk?"ask":""}
-    return `<button class="pchip ${cls}" data-id="${id}" aria-pressed="${picks.has(id)}" ${checked?"disabled":""}>${esc(n)}</button>`}).join("")}</div>`).join("");
+    const cls=checked?(id in p.ideal?"hit":p.ok.includes(id)?"okx":""):"";
+    return `<span class="pchip ${cls}">${esc(n)}</span>`}).join("")}</div>`).join("");
   const ans=$("#answer");
-  if(!checked){ans.hidden=true;$("#mCheck").disabled=false;return}
-  const hits=Object.keys(p.ideal).filter(id=>picks.has(id)).length,tot=Object.keys(p.ideal).length;
-  const extra=[...picks].filter(id=>!(id in p.ideal)&&!p.ok.includes(id)),pt=teamById(mPresent);
-  ans.hidden=false;$("#mCheck").disabled=true;
-  ans.innerHTML=`<div class="row" style="justify-content:space-between"><div class="scoreline">${hits} of ${tot} recommended products found</div><span class="pill">${pt?`+${hits*10} to ${esc(pt.name)}`:`${hits*10} points`}</span></div>
-   ${Object.entries(p.ideal).map(([id,why])=>`<div class="ln"><b>${picks.has(id)?"✓ ":""}${esc(PNAME[id])}</b><span>${esc(why)}</span></div>`).join("")}
+  $("#mCheck").disabled=!!checked;
+  if(!checked){ans.hidden=true;refreshRoundStatus();return}
+  const res=r.result.teams||{},tot=Object.keys(p.ideal).length;
+  ans.hidden=false;
+  ans.innerHTML=`<div class="scoreline">Recommended for ${esc(p.n)}</div>
+   ${Object.entries(p.ideal).map(([id,why])=>`<div class="ln"><b>${esc(PNAME[id])}</b><span>${esc(why)}</span></div>`).join("")}
    ${p.ok.length?`<div class="ln"><b>Also reasonable</b><span>${p.ok.map(id=>esc(PNAME[id])).join(", ")}</span></div>`:""}
-   ${extra.length?`<div class="ln"><b>Ask the table why</b><span>${extra.map(id=>esc(PNAME[id])).join(", ")}. Is there a real need, or is this a product push?</span></div>`:""}
    <div class="ln"><b>A strong first question</b><span>${esc(p.q)}</span></div>
-   ${pt?"":`<div class="note">No presenting table was chosen, so no points were added. Clear picks, choose the table, and check again.</div>`}`;
-  matched[p.id]=hits;store.set("matched",matched);renderPlist();
+   <div class="eyebrow" style="margin-top:6px">Team picks · 10 points per recommended product</div>
+   ${sortedTeams().map(t=>{const x=res[t.id]||{},picks=x.answer&&Array.isArray(x.answer.picks)?x.answer.picks:[];
+     const hit=picks.filter(id=>id in p.ideal),extra=picks.filter(id=>!(id in p.ideal)&&!p.ok.includes(id));
+     return `<div class="ln team-ln" style="--tc:${tcol(t)}"><b>${esc(t.name)} · ${hit.length}/${tot} <span class="mono">${x.points>0?"+"+x.points:"0"}</span></b><span>${picks.length?picks.map(id=>`<span class="tag ${id in p.ideal?"hit":p.ok.includes(id)?"okx":"ask"}">${esc(PNAME[id]||id)}</span>`).join(" "):"No picks sent"}${extra.length?`<br><small class="muted">Ask why: ${extra.map(id=>esc(PNAME[id]||id)).join(", ")}</small>`:""}</span></div>`}).join("")}
+   ${markRow(ref+":adj",10,"match","Bonus for a strong first question (+10)")}`;
+  refreshMarks();
 }
-$("#pool").onclick=e=>{const b=e.target.closest(".pchip");if(!b||checked)return;const id=b.dataset.id;picks.has(id)?picks.delete(id):picks.add(id);b.setAttribute("aria-pressed",picks.has(id))};
 $("#mCheck").onclick=async()=>{
-  if(isHost()&&teams.length&&!mPresent){toast("Choose the presenting table first.",true);return}
-  checked=true;renderMatch();
-  const p=PERSONAS[pI],hits=Object.keys(p.ideal).filter(id=>picks.has(id)).length;
-  if(isHost()&&mPresent){try{if(hits)await award(mPresent,hits*10,"match","match:"+p.id);else await revoke(mPresent,"match:"+p.id)}catch(_){}}
+  const ref=mRef(PERSONAS[pI]);
+  if(isHost()&&liveRound&&liveRound.ref===ref){try{scoredToast(await closeRound())}catch(_){return}}
+  else if(!roundFor(ref)){toast("Send the persona to the team phones first.",true);return}
+  renderMatch();
 };
-$("#mClear").onclick=()=>{picks=new Set();checked=false;renderMatch()};
 
 /* ================= SPOT ================= */
-// Reveal each opportunity, then tick the tables that listed it; its points are added straight away.
+// Teams list the opportunities on their phone; reveal them, show the team lists, and tick who spotted each one.
 let sI=0,sShown=new Set();
+const sRef=i=>"spot:"+i;
+ROUND_OPENERS.spot=ref=>{const i=+ref.split(":")[1],s=SPOT[i];
+  return openRound("text","spot",ref,0,{type:"text",title:"Spot the Opportunity",text:s.p,sub:s.tk,fields:["Every opportunity you spotted, one per line"]},{})};
 function renderSpot(){
-  const s=SPOT[sI];
+  const s=SPOT[sI],ref=sRef(sI),r=roundFor(ref),closed=r&&r.status==="closed",res=closed&&r.result?r.result.teams||{}:{};
   $("#scn").innerHTML=`<span class="ticket">Scenario ${sI+1} of ${SPOT.length} · ${esc(s.tk)}</span><h3>${esc(s.h)}</h3><p>${esc(s.p)}</p>
-   <div class="row"><button class="btn primary" id="spTimer">Start 2-minute timer</button><button class="btn" id="spAll">Reveal all</button></div>
+   <div class="row"><button class="btn" id="spTimer">Start 2-minute timer</button><button class="btn" id="spAll">Reveal all</button>${isHost()&&liveRound&&liveRound.ref===ref?`<button class="btn primary" id="spShow">Show team lists</button>`:""}</div>
+   ${teams.length?(closed?"":roundCtl(ref)):noTeams()}
+   ${closed?`<div class="tans">${sortedTeams().map(t=>{const a=(res[t.id]||{}).answer,txt=a&&Array.isArray(a.fields)?a.fields[0]:"";return `<div class="ta" style="--tc:${tcol(t)}"><b>${esc(t.name)}</b><div class="ta-txt pre">${esc(txt||"No list sent")}</div></div>`}).join("")}</div>`:""}
    <div class="note">Total available: <b class="mono">${s.o.reduce((a,o)=>a+o[2],0)}</b> points per table. Under each revealed opportunity, tick the tables that listed it.</div>`;
   $("#opp").innerHTML=s.o.map((o,i)=>`<div class="o ${sShown.has(i)?"shown":""}"><button class="o-head" data-i="${i}" aria-label="${sShown.has(i)?esc(o[0]):"Reveal opportunity "+(i+1)}"><span class="num">${i+1}</span><span class="txt"><b>${esc(o[0])}</b><span>${esc(o[1])}</span></span><span class="pts">+${o[2]}</span></button>
     ${sShown.has(i)?markRow(`spot:${sI}:${i}`,o[2],"spot","Listed it"):""}</div>`).join("");
   $("#spTimer").onclick=()=>{clockSet(2);clockToggle()};
   $("#spAll").onclick=()=>{s.o.forEach((_,i)=>sShown.add(i));renderSpot()};
-  refreshMarks();
+  const sh=$("#spShow");if(sh)sh.onclick=async()=>{try{await closeRound()}catch(_){}renderSpot()};
+  refreshMarks();refreshRoundStatus();
 }
 $("#opp").onclick=e=>{const b=e.target.closest("button.o-head");if(!b)return;sShown.add(+b.dataset.i);renderSpot()};
-$("#spNext").onclick=()=>{sI=(sI+1)%SPOT.length;sShown=new Set();renderSpot()};
-$("#spPrev").onclick=()=>{sI=(sI-1+SPOT.length)%SPOT.length;sShown=new Set();renderSpot()};
+const goSpot=d=>{if(isHost()&&liveRound&&liveRound.ref===sRef(sI))cancelRound();sI=(sI+d+SPOT.length)%SPOT.length;sShown=new Set();renderSpot()};
+$("#spNext").onclick=()=>goSpot(1);
+$("#spPrev").onclick=()=>goSpot(-1);
 
 /* ================= SPIN ================= */
 const cv=$("#wheel"),cx=cv.getContext("2d");let ang=0,spinning=false,spinPick=null,spinId=0,spT=30,spInt=null;

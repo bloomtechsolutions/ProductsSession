@@ -4,24 +4,22 @@ Facilitator console for the BML retail refresher session (Day 1 · Session 4). I
 
 It is a single static page (`public/index.html`) with no build step, backed by Supabase for sessions, teams and scores.
 
-## Sessions, teams and automatic scoring
+## Sessions, team phones and automatic marking
 
-- **Session…** in the top bar creates a session (a 6-character code) or joins one. The device that creates it is the facilitator: it holds a private host key, and only it can add teams or change scores.
-- **+ Team** creates a team (up to 8). Rename teams in the bar or in the session dialog.
-- The session dialog has a **scoreboard link** for tables (view only, updates live) and a private **facilitator link** to control the session from another device.
-- Marking is scoring. Every activity awards points as you mark it, and unticking removes them:
-  - Myth or Fact: record each table's call, then Reveal; correct tables get 10.
-  - Product Passport: tap each table's 1–5 teach-back rating (10 per star).
-  - Quiz: tap the answering table's answer; correct scores the tile value, a miss opens a steal for the other tables. Turns rotate automatically.
-  - Listen for the Clue: tick clue, need and question per table (10 each).
-  - Match the Customer: choose the presenting table and press Check (10 per recommended product found).
-  - Spot the Opportunity: tick the tables that listed each opportunity.
-  - Spin & Explain: tick the volunteer's table on a thumbs up (30).
+- **Session…** in the top bar creates a session (a 6-character code). The device that creates it is the facilitator console: it holds a private host key and is the only device that can send questions or change scores.
+- **Show on screen** puts a join QR code on the projector. Each team joins on **one phone** at `/play`: it picks a free team or creates its own. A session has **at most 6 teams**, and a team that already has a phone can't be taken by another one. If a phone dies, **Release phone** in the session dialog frees the seat.
+- Teams answer on their phones. The facilitator sends each item to the phones and sees who has answered (not what) until the reveal:
+  - Myth or Fact: teams tap Fact or Myth; Reveal marks every team (+10 if right).
+  - Product Challenge: opening a tile sends it to every phone; Reveal gives the tile value to every correct team. The choosing table still rotates.
+  - Match the Customer: teams pick products for the persona; Reveal & score gives 10 per recommended product each team picked.
+  - Listen for the Clue and Spot the Opportunity: teams type their answers; the facilitator shows them on screen and ticks what is right.
+  - Teach-back ratings and Spin & Explain are judged by the room and ticked by the facilitator.
   - Close: the leaderboard picks the winner and shows points by activity.
+- Answer keys go to the server with each question and never reach the team phones, so answers can't be read from the phone page. The server marks Myth or Fact, quiz and match answers when the round closes.
 
 ### Data model
 
-`supabase/migrations/` holds the schema. A team's score is the sum of its `score_events`. Automatic awards carry a `ref` (for example `quiz:2-3`), so awarding again replaces the points instead of adding them. Tables are readable by anyone with the publishable key; every write goes through `SECURITY DEFINER` functions that check the session's host key (stored only as a SHA-256 hash). Teams and score events are published to Supabase Realtime so every screen updates live.
+`supabase/migrations/` holds the schema. A team's score is the sum of its `score_events`. `rounds` holds each question sent to the phones (readable by everyone), `round_keys` its answer key and `answers` each team's answer (neither readable through the API). `team_secrets` holds each phone's player key as a hash. Automatic awards carry a `ref` (for example `quiz:2-3`), so awarding again replaces the points instead of adding them. Tables are readable by anyone with the publishable key; every write goes through `SECURITY DEFINER` functions that check the session's host key (stored only as a SHA-256 hash). Teams and score events are published to Supabase Realtime so every screen updates live.
 
 The Supabase client is vendored in `public/vendor/` so the page does not depend on a CDN on the day.
 
