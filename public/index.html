@@ -393,7 +393,7 @@ span.pchip{display:inline-block}
 /* product picks */
 #picks{display:flex;flex-direction:column;gap:12px}
 #picks .tb-title{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:10px}
-.pk-board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.pk-board{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px}
 .pk-fam{display:flex;flex-direction:column;gap:6px}
 .pk-chips{display:flex;flex-direction:column;gap:6px}
 .pk{display:flex;justify-content:space-between;align-items:center;gap:8px;text-align:left;border:1.5px solid var(--line);background:var(--surface);border-radius:10px;padding:8px 10px;font-weight:650;font-size:.9rem;color:var(--ink)}
@@ -452,6 +452,13 @@ span.pchip{display:inline-block}
 .sp-clock.low .mono{animation:pulse .5s ease-in-out infinite}
 .sp-notes summary{cursor:pointer;color:var(--muted);font-weight:600;font-size:.88rem}
 .sp-notes[open] summary{margin-bottom:8px}
+
+/* product library */
+.pl-groups{display:flex;flex-direction:column;gap:22px}
+.pl-group{display:flex;flex-direction:column;gap:10px}
+.pl-group > h3{display:flex;align-items:center;gap:10px;font-size:1.25rem;font-weight:850}
+#plTabs small{font-weight:600;color:var(--muted);font-size:.72rem}
+#plTabs button[aria-pressed="true"] small{color:inherit;opacity:.8}
 
 @media (max-width:1100px){
   .board{grid-template-columns:repeat(3,minmax(0,1fr))}
@@ -540,7 +547,7 @@ span.pchip{display:inline-block}
     <!-- LIBRARY -->
     <section class="view" id="v-library" data-title="Product Passport">
       <div class="hd"><div><div class="eyebrow">Activity 2 · 25 min · jigsaw teach-back</div><h2>Product Passport</h2>
-        <p>Open picking: each team chooses <b>2 products</b> on its phone from Accounts, Cards and Financing. A product one team takes is closed to the others. Teams spend 10 minutes on their two cards below, then teach them to the room in 3 minutes: who each product is for, one detail people usually get wrong, and a one-line pitch. While a team presents, every other team scores it on their phones: 1 to 5 stars for a clear explanation, accurate facts and a customer-ready pitch. Close the vote and the presenting team gets 10 points per average star (up to 50).</p></div></div>
+        <p>Open picking: each team chooses <b>2 products</b> on its phone from individual products (accounts, cards, financing) and business products (accounts and cards, financing, corporate and trade, payments). A product one team takes is closed to the others. Teams spend 10 minutes on their two cards below, then teach them to the room in 3 minutes: who each product is for, one detail people usually get wrong, and a one-line pitch. While a team presents, every other team scores it on their phones: 1 to 5 stars for a clear explanation, accurate facts and a customer-ready pitch. Close the vote and the presenting team gets 10 points per average star (up to 50).</p></div></div>
       <div class="panel" id="picks"></div>
       <div class="panel" id="teach"></div>
       <div class="row"><div class="fam-tabs" id="famTabs"></div><input class="search" id="libSearch" type="search" placeholder="Search products, rates, limits…" aria-label="Search products"></div>
@@ -581,6 +588,15 @@ span.pchip{display:inline-block}
         <div class="wheel-box"><div class="pointer" aria-hidden="true"></div><canvas id="wheel" width="1040" height="1040" aria-label="Product wheel"></canvas></div>
         <div class="result" id="spinRes"></div>
       </div>
+    </section>
+
+    <!-- PRODUCT LIBRARY -->
+    <section class="view" id="v-products" data-title="Product Library">
+      <div class="hd"><div><div class="eyebrow">Reference · individual and business customers</div><h2>Product Library</h2>
+        <p>Every Bank of Maldives product in one place, for individual and business customers, with who it is for, the key facts and a one-line pitch. Product facts come from bankofmaldives.com.mv; rates, limits and fees change, so check the current Schedule of Charges before quoting a figure to a customer.</p></div></div>
+      <div class="row"><div class="fam-tabs" id="plSeg"></div><input class="search" id="plSearch" type="search" placeholder="Search products, rates, terms, customers…" aria-label="Search all products"><span class="pill" id="plCount"></span></div>
+      <div class="fam-tabs" id="plTabs"></div>
+      <div id="plLib" class="pl-groups"></div>
     </section>
 
     <!-- CLOSE -->
@@ -630,7 +646,8 @@ const store={get(k,d){try{const v=localStorage.getItem("kykp:"+k);return v?JSON.
 const VIEWS=[
  ["plan","Run of show","Facilitator plan"],["warmup","True or False","Warm-up · 10 min"],["library","Product Passport","Refresh · 25 min"],
  ["challenge","Product Challenge","Quiz · 20 min"],["clues","Listen for the Clue","Needs · 15 min"],
- ["spin","Spin & Explain","Confidence · 20 min"],["close","Close","Commit · 5 min"]];
+ ["spin","Spin & Explain","Confidence · 20 min"],["close","Close","Commit · 5 min"],
+ ["products","Product Library","All products · reference"]];
 
 const ROS=[
  {t:"0:00",d:"10 min",v:"warmup",h:"True or False warm-up",p:"Wakes the room up and shows what people don't know yet, before any teaching starts.",n:["Ask the 1–5 confidence question first and note the hand count.","Run 6–8 statements. Keep it fast: about 60 seconds each.","Start the session and show the join QR code. Each team joins on one phone (up to 6 teams)."]},
@@ -659,8 +676,11 @@ const MF=[
 ];
 
 // Product Passport covers Accounts, Cards and Financing; Digital and What's new stay in the data for the other activities.
-const PASS_FAMS=[["acc","Accounts"],["card","Cards"],["fin","Financing"]];
+const PASS_FAMS=[["acc","Accounts"],["card","Cards"],["fin","Financing"],["bacc","Business accounts & cards"],["bfin","Business financing"],["corp","Corporate & trade"],["bpay","Payments & merchant"]];
 const FAMS=[["all","All"],...PASS_FAMS];
+// Every product family, for the Product Library. "seg" splits individual from business customers.
+const ALL_FAMS=[["acc","Accounts","ind"],["card","Cards","ind"],["fin","Financing","ind"],["dig","Digital","ind"],["new","What's new","ind"],["bacc","Accounts & cards","biz"],["bfin","Business financing","biz"],["corp","Corporate & trade","biz"],["bpay","Payments & merchant","biz"]];
+const segOf=p=>(ALL_FAMS.find(f=>f[0]===p.f)||[])[2]||"ind";
 const PASS_PRODUCTS=()=>PRODUCTS.filter(p=>PASS_FAMS.some(f=>f[0]===p.f));
 const pid=p=>p.n.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
 const PRODUCTS=[
@@ -699,10 +719,40 @@ const PRODUCTS=[
  {f:"new",n:"Youth Entrepreneurship Financing",tags:["15 Jul 2026","With SME Digital"],who:"Aspiring entrepreneurs and freelancers aged 18–30.",k:["Up to MVR 150,000, unsecured, no equity","7% p.a., up to 5 years with a 6-month grace period","Decision within 24 hours","Mentoring and training from SME Digital"],pitch:"Turn your freelance work into a business: up to MVR 150,000, no collateral, a decision within a day."},
  {f:"new",n:"Islamic Micro Financing",tags:["Via SME Digital","Since Jan 2026"],who:"New entrepreneurs and underserved communities.",k:["Up to MVR 100,000 at 2.5%","Up to 10 years, grace up to 12 months","No application or processing fees","Applications only through SME Digital, BML's Shariah-compliant subsidiary"],pitch:"For a first small business, this is the lowest-cost start-up finance in the country. Refer them to SME Digital."},
  {f:"new",n:"US Dollar Investment pools",tags:["From 30 Jun 2026","App + Internet Banking"],who:"Customers with US dollar income.",k:["Invest USD fully online in daily investment pools","MVR equivalent credited to the account immediately","Profit credited to the MVR account the next day","Pools offer different returns; check today's rates before quoting"],pitch:"Explain the mechanics accurately and quote only today's published pool rates. Don't promise returns."},
- {f:"new",n:"BML Startup Grant 2026",tags:["Applications opened 20 Oct 2026"],who:"Start-up founders.",k:["Applications now open","Check eligibility and deadline on the BML website before referring","Pairs well with Youth Entrepreneurship Financing"],pitch:"If you have an idea but no funds yet, apply for the grant now. I can show you where."}
+ {f:"new",n:"BML Startup Grant 2026",tags:["Applications opened 20 Oct 2026"],who:"Start-up founders.",k:["Applications now open","Check eligibility and deadline on the BML website before referring","Pairs well with Youth Entrepreneurship Financing"],pitch:"If you have an idea but no funds yet, apply for the grant now. I can show you where."},
+ // ---------- Business and SME (bankofmaldives.com.mv, Business and SME and Corporate Banking pages) ----------
+ // Business accounts and cards
+ {f:"bacc",n:"Business Current Account",tags:["Business & SME","MVR · USD · EUR · CNY"],who:"Companies, sole traders and SMEs that need an operating account.",k:["Current accounts in MVR, USD and EUR","Chinese Yuan (CNY) accounts are now available, a first in the Maldives","Managed through Business Internet Banking","Opened at the Business Centre, where relationship managers support businesses"],pitch:"Run all your business money through one account, in the currencies you trade in."},
+ {f:"bacc",n:"BML Islamic Wadi'ah Business Account",tags:["Business & SME","Wadi'ah · Shariah-compliant"],who:"Businesses that want a Shariah-compliant operating account.",k:["Business current account under the Wadi'ah (safe custody) principle","Offered by BML Islamic","Pairs with the BML Islamic Mastercard Business Debit card"],pitch:"Your business account, held in safe custody under Islamic principles."},
+ {f:"bacc",n:"Business Fixed Deposit",tags:["Business & SME","6 or 12 months"],who:"Businesses with surplus funds they won't need for a while.",k:["A fixed rate of return on excess business funds","Terms of 6 or 12 months","Return of up to 2% p.a."],pitch:"Idle cash in the business account can earn a fixed return instead of sitting still."},
+ {f:"bacc",n:"Escrow Account",tags:["Corporate","Held for a transaction"],who:"Companies and parties in a deal that need funds held until conditions are met.",k:["Offered by Corporate Banking alongside current and fixed deposit accounts","Holds funds for a transaction until agreed conditions are met"],pitch:"Both sides of the deal can trust the money will move only when the conditions are met."},
+ {f:"bacc",n:"Mastercard Business Debit",tags:["Business & SME","Conventional and BML Islamic"],who:"Businesses that want a card on the business account for staff or owners.",k:["Debit card linked to the business account","Also available as a BML Islamic Mastercard Business Debit","Annual fee MVR 200 or USD 13.33","Check current withdrawal and foreign-spend limits with the bank before quoting them"],pitch:"Pay business expenses straight from the business account and keep them separate from personal spending."},
+ {f:"bacc",n:"Visa Corporate Card",tags:["Corporate","Corporate credit card"],who:"Companies that want credit cards for business spending.",k:["Corporate credit cards issued through Corporate Banking and the Business Centre","Separates company spending from personal cards"],pitch:"Give your team a company card so business travel and purchases stay on the company's books."},
+ // Business financing (SME)
+ {f:"bfin",n:"BML Business Financing",tags:["Business & SME","Business development"],who:"SMEs that need funding to start, grow or develop the business.",k:["Business development loans for SMEs","Part of the BML Business Financing range, with Commercial Property Financing, Advance Merchant Settlement and Guest House Loans","Business Centre relationship managers advise on and take applications (3300504 / 3300508)"],pitch:"Talk to our Business Centre: we'll match the financing to what your business needs next."},
+ {f:"bfin",n:"Commercial Property Financing",tags:["Business & SME","12% · up to MVR 30m"],who:"Businesses buying land, business premises or garages.",k:["Up to MVR 30 million","12% p.a.","For land, business premises and garages"],pitch:"Own your business premises instead of renting them, with up to MVR 30 million."},
+ {f:"bfin",n:"Guest House Loans",tags:["Business & SME","Tourism"],who:"Guest house owners and operators.",k:["Financing for guest house businesses, listed in the BML Business Financing range","Confirm the current amount, rate and term with the Business Centre"],pitch:"Build, upgrade or expand your guest house with financing made for the business."},
+ {f:"bfin",n:"BML Islamic Working Capital Finance",tags:["BML Islamic","Short-term"],who:"SMEs that need short-term funding for day-to-day operations.",k:["Shariah-compliant funding for operating needs such as inventory and receivables","Structured under Diminishing Musharakah, Wakalah bil-Istithmar or Murabahah","No security required for financing up to MVR 3 million","Limit is linked to the business's sales; confirm the current profit rate with the bank"],pitch:"Keep stock on the shelves and the business moving, without putting up security for up to MVR 3 million."},
+ {f:"bfin",n:"Retailers' Financing",tags:["BML Islamic","Based on POS sales"],who:"Existing SMEs that take card payments on BML POS terminals.",k:["Term financing or a Wakalah-based overdraft","Up to 3 times the monthly average POS sales","The business account must have been operating for at least 12 months"],pitch:"Your card sales through BML already show what the shop can afford, so they set your financing."},
+ {f:"bfin",n:"BML Islamic Advance Merchant Settlement",tags:["BML Islamic","Up to MVR 2m · 12%"],who:"Existing SMEs with BML POS terminals.",k:["Financing up to MVR 2 million against future card settlements","12% p.a. profit rate","Processing fee 1.5% of the facility amount"],pitch:"Get cash now against the card sales you'll take tomorrow."},
+ {f:"bfin",n:"BML Islamic General Financing",tags:["BML Islamic","General purpose"],who:"Businesses that need Shariah-compliant financing for a general business purpose.",k:["Shariah-compliant financing applied for with the BML Islamic General Financing form","Confirm purpose, amount and rate with BML Islamic"],pitch:"A Shariah-compliant way to fund what your business needs."},
+ // Corporate banking and trade
+ {f:"corp",n:"Corporate Financing",tags:["Corporate","Large businesses"],who:"Large companies and projects.",k:["Working Capital Financing","Project Financing and Syndications","Demand Loans","Structured Financing"],pitch:"Financing shaped around the company's cash cycle and projects, from working capital to syndicated deals."},
+ {f:"corp",n:"Corporate Advisory",tags:["Corporate","Advisory"],who:"Investors and companies planning major projects.",k:["Foreign Direct Investment advisory","Project financing advisory","Syndication of facilities"],pitch:"We help structure the deal before you need the money."},
+ {f:"corp",n:"Letter of Credit (LC)",tags:["Trade","Import · Export"],who:"Importers and exporters who need payment security with overseas partners.",k:["Issuance, advising and negotiation of LCs","LCs can be issued in Chinese Yuan","A Shariah-compliant BML Islamic Letter of Credit is also available"],pitch:"Your supplier gets a bank's promise to pay, so you can trade with new partners safely."},
+ {f:"corp",n:"Trade Collections",tags:["Trade","Documents"],who:"Importers and exporters handling shipping documents.",k:["Handling of import and export documents","A lower-cost alternative to an LC when both sides trust each other"],pitch:"We handle the trade documents so goods are released against payment or acceptance."},
+ {f:"corp",n:"Trade Finance",tags:["Trade","Import · Export"],who:"Businesses that need cash between buying and selling goods.",k:["Post-import loans (TRDL) to pay for goods after they arrive","Export bills discounting to get paid early on export documents"],pitch:"Pay your supplier now and repay when the goods are sold."},
+ {f:"corp",n:"Bank Guarantees",tags:["Trade","Financial · Performance · Shipping"],who:"Businesses that must prove to a buyer, government or shipper that they can pay or perform.",k:["Financial guarantees","Performance guarantees","Shipping guarantees"],pitch:"A guarantee from BML helps you win the contract or release the cargo."},
+ {f:"corp",n:"Telegraphic Transfer (TT)",tags:["Trade","International payments"],who:"Businesses paying or receiving money internationally.",k:["International transfers in and out","Transfers can be sent and received directly in Chinese Yuan"],pitch:"Pay overseas suppliers directly, including in Chinese Yuan."},
+ // Payments and merchant services
+ {f:"bpay",n:"Merchant Services (POS)",tags:["Payments","In-store"],who:"Shops, restaurants and any business taking card payments.",k:["POS terminals accept all major cards","No setup or monthly fees for POS terminals","POS sales history can support Retailers' Financing and Advance Merchant Settlement"],pitch:"Take every card your customers carry, with no setup or monthly POS fees."},
+ {f:"bpay",n:"mPOS and Merchant Portal",tags:["Payments","Smartphone"],who:"Small businesses, delivery and mobile sellers.",k:["Accept payments on a smartphone, without a traditional card machine","Free and fast set-up","Merchant Portal to take payments and track them online"],pitch:"Turn your phone into a card machine and take payments anywhere."},
+ {f:"bpay",n:"Online Payment Gateway",tags:["Payments","E-commerce"],who:"Businesses selling online.",k:["Accepts Visa, Mastercard/Maestro and American Express","BML describes it as the only 3-D Secure payment gateway in the Maldives"],pitch:"Sell online and get paid securely by card."},
+ {f:"bpay",n:"Cash Management Services",tags:["Corporate","Cash management"],who:"Companies that handle large volumes of collections and payments.",k:["Offered by Corporate Banking with trade services","Helps manage collections, payments and liquidity"],pitch:"See and move the company's cash efficiently, every day."},
+ {f:"bpay",n:"Business Internet Banking",tags:["Digital","Business"],who:"Every business customer.",k:["Business account opening and internet banking through the Business Centre","Make payments and manage business accounts online"],pitch:"Run your business banking from the office, not the branch queue."},
 ];
 
-const QCATS=["Accounts","Cards","Financing","Digital","What's new","Islamic basics"];
+const QCATS=["Accounts","Cards","Financing","Business & SME","What's new","Islamic basics"];
 const Q=[
  // Accounts
  [{q:"What is the minimum balance to keep an MVR Savings Account open?",o:["MVR 100","MVR 200","MVR 500","MVR 5,000"],a:1,e:"MVR 200 (USD 50). Profit starts from MVR 5,000 (USD 1,000), which is worth mentioning to the customer."},
@@ -719,11 +769,11 @@ const Q=[
   {q:"What is the minimum equity for Home Purchase Financing, and where can it come from?",o:["20%, in cash only","10%, plus a guarantor","5%, which can come from the Pension Fund","No equity needed"],a:2,e:"5% of the total cost, which can be financed through the Pension Fund subject to MPAO rules. The term is up to 25 years."},
   {q:"What is the profit rate on unsecured Green Financing?",o:["7%","9.5%","12%","15%"],a:2,e:"12% unsecured (MVR 50k–500k) and 10% secured (up to MVR 20m). There is no deposit and no processing fee."},
   {q:"Which statement about Youth Entrepreneurship Financing is TRUE?",o:["Up to MVR 1m, with collateral","Ages 18–40, at 2.5%","Up to MVR 150,000, 7%, unsecured, ages 18–30","Only for registered companies"],a:2,e:"Up to MVR 150,000 at 7%, up to 5 years with a 6-month grace period, unsecured, with a decision in 24 hours. Freelancers qualify. It was launched with SME Digital in July 2026."}],
- // Digital
- [{q:"What is the most a customer can send abroad (TT) through BML Mobile Banking?",o:["USD 1,000","USD 5,000","USD 10,000","No limit"],a:1,e:"USD 5,000 for outward transfers. Incoming remittances up to USD 10,000 are credited after instant verification."},
-  {q:"What is Aaya?",o:["A savings product for children","BML's AI assistant in the app and Internet Banking","The merchant payment terminal","A prepaid card for fishermen"],a:1,e:"Aaya is BML's AI assistant. It guides applications, answers queries and can connect the customer to a staff member. It was upgraded in July 2026."},
-  {q:"What does a customer automatically receive when they open a new BML account?",o:["A free credit card","A cheque book","A virtual MVR Mastercard Prepaid card linked to BML Pay","A USD Travel Card"],a:2,e:"A virtual MVR Mastercard Prepaid card linked to BML Pay, with free top-ups. It's a good way to start a first-time user on digital payments."},
-  {q:"Incoming foreign remittances are credited after instant verification up to what amount?",o:["USD 1,600","USD 3,500","USD 5,000","USD 10,000"],a:3,e:"USD 10,000. The customer no longer has to visit a branch to receive money from abroad."}],
+ // Business & SME
+ [{q:"What can Commercial Property Financing be used for?",o:["Land, business premises and garages","Guest houses only","Vehicles and boats","Stock and inventory"],a:0,e:"Land, business premises and garages, up to MVR 30 million at 12%. For a guest house, point the customer to Guest House Loans."},
+  {q:"BML Islamic Advance Merchant Settlement offers financing of up to…",o:["MVR 500,000","MVR 2 million","MVR 5 million","MVR 30 million"],a:1,e:"MVR 2 million against future card settlements, for existing SMEs with BML POS terminals, at 12% p.a. with a 1.5% processing fee."},
+  {q:"How is the amount of Retailers' Financing set?",o:["8× the owner's monthly salary","50% of the shop's property value","Up to 3× the monthly average POS sales","A fixed MVR 100,000"],a:2,e:"Up to 3 times the monthly average POS sales, for SMEs whose account has operated for at least 12 months. It can be a term facility or a Wakalah-based overdraft."},
+  {q:"An exporter wants to be paid early on its export documents. Which trade service fits?",o:["Bank guarantee","Escrow account","Export bills discounting","Telegraphic transfer"],a:2,e:"Export bills discounting, part of BML's trade finance with post-import loans. A bank guarantee proves ability to pay or perform; it doesn't advance cash."}],
  // What's new
  [{q:"From 13 September 2026, all new personal accounts and financing are processed under…",o:["Conventional principles","Islamic banking principles","The customer's choice on a form","SME Digital"],a:1,e:"Islamic principles. Customers who prefer conventional banking can still request it, and existing customers have simple ways to transition."},
   {q:"What is the new monthly USD ATM cash limit per customer, from 1 October 2026?",o:["USD 1,600","USD 3,500","USD 5,000","USD 10,000"],a:1,e:"USD 3,500 per customer per month. The USD 1,600 daily limit per card still applies."},
@@ -747,7 +797,7 @@ const CLUES=[
  {q:"Every month I come here on Friday to send money to my family in Dhaka.",by:"Expatriate worker, 33",clue:"Pain point: repeated branch visits",need:"Remit easily and cheaply without queuing",lead:"Expatriate Account · Mobile Banking outward TT up to USD 5,000 · Debit card",ask:"\"Shall we set up the app together now, so next month you can send it from your room?\""}
 ];
 
-const WHEEL=["Kids' Saver","Investment Account","Expatriate Account","Islamic Visa Credit Card","BML Student Card","Visa Infinite","Lui Financing","Home Purchase","Green Financing","Kiyavaa Financing","Youth Entrepreneurship","Mobile Pay & Aaya"];
+const WHEEL=["Commercial Property Financing","Advance Merchant Settlement","Merchant Services (POS)","Business Debit Card","Kids' Saver","Investment Account","Expatriate Account","Islamic Visa Credit Card","BML Student Card","Visa Infinite","Lui Financing","Home Purchase","Green Financing","Kiyavaa Financing","Youth Entrepreneurship","Mobile Pay & Aaya"];
 const FAB={
  "Kids' Saver":["Expected profit of 3% (MVR) with free scheduled transfers","About twice the adult savings rate, and it runs automatically","Your child's savings grow every month without you remembering"],
  "Investment Account":["6 or 12 months from MVR 10,000, auto-renewal","A higher rate than savings, with no effort","Idle money works harder and is still there on the date you need it"],
@@ -760,6 +810,10 @@ const FAB={
  "Green Financing":["Solar and renewables, no processing fee, 10–12%","The panels pay for themselves through lower bills","You cut your electricity bill and help the islands"],
  "Kiyavaa Financing":["2.5% secured, repay after studies, up to 90% of cost","Very low cost, with no repayments during study","Your child can focus on graduating, not on money"],
  "Youth Entrepreneurship":["Up to MVR 150,000, unsecured, 7%, 24-hour decision, SME Digital mentoring","Start-up capital without collateral","Turn your side hustle into a real business this year"],
+ "Commercial Property Financing":["Up to MVR 30 million at 12% for land, business premises and garages","Own the premises instead of paying rent","The business builds an asset while it grows"],
+ "Advance Merchant Settlement":["Up to MVR 2 million against future card sales, 12% p.a.","Cash now, repaid from the POS settlements","Restock or expand without waiting for sales to come in"],
+ "Merchant Services (POS)":["POS, mPOS and a 3-D Secure online gateway; no setup or monthly POS fees","Accept Visa, Mastercard and Amex in store and online","Customers pay the way they want, so you don't lose the sale"],
+ "Business Debit Card":["Mastercard Business Debit on the business account, MVR 200 a year","Business spending stays separate and traceable","Cleaner books and control over who spends what"],
  "Mobile Pay & Aaya":["Scan or tap to pay, send to friends, AI help 24/7","No cash, no queues, help at midnight","Bank on your own time, wherever you are"]
 };
 
@@ -1153,7 +1207,7 @@ $("#clockGo").onclick=clockToggle;
 $$(".clock [data-min]").forEach(b=>b.onclick=()=>clockSet(+b.dataset.min));
 
 /* ================= NAV ================= */
-$("#rail").innerHTML=VIEWS.map((v,i)=>`<a href="#${v[0]}" data-v="${v[0]}"><span class="n">${i===0?"··":String(i).padStart(2,"0")}</span><span>${v[1]}<small>${v[2]}</small></span></a>`).join("");
+$("#rail").innerHTML=VIEWS.map((v,i)=>`<a href="#${v[0]}" data-v="${v[0]}"><span class="n">${i===0||v[0]==="products"?"··":String(i).padStart(2,"0")}</span><span>${v[1]}<small>${v[2]}</small></span></a>`).join("");
 function show(id){
   if(!VIEWS.some(v=>v[0]===id))id="plan";
   $$(".view").forEach(s=>s.classList.toggle("on",s.id==="v-"+id));
@@ -1225,6 +1279,25 @@ let fam="all",q="";
 $("#famTabs").innerHTML=FAMS.map(f=>`<button data-f="${f[0]}" aria-pressed="${f[0]===fam}">${f[1]}</button>`).join("");
 $("#famTabs").onclick=e=>{const b=e.target.closest("button");if(!b)return;fam=b.dataset.f;$$("#famTabs button").forEach(x=>x.setAttribute("aria-pressed",x===b));renderLib()};
 $("#libSearch").oninput=e=>{q=e.target.value.toLowerCase();renderLib()};
+/* ---- Product Library: every product, individual and business ---- */
+let plSeg="all",plFam="all",plQ="";
+const SEGS=[["all","All products"],["ind","Individual"],["biz","Business & SME"]];
+function renderProductLib(){
+  const fams=ALL_FAMS.filter(f=>plSeg==="all"||f[2]===plSeg);
+  if(plFam!=="all"&&!fams.some(f=>f[0]===plFam))plFam="all";
+  $("#plSeg").innerHTML=SEGS.map(([k,n])=>`<button data-seg="${k}" aria-pressed="${plSeg===k}">${n}</button>`).join("");
+  $("#plTabs").innerHTML=[["all","All families"],...fams].map(([k,n,sg])=>`<button data-plf="${k}" aria-pressed="${plFam===k}">${n}${sg&&plSeg==="all"?` <small>${sg==="biz"?"Business":"Individual"}</small>`:""}</button>`).join("");
+  const list=PRODUCTS.filter(p=>fams.some(f=>f[0]===p.f)&&(plFam==="all"||p.f===plFam)&&(!plQ||JSON.stringify(p).toLowerCase().includes(plQ)));
+  $("#plCount").textContent=list.length+" of "+PRODUCTS.length+" products";
+  $("#plLib").innerHTML=list.length?fams.filter(f=>list.some(p=>p.f===f[0])).map(([k,n,sg])=>`<section class="pl-group"><h3><span class="pill ${sg==="biz"?"sun":""}">${sg==="biz"?"Business":"Individual"}</span>${esc(n)}</h3>
+    <div class="lib">${list.filter(p=>p.f===k).map(p=>`<article class="pcard"><div class="tags">${p.tags.map(t=>`<span class="pill">${esc(t)}</span>`).join("")}</div>
+      <h3>${esc(p.n)}</h3><p class="who">${esc(p.who)}</p><ul>${p.k.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
+      <div class="pitch"><b>Say it in one line</b>${esc(p.pitch)}</div></article>`).join("")}</div></section>`).join("")
+    :`<div class="note">No products match "${esc(plQ)}". Try a product name, a rate such as "12%", or a word such as "POS" or "guest house".</div>`;
+}
+$("#plSeg").onclick=e=>{const b=e.target.closest("[data-seg]");if(!b)return;plSeg=b.dataset.seg;plFam="all";renderProductLib()};
+$("#plTabs").onclick=e=>{const b=e.target.closest("[data-plf]");if(!b)return;plFam=b.dataset.plf;renderProductLib()};
+$("#plSearch").oninput=e=>{plQ=e.target.value.toLowerCase().trim();renderProductLib()};
 function renderLib(){
   const list=PASS_PRODUCTS().filter(p=>(fam==="all"||p.f===fam)&&(!q||JSON.stringify(p).toLowerCase().includes(q)));
   $("#lib").innerHTML=list.length?list.map(p=>{const t=teamById(picks.get(pid(p)));return `<article class="pcard ${t?"taken":""}" style="${t?`--tc:${tcol(t)}`:""}">
@@ -1663,7 +1736,7 @@ window.__screenModel=screenModel; // used by the automated tests
 const screenUrl=()=>(location.protocol==="file:"?location.href.replace(/[^/]*$/,"")+"screen.html":location.origin+location.pathname.replace(/[^/]*$/,"")+"screen")+"?s="+(sess?sess.code:"");
 
 /* ================= INIT ================= */
-renderSnd();renderQSec();renderFinishBtns();renderTeams();renderMF();renderPicks();renderLib();renderTeach();renderBoard();renderClue();renderSpin();renderLeader();drawClock();setConn("none");
+renderSnd();renderProductLib();renderQSec();renderFinishBtns();renderTeams();renderMF();renderPicks();renderLib();renderTeach();renderBoard();renderClue();renderSpin();renderLeader();drawClock();setConn("none");
 const h=(location.hash||"").slice(1);show(VIEWS.some(v=>v[0]===h)?h:store.get("view","plan"));
 document.fonts&&document.fonts.ready.then(drawWheel);
 (async()=>{

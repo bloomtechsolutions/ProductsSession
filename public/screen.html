@@ -99,9 +99,9 @@ body{font-family:var(--f-body);display:flex;align-items:center;justify-content:c
 .pts{font-family:var(--f-mono);font-weight:800;font-size:5cqw;color:var(--good)}
 .notes{display:flex;flex-direction:column;gap:.6cqw}
 .notes div{border-left:.35cqw solid var(--c);padding-left:1cqw;font-size:1.4cqw}
-.pk{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.2cqw}
+.pk{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:.8cqw}
 .pk .fam{display:flex;flex-direction:column;gap:.5cqw}
-.pk .p{display:flex;justify-content:space-between;gap:.6cqw;background:var(--board);border:1px solid var(--line);border-radius:.6cqw;padding:.55cqw .9cqw;font-size:1.2cqw;font-weight:650;transition:all .4s}
+.pk .p{display:flex;flex-direction:column;gap:.1cqw;background:var(--board);border:1px solid var(--line);border-radius:.5cqw;padding:.4cqw .6cqw;font-size:.95cqw;font-weight:650;line-height:1.2;transition:all .4s}
 .pk .p.t{background:var(--c);border-color:var(--c);color:#111}
 .pk .p small{font-family:var(--f-mono);font-size:.95cqw;font-weight:700}
 .qb{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:.8cqw}
@@ -178,7 +178,13 @@ const FACTS=["Lui Financing is unsecured: no guarantor, no collateral, from MVR 
  "Secured Kiyavaa Financing is 2.5%, with repayments starting after studies end.",
  "USD cash from ATMs: up to USD 1,600 a day per card and USD 3,500 a month per customer.",
  "Youth Entrepreneurship Financing: up to MVR 150,000, unsecured, with a decision in 24 hours.",
- "Since 13 September 2026, new personal accounts and financing are Shariah-compliant by default."];
+ "Since 13 September 2026, new personal accounts and financing are Shariah-compliant by default.",
+ "Commercial Property Financing: up to MVR 30 million at 12% for land, business premises and garages.",
+ "Retailers' Financing can reach 3 times a shop's monthly average POS sales.",
+ "Advance Merchant Settlement gives SMEs up to MVR 2 million against their future card sales.",
+ "BML POS terminals have no setup or monthly fees.",
+ "Businesses can now hold Chinese Yuan accounts and send transfers and LCs in CNY, a first in the Maldives.",
+ "BML Islamic Working Capital Finance needs no security for amounts up to MVR 3 million."];
 
 /* ---------- split-flap board ---------- */
 const AZ="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";

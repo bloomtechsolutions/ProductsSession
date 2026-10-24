@@ -4,6 +4,12 @@ Facilitator console for the BML retail refresher session (Day 1 · Session 4). I
 
 It is a single static page (`public/index.html`) with no build step, backed by Supabase for sessions, teams and scores.
 
+## Product Library
+
+The **Product Library** view (last item in the menu) holds every Bank of Maldives product: 31 for individual customers (accounts, cards, financing, digital, what's new) and 25 for business customers (accounts and cards, SME financing, corporate and trade, payments and merchant services). Filter by Individual or Business and by family, or search any word, rate or customer type. Each card says who the product is for, its key facts and a one-line pitch. Facts come from bankofmaldives.com.mv; figures the bank's own pages disagree on (such as business debit card limits) are left out.
+
+Business products also appear in the games: Product Passport teams can pick them, the Product Challenge has a Business & SME column, the Spin & Explain wheel includes four business products, and the audience screen's ticker has business facts.
+
 ## Sessions, team phones and automatic marking
 
 - **Session…** in the top bar creates a session (a 6-character code). The device that creates it is the facilitator console: it holds a private host key and is the only device that can send questions or change scores.
