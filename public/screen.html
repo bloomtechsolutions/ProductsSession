@@ -156,6 +156,7 @@ body{font-family:var(--f-body);display:flex;align-items:center;justify-content:c
 <button class="sound" id="soundBtn">Click to turn on sound</button>
 <script src="vendor/supabase-2.117.3.js"></script>
 <script src="vendor/qrcode-generator-2.0.4.js"></script>
+<script src="content.js"></script>
 <script>
 (()=>{
 const $=s=>document.querySelector(s);
@@ -167,24 +168,7 @@ const scene=$("#scene");
 
 // Round titles for the intro cards, in run-of-show order.
 const GAME_INTRO={warmup:[1,["TRUE OR","FALSE"]],library:[2,["PRODUCT","PASSPORT"]],challenge:[3,["PRODUCT","CHALLENGE"]],clues:[4,["LISTEN FOR","THE CLUE"]],spin:[5,["SPIN &","EXPLAIN"]]};
-const FACTS=["Lui Financing is unsecured: no guarantor, no collateral, from MVR 10,000 up to MVR 1.2 million.",
- "Kids' Saver earns 3% on MVR and 3.5% on USD, about twice the adult savings rate.",
- "Home Purchase Financing needs just 5% equity, and it can come from the Pension Fund.",
- "Tourism employees get home financing at 7.5%, and their service charge counts as income.",
- "The Visa Infinite was the first metal card in the Maldives.",
- "Parents can freeze their child's BML Student Card straight from the app.",
- "Green Financing has no deposit and no processing fee.",
- "Every new BML account comes with a virtual MVR Mastercard Prepaid card.",
- "Secured Kiyavaa Financing is 2.5%, with repayments starting after studies end.",
- "USD cash from ATMs: up to USD 1,600 a day per card and USD 3,500 a month per customer.",
- "Youth Entrepreneurship Financing: up to MVR 150,000, unsecured, with a decision in 24 hours.",
- "Since 13 September 2026, new personal accounts and financing are Shariah-compliant by default.",
- "Commercial Property Financing: up to MVR 30 million at 12% for land, business premises and garages.",
- "Retailers' Financing can reach 3 times a shop's monthly average POS sales.",
- "Advance Merchant Settlement gives SMEs up to MVR 2 million against their future card sales.",
- "BML POS terminals have no setup or monthly fees.",
- "Businesses can now hold Chinese Yuan accounts and send transfers and LCs in CNY, a first in the Maldives.",
- "BML Islamic Working Capital Finance needs no security for amounts up to MVR 3 million."];
+const FACTS=window.KYKP_CONTENT?KYKP_CONTENT.facts:[];
 
 /* ---------- split-flap board ---------- */
 const AZ="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -476,6 +460,8 @@ function askCode(msg){
 // "Did you know?" facts rotate on the home board, between games and under the standings.
 function nextFact(){const f=$("#fact");f.textContent=FACTS[facts++%FACTS.length];f.style.animation="none";void f.offsetWidth;f.style.animation=""}
 nextFact();setInterval(nextFact,9000);
+// Facts edited on the admin page replace the built-in ones.
+if(sb)sb.from("content").select("data").eq("key","facts").maybeSingle().then(({data})=>{if(data&&Array.isArray(data.data)&&data.data.length)FACTS.splice(0,FACTS.length,...data.data)});
 start();
 })();
 </script>

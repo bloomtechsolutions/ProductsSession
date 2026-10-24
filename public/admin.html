@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Content Admin · Know Your Customer</title>
+<meta name="description" content="Edit the content of every activity in the Know Your Customer, Know Your Product session.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230f2238'/%3E%3Ctext x='32' y='43' font-family='Arial' font-weight='900' font-size='30' fill='%23c4122f' text-anchor='middle'%3EKY%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..125,500..900&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: an editing tool. Sticky header with sign-in state, a tab per content section, then the section's editor:
+   a status line, a list of editable items and a sticky save bar. Same palette as the facilitator console. */
+:root{
+  --paper:#eef3f6; --surface:#ffffff; --surface-2:#f6f9fb; --ink:#0f2238; --muted:#566779; --line:#d5dfe6;
+  --accent:#c4122f; --accent-ink:#ffffff; --accent-soft:#fbe6ea; --lagoon:#0b7f83; --lagoon-soft:#dff2f2;
+  --sun:#b77900; --sun-soft:#fdf1d8; --good:#16794a; --good-soft:#dcf3e6; --bad:#b42318; --bad-soft:#fde4e1;
+  --bar:#0f2238; --bar-fg:#eef3f6;
+  --f-display:"Archivo","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Figtree",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#0a1522; --surface:#112135; --surface-2:#0e1c2d; --ink:#e6eef5; --muted:#9db0c3; --line:#22374f;
+  --accent:#ff5470; --accent-ink:#1a0308; --accent-soft:#3a1420; --lagoon:#41c7c3; --lagoon-soft:#0f3236;
+  --sun:#f2b84b; --sun-soft:#3a2c10; --good:#4cd38b; --good-soft:#0f3322; --bad:#ff7a6b; --bad-soft:#3d1713;
+  --bar:#050d17; --bar-fg:#e6eef5; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#0a1522; --surface:#112135; --surface-2:#0e1c2d; --ink:#e6eef5; --muted:#9db0c3; --line:#22374f;
+  --accent:#ff5470; --accent-ink:#1a0308; --accent-soft:#3a1420; --lagoon:#41c7c3; --lagoon-soft:#0f3236;
+  --sun:#f2b84b; --sun-soft:#3a2c10; --good:#4cd38b; --good-soft:#0f3322; --bad:#ff7a6b; --bad-soft:#3d1713;
+  --bar:#050d17; --bar-fg:#e6eef5; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.5 var(--f-body)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bar)}
+h1,h2,h3{font-family:var(--f-display);font-stretch:112%;line-height:1.12;margin:0;text-wrap:balance}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--lagoon);outline-offset:2px}
+.eyebrow{font-family:var(--f-display);font-stretch:118%;font-weight:700;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.muted{color:var(--muted)}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bar);color:var(--bar-fg);padding:12px max(16px,env(safe-area-inset-right,0px)) 12px max(16px,env(safe-area-inset-left,0px))}
+.top-in{max-width:1100px;margin:0 auto;display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+.top b{font-family:var(--f-display);font-stretch:118%;font-size:1.05rem}
+.top .who{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:.85rem}
+.top input{background:transparent;border:1px solid color-mix(in srgb,var(--bar-fg) 30%,transparent);border-radius:8px;padding:5px 9px;color:var(--bar-fg);width:12em}
+.chipbtn{border:1px solid color-mix(in srgb,var(--bar-fg) 30%,transparent);background:transparent;color:var(--bar-fg);border-radius:999px;padding:5px 12px;font-size:.82rem;font-weight:600}
+main{max-width:1100px;margin:0 auto;padding:22px max(16px,env(safe-area-inset-right,0px)) 120px max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:18px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:12px}
+.auth{max-width:440px;margin:40px auto}
+.auth h1{font-size:1.7rem;font-weight:850}
+.field{width:100%;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:9px 12px;color:var(--ink)}
+textarea.field{min-height:64px;resize:vertical;line-height:1.45}
+label.l{display:flex;flex-direction:column;gap:4px;font-size:.82rem;font-weight:600;color:var(--muted);min-width:0}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:8px 14px;font-weight:650;font-size:.9rem}
+.btn:hover{border-color:var(--ink)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.ghost{background:transparent}
+.btn.small{padding:4px 10px;font-size:.8rem;border-radius:8px}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tabs button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 14px;font-weight:650;font-size:.88rem}
+.tabs button[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.tabs button small{font-weight:600;font-size:.7rem;margin-left:4px;color:var(--sun)}
+.status{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:.9rem}
+.pill{display:inline-flex;border-radius:999px;padding:2px 10px;font-size:.75rem;font-weight:700;background:var(--lagoon-soft);color:var(--lagoon)}
+.pill.sun{background:var(--sun-soft);color:var(--sun)}
+.items{display:flex;flex-direction:column;gap:10px}
+.item{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:grid;gap:8px}
+.item-h{display:flex;gap:8px;align-items:center}
+.item-h .n{font-family:var(--f-mono);font-weight:700;font-size:.8rem;color:var(--muted)}
+.item-h .t{font-weight:700;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
+.grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.opt{display:flex;gap:6px;align-items:center}
+.opt input[type=radio]{accent-color:var(--good);width:18px;height:18px;flex:none}
+.cat{border:1px solid var(--line);border-radius:12px;padding:12px;display:grid;gap:10px;background:var(--surface-2)}
+.cat h3{font-size:1.05rem}
+.err{background:var(--bad-soft);color:var(--bad);border-radius:10px;padding:10px 12px;font-weight:600;font-size:.9rem}
+.ok{background:var(--good-soft);color:var(--good);border-radius:10px;padding:10px 12px;font-weight:600;font-size:.9rem}
+.savebar{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--surface);border-top:1px solid var(--line);padding:10px max(16px,env(safe-area-inset-right,0px)) calc(env(safe-area-inset-bottom,0px) + 10px) max(16px,env(safe-area-inset-left,0px))}
+.savebar .in{max-width:1100px;margin:0 auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.savebar .msg{margin-right:auto;font-weight:600;font-size:.9rem}
+.dirty{color:var(--sun)}
+@media (max-width:700px){.grid2,.grid4{grid-template-columns:minmax(0,1fr)}.top .who{margin-left:0}}
+</style>
+</head>
+<body>
+<header class="top"><div class="top-in"><b>Content admin</b><span style="opacity:.75;font-size:.85rem">Know Your Customer, Know Your Product</span>
+  <div class="who" id="who" hidden><label for="editor">Your name</label><input id="editor" placeholder="Shown with each edit" maxlength="60"><button class="chipbtn" id="pwBtn">Change password</button><button class="chipbtn" id="outBtn">Sign out</button></div></div></header>
+<main id="main"></main>
+<div class="savebar" id="savebar" hidden><div class="in"><span class="msg" id="saveMsg"></span>
+  <button class="btn ghost" id="resetBtn" title="Delete the edited version so the app uses the built-in content again">Reset to original</button>
+  <button class="btn" id="undoBtn">Discard changes</button><button class="btn primary" id="saveBtn">Save for everyone</button></div></div>
+<script src="vendor/supabase-2.117.3.js"></script>
+<script src="content.js"></script>
+<script>
+(()=>{
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const store={get(k,d){try{const v=localStorage.getItem("kykp:"+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem("kykp:"+k,JSON.stringify(v))}catch(e){}}};
+const SB_URL="https://jtofxcdoyzyyxdlbjrbh.supabase.co", SB_KEY="sb_publishable_UduFSvz4bpmCY41kxjLRww_iufXEQpx";
+const sb=window.supabase?window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:false,autoRefreshToken:false}}):null;
+const B=window.KYKP_CONTENT,clone=v=>JSON.parse(JSON.stringify(v));
+const main=$("#main");
+
+// What each section is, its built-in value, and the shape saved to the database.
+const SECTIONS=[
+  {key:"mf",name:"True or False",builtIn:()=>B.mf},
+  {key:"quiz",name:"Product Challenge",builtIn:()=>({cats:B.quizCats,questions:B.quiz})},
+  {key:"clues",name:"Listen for the Clue",builtIn:()=>({clues:B.clues,products:B.clueProducts})},
+  {key:"wheel",name:"Spin & Explain wheel",builtIn:()=>({wheel:B.wheel,fab:B.fab})},
+  {key:"products",name:"Product library",builtIn:()=>B.products},
+  {key:"facts",name:"Did you know? facts",builtIn:()=>B.facts}];
+const ERRORS={bad_password:"That password is wrong.",locked:"Too many wrong passwords. The admin page is locked for 5 minutes.",not_set:"No admin password is set yet. Reload the page to set one.",
+  too_short:"Use at least 8 characters.",already_set:"An admin password is already set. Sign in with it.",too_large:"This section is too large to save.",bad_key:"Unknown content section."};
+
+let pw=null,saved={},tab=store.get("admintab","mf"),draft=null,dirty=false,famFilter="all";
+
+async function call(fn,args){const {data,error}=await sb.rpc(fn,args);if(error)throw error;return data}
+function notInstalled(e){main.innerHTML=`<div class="panel auth"><h1>Admin isn't set up yet</h1><p>The content tables are missing from the Supabase project. Run <b>supabase/migrations/20261024300000_content_admin.sql</b> in the Supabase SQL Editor, then reload this page.</p><p class="muted" style="font-size:.85rem">${esc(e&&e.message||"")}</p></div>`}
+
+/* ---------- sign in ---------- */
+async function start(){
+  if(!sb){main.innerHTML=`<div class="panel auth">The database library did not load. Check the connection and reload.</div>`;return}
+  let st;try{st=await call("admin_status",{})}catch(e){notInstalled(e);return}
+  st&&st.password_set?showLogin():showSetup();
+}
+function showSetup(msg){
+  main.innerHTML=`<form class="panel auth" id="f"><div class="eyebrow">First-time setup</div><h1>Set the admin password</h1>
+    <p class="muted" style="margin:0">Anyone with this password can change the content every facilitator and team sees. Use at least 8 characters and share it only with facilitators.</p>
+    <label class="l">New password<input class="field" id="p1" type="password" autocomplete="new-password" minlength="8" required></label>
+    <label class="l">Repeat it<input class="field" id="p2" type="password" autocomplete="new-password" minlength="8" required></label>
+    ${msg?`<div class="err">${esc(msg)}</div>`:""}<button class="btn primary">Set password and continue</button></form>`;
+  $("#f").onsubmit=async e=>{e.preventDefault();const a=$("#p1").value,b=$("#p2").value;
+    if(a!==b)return showSetup("The two passwords don't match.");
+    try{const r=await call("admin_setup",{p_password:a});if(r!=="ok")return r==="already_set"?showLogin(ERRORS[r]):showSetup(ERRORS[r]||r);pw=a;enter()}catch(e){showSetup(e.message)}};
+}
+function showLogin(msg){
+  main.innerHTML=`<form class="panel auth" id="f"><div class="eyebrow">Facilitators only</div><h1>Sign in to edit content</h1>
+    <label class="l">Admin password<input class="field" id="p1" type="password" autocomplete="current-password" required></label>
+    ${msg?`<div class="err">${esc(msg)}</div>`:""}<button class="btn primary">Sign in</button></form>`;
+  $("#p1").focus();
+  $("#f").onsubmit=async e=>{e.preventDefault();const a=$("#p1").value;
+    try{const r=await call("admin_login",{p_password:a});if(r!=="ok")return showLogin(ERRORS[r]||r);pw=a;enter()}catch(e){showLogin(e.message)}};
+}
+async function enter(){
+  $("#who").hidden=false;$("#editor").value=store.get("editor","");
+  await loadSaved();renderTab();
+}
+$("#editor").oninput=e=>store.set("editor",e.target.value.trim());
+$("#outBtn").onclick=()=>{if(dirty&&!confirmLeave())return;pw=null;$("#who").hidden=true;$("#savebar").hidden=true;showLogin()};
+$("#pwBtn").onclick=()=>{
+  if(dirty&&!confirmLeave())return;$("#savebar").hidden=true;
+  main.innerHTML=`<form class="panel auth" id="f"><h1>Change the admin password</h1>
+    <label class="l">Current password<input class="field" id="p0" type="password" autocomplete="current-password" required></label>
+    <label class="l">New password<input class="field" id="p1" type="password" autocomplete="new-password" minlength="8" required></label>
+    <div id="pm"></div><div class="row"><button class="btn primary">Change password</button><button class="btn" type="button" id="pc">Back to content</button></div></form>`;
+  $("#pc").onclick=()=>renderTab();
+  $("#f").onsubmit=async e=>{e.preventDefault();try{const r=await call("admin_change_password",{p_old:$("#p0").value,p_new:$("#p1").value});
+    if(r==="ok"){pw=$("#p1").value;$("#pm").innerHTML=`<div class="ok">Password changed. Tell the other facilitators.</div>`}else $("#pm").innerHTML=`<div class="err">${esc(ERRORS[r]||r)}</div>`}catch(e){$("#pm").innerHTML=`<div class="err">${esc(e.message)}</div>`}};
+};
+// The viewer can't show confirm() dialogs, so leaving with unsaved changes uses a two-tap guard.
+let leaveArmed=0;
+function confirmLeave(){if(Date.now()-leaveArmed<4000)return true;leaveArmed=Date.now();setMsg("You have unsaved changes. Tap again to leave without saving.","dirty");return false}
+
+/* ---------- loading and saving ---------- */
+async function loadSaved(){
+  const {data,error}=await sb.from("content").select("key,data,updated_at,updated_by");
+  if(error){notInstalled(error);return}
+  saved=Object.fromEntries(data.map(r=>[r.key,r]));
+}
+const current=key=>saved[key]?saved[key].data:SECTIONS.find(s=>s.key===key).builtIn();
+function setMsg(t,cls){const m=$("#saveMsg");m.textContent=t;m.className="msg "+(cls||"")}
+function markDirty(){dirty=true;setMsg("Unsaved changes","dirty")}
+$("#undoBtn").onclick=()=>{dirty=false;renderTab()};
+$("#saveBtn").onclick=async()=>{
+  const problems=validate();if(problems.length){setMsg(problems[0],"dirty");$("#errs").innerHTML=`<div class="err">${problems.map(esc).join("<br>")}</div>`;return}
+  $("#saveBtn").disabled=true;
+  try{const r=await call("save_content",{p_password:pw,p_key:tab,p_data:clean(),p_by:$("#editor").value.trim()||null});
+    if(r!=="ok"){setMsg(ERRORS[r]||r,"dirty");if(r==="bad_password"||r==="locked"){pw=null;showLogin(ERRORS[r])}}
+    else{await loadSaved();dirty=false;renderTab();setMsg("Saved. Open consoles and screens update now; phones get it with the next question.")}}
+  catch(e){setMsg(e.message,"dirty")}
+  $("#saveBtn").disabled=false;
+};
+let resetArm=0;
+$("#resetBtn").onclick=async()=>{
+  if(Date.now()-resetArm>4000){resetArm=Date.now();setMsg("Tap Reset to original again to bring back the built-in content.","dirty");return}
+  try{const r=await call("reset_content",{p_password:pw,p_key:tab});if(r!=="ok"){setMsg(ERRORS[r]||r,"dirty");return}await loadSaved();dirty=false;renderTab();setMsg("Back to the built-in content.")}catch(e){setMsg(e.message,"dirty")}
+};
+
+/* ---------- editors ---------- */
+// Inputs carry data-p="path.to.value" (and data-kind for lists and booleans); typing writes straight into the draft.
+function getPath(o,p){return p===""||p==null?o:p.split(".").reduce((a,k)=>a==null?a:a[k],o)}
+function setPath(o,p,v){const ks=p.split("."),last=ks.pop();const t=ks.reduce((a,k)=>a[k],o);t[last]=v}
+main.addEventListener("input",e=>{
+  const el=e.target.closest("[data-p]");if(!el||el.dataset.p==="__facts"||el.type==="radio")return;let v=el.value;
+  if(el.dataset.kind==="lines")v=v.split("\n").map(x=>x.trim()).filter(Boolean);
+  else if(el.dataset.kind==="tags")v=v.split(",").map(x=>x.trim()).filter(Boolean);
+  else if(el.dataset.kind==="bool")v=v==="true";
+  else if(el.dataset.kind==="int")v=+v;
+  setPath(draft,el.dataset.p,v);markDirty();
+  const h=el.closest(".item");if(h&&el.dataset.title){const t=h.querySelector(".t");if(t)t.textContent=el.value}
+});
+main.addEventListener("change",e=>{const el=e.target.closest("input[type=radio][data-p]");if(!el)return;setPath(draft,el.dataset.p,+el.value);markDirty()});
+main.addEventListener("click",e=>{
+  const b=e.target.closest("[data-act]");if(!b)return;
+  const list=getPath(draft,b.dataset.list),i=+b.dataset.i;
+  if(b.dataset.act==="up"&&i>0){[list[i-1],list[i]]=[list[i],list[i-1]];if(b.dataset.twin){const t=getPath(draft,b.dataset.twin);[t[i-1],t[i]]=[t[i],t[i-1]]}}
+  else if(b.dataset.act==="down"&&i<list.length-1){[list[i+1],list[i]]=[list[i],list[i+1]];if(b.dataset.twin){const t=getPath(draft,b.dataset.twin);[t[i+1],t[i]]=[t[i],t[i+1]]}}
+  else if(b.dataset.act==="del"){list.splice(i,1);if(b.dataset.twin)getPath(draft,b.dataset.twin).splice(i,1)}
+  else if(b.dataset.act==="add"){list.push(JSON.parse(b.dataset.blank));if(b.dataset.twin)getPath(draft,b.dataset.twin).push(JSON.parse(b.dataset.twinBlank||'""'))}
+  else return;
+  markDirty();drawEditor();
+});
+const ctl=(list,i,n,twin,twinBlank)=>`<button class="btn small ghost" data-act="up" data-list="${list}" data-i="${i}" ${twin?`data-twin="${twin}"`:""} ${i?"":"disabled"} aria-label="Move up">↑</button><button class="btn small ghost" data-act="down" data-list="${list}" data-i="${i}" ${twin?`data-twin="${twin}"`:""} ${i<n-1?"":"disabled"} aria-label="Move down">↓</button><button class="btn small ghost" data-act="del" data-list="${list}" data-i="${i}" ${twin?`data-twin="${twin}"`:""} aria-label="Remove">Remove</button>`;
+const addBtn=(list,blank,label,twin,twinBlank)=>`<button class="btn" data-act="add" data-list="${list}" data-blank="${esc(JSON.stringify(blank))}" ${twin?`data-twin="${twin}" data-twin-blank="${esc(JSON.stringify(twinBlank))}"`:""}>${label}</button>`;
+const ta=(p,v,label,rows,kind,title)=>`<label class="l">${label}<textarea class="field" rows="${rows||2}" data-p="${p}" ${kind?`data-kind="${kind}"`:""} ${title?"data-title=1":""}>${esc(Array.isArray(v)?v.join(kind==="tags"?", ":"\n"):v)}</textarea></label>`;
+const inp=(p,v,label,title)=>`<label class="l">${label}<input class="field" data-p="${p}" value="${esc(v)}" ${title?"data-title=1":""}></label>`;
+
+function renderTab(){
+  const sec=SECTIONS.find(s=>s.key===tab)||SECTIONS[0];tab=sec.key;store.set("admintab",tab);
+  draft=clone(current(tab));dirty=false;
+  main.innerHTML=`<div class="tabs" id="tabs">${SECTIONS.map(s=>`<button data-tab="${s.key}" aria-pressed="${s.key===tab}">${s.name}${saved[s.key]?"<small>edited</small>":""}</button>`).join("")}</div>
+    <div class="status">${saved[tab]?`<span class="pill sun">Edited</span><span>Last saved ${new Date(saved[tab].updated_at).toLocaleString()}${saved[tab].updated_by?" by "+esc(saved[tab].updated_by):""}. The app uses this version.</span>`:`<span class="pill">Built-in</span><span>The app uses the built-in content (checked 24 Oct 2026). Saving here replaces it for everyone.</span>`}</div>
+    <div id="errs"></div><div id="ed"></div>`;
+  $("#tabs").onclick=e=>{const b=e.target.closest("[data-tab]");if(!b||b.dataset.tab===tab)return;if(dirty&&!confirmLeave())return;tab=b.dataset.tab;renderTab()};
+  $("#savebar").hidden=false;$("#resetBtn").hidden=!saved[tab];setMsg(saved[tab]?"Edited version in use":"Built-in version in use");
+  drawEditor();
+}
+function drawEditor(){
+  const d=draft,ed=$("#ed");$("#errs").innerHTML="";
+  if(tab==="mf"){
+    ed.innerHTML=`<p class="muted" style="margin:0">Statements are shown in this order. Each needs the statement, whether it is true or false, and the explanation shown after the reveal (start it with “True.” or “False.”).</p>
+      <div class="items">${d.map((m,i)=>`<div class="item"><div class="item-h"><span class="n">${i+1}</span><span class="t">${esc(m.s)}</span>${ctl("",i,d.length)}</div>
+        ${ta(`${i}.s`,m.s,"Statement",2,"",1)}
+        <label class="l">Answer<select class="field" data-p="${i}.a" data-kind="bool"><option value="true" ${m.a?"selected":""}>True</option><option value="false" ${m.a?"":"selected"}>False</option></select></label>
+        ${ta(`${i}.e`,m.e,"Explanation shown after the reveal",2)}</div>`).join("")}</div>
+      <div class="row">${addBtn("",{s:"",a:true,e:"True. "},"Add a statement")}</div>`;
+  }else if(tab==="quiz"){
+    ed.innerHTML=`<p class="muted" style="margin:0">Six categories with four questions each, worth 100 to 400. Tick the correct option.</p>
+      ${d.cats.map((c,ci)=>`<div class="cat"><div class="grid2">${inp(`cats.${ci}`,c,`Category ${ci+1} name`)}</div>
+        ${d.questions[ci].map((q,qi)=>`<div class="item"><div class="item-h"><span class="n">${(qi+1)*100}</span><span class="t">${esc(q.q)}</span></div>
+          ${ta(`questions.${ci}.${qi}.q`,q.q,"Question",2,"",1)}
+          <div class="grid2">${q.o.map((o,oi)=>`<div class="opt"><input type="radio" name="a${ci}-${qi}" value="${oi}" data-kind="int" data-p="questions.${ci}.${qi}.a" ${q.a===oi?"checked":""} aria-label="Option ${"ABCD"[oi]} is correct"><input class="field" data-p="questions.${ci}.${qi}.o.${oi}" value="${esc(o)}" aria-label="Option ${"ABCD"[oi]}"></div>`).join("")}</div>
+          ${ta(`questions.${ci}.${qi}.e`,q.e,"Explanation shown after the reveal",2)}</div>`).join("")}</div>`).join("")}`;
+  }else if(tab==="clues"){
+    ed.innerHTML=`<p class="muted" style="margin:0">Each customer gives three phone questions: the clue, the product to lead with and the best next question. Wrong options come from the other customers, so keep at least four customers.</p>
+      <div class="items">${d.clues.map((c,i)=>`<div class="item"><div class="item-h"><span class="n">${i+1}</span><span class="t">${esc(c.q)}</span>${ctl("clues",i,d.clues.length,"products")}</div>
+        ${ta(`clues.${i}.q`,c.q,"What the customer says",2,"",1)}
+        <div class="grid2">${inp(`clues.${i}.by`,c.by,"Who they are")}${inp(`clues.${i}.clue`,c.clue,"The clue (right answer to question 1)")}</div>
+        <div class="grid2">${inp(`products.${i}`,d.products[i]||"","Product to lead with (right answer to question 2)")}${inp(`clues.${i}.need`,c.need,"The need")}</div>
+        ${ta(`clues.${i}.lead`,c.lead,"Lead with (shown on the clue card)",2)}
+        ${ta(`clues.${i}.ask`,c.ask,"Best next question (right answer to question 3)",2)}</div>`).join("")}</div>
+      <div class="row">${addBtn("clues",{q:"",by:"",clue:"",need:"",lead:"",ask:""},"Add a customer","products","")}</div>`;
+  }else if(tab==="wheel"){
+    ed.innerHTML=`<p class="muted" style="margin:0">Products on the Spin &amp; Explain wheel, with the Feature, Advantage and Benefit coaching notes the facilitator sees. Keep names short so they fit on the wheel.</p>
+      <div class="items">${d.wheel.map((w,i)=>{const f=d.fab[w]||["","",""];return `<div class="item"><div class="item-h"><span class="n">${i+1}</span><span class="t">${esc(w)}</span>${ctl("wheel",i,d.wheel.length)}</div>
+        <label class="l">Product on the wheel<input class="field" data-wheel="${i}" value="${esc(w)}" maxlength="40"></label>
+        <div class="grid2">${["Feature","Advantage","Benefit"].map((l,j)=>`<label class="l">${l}<textarea class="field" rows="2" data-fab="${i}" data-j="${j}">${esc(f[j]||"")}</textarea></label>`).join("")}</div></div>`}).join("")}</div>
+      <div class="row">${addBtn("wheel",'',"Add a product to the wheel")}</div>`;
+  }else if(tab==="products"){
+    const fams=B.families;
+    ed.innerHTML=`<div class="row"><label class="l" style="flex-direction:row;align-items:center;gap:8px">Show<select class="field" id="famF" style="width:auto"><option value="all">All families</option>${fams.map(f=>`<option value="${f[0]}" ${famFilter===f[0]?"selected":""}>${f[2]==="biz"?"Business · ":"Individual · "}${esc(f[1])}</option>`).join("")}</select></label><span class="muted">${d.length} products</span></div>
+      <div class="items">${d.map((p,i)=>famFilter!=="all"&&p.f!==famFilter?"":`<div class="item"><div class="item-h"><span class="n">${i+1}</span><span class="t">${esc(p.n)}</span>${ctl("",i,d.length)}</div>
+        <div class="grid2">${inp(`${i}.n`,p.n,"Product name",1)}<label class="l">Family<select class="field" data-p="${i}.f">${fams.map(f=>`<option value="${f[0]}" ${p.f===f[0]?"selected":""}>${f[2]==="biz"?"Business · ":"Individual · "}${esc(f[1])}</option>`).join("")}</select></label></div>
+        ${ta(`${i}.tags`,p.tags,"Tags (separate with commas)",1,"tags")}
+        ${ta(`${i}.who`,p.who,"Who it is for",2)}
+        ${ta(`${i}.k`,p.k,"Key facts (one per line)",4,"lines")}
+        ${ta(`${i}.pitch`,p.pitch,"One-line pitch",2)}</div>`).join("")}</div>
+      <div class="row">${addBtn("",{f:famFilter==="all"?"acc":famFilter,n:"New product",tags:[],who:"",k:[],pitch:""},"Add a product")}</div>`;
+    $("#famF").onchange=e=>{famFilter=e.target.value;drawEditor()};
+  }else if(tab==="facts"){
+    ed.innerHTML=`<p class="muted" style="margin:0">Short product facts that rotate on the audience screen. One fact per line.</p>${ta("",d,"Facts",14,"lines").replace('data-p=""','data-p="__facts"')}`;
+  }
+}
+// Wheel names key the coaching notes, so renaming moves the notes with the product.
+main.addEventListener("input",e=>{
+  const w=e.target.closest("[data-wheel]");if(w){const i=+w.dataset.wheel,old=draft.wheel[i],v=w.value;draft.fab[v]=draft.fab[old]||["","",""];if(old!==v)delete draft.fab[old];draft.wheel[i]=v;w.closest(".item").querySelector(".t").textContent=v;markDirty();return}
+  const f=e.target.closest("[data-fab]");if(f){const name=draft.wheel[+f.dataset.fab];draft.fab[name]=draft.fab[name]||["","",""];draft.fab[name][+f.dataset.j]=f.value;markDirty();return}
+  const facts=e.target.closest('[data-p="__facts"]');if(facts){draft=facts.value.split("\n").map(x=>x.trim()).filter(Boolean);markDirty()}
+},true);
+
+/* ---------- checks before saving ---------- */
+function validate(){
+  const d=draft,out=[],blank=v=>!String(v==null?"":v).trim();
+  if(tab==="mf"){if(!d.length)out.push("Add at least one statement.");d.forEach((m,i)=>{if(blank(m.s))out.push(`Statement ${i+1} is empty.`);if(blank(m.e))out.push(`Statement ${i+1} needs an explanation.`)})}
+  if(tab==="quiz")d.questions.forEach((col,ci)=>{if(blank(d.cats[ci]))out.push(`Category ${ci+1} needs a name.`);col.forEach((q,qi)=>{const at=`${d.cats[ci]||"Category "+(ci+1)} ${(qi+1)*100}`;if(blank(q.q))out.push(`${at}: the question is empty.`);if(q.o.some(blank))out.push(`${at}: fill in all four options.`);if(!(q.a>=0&&q.a<4))out.push(`${at}: tick the correct option.`)})});
+  if(tab==="clues"){if(d.clues.length<4)out.push("Keep at least four customers: wrong options come from the other customers.");d.clues.forEach((c,i)=>{["q","by","clue","need","lead","ask"].forEach(k=>{if(blank(c[k]))out.push(`Customer ${i+1}: fill in every field.`)});if(blank(d.products[i]))out.push(`Customer ${i+1}: add the product to lead with.`)})}
+  if(tab==="wheel"){if(d.wheel.length<2)out.push("The wheel needs at least two products.");d.wheel.forEach((w,i)=>{if(blank(w))out.push(`Wheel product ${i+1} needs a name.`)});if(new Set(d.wheel).size!==d.wheel.length)out.push("Two wheel products have the same name.")}
+  if(tab==="products"){d.forEach((p,i)=>{if(blank(p.n))out.push(`Product ${i+1} needs a name.`);if(!p.k.length)out.push(`${p.n||"Product "+(i+1)}: add at least one key fact.`)});const names=d.map(p=>p.n.trim().toLowerCase());if(new Set(names).size!==names.length)out.push("Two products have the same name.")}
+  if(tab==="facts"&&!d.length)out.push("Add at least one fact.");
+  return [...new Set(out)].slice(0,12);
+}
+function clean(){
+  if(tab==="wheel")return {wheel:draft.wheel,fab:Object.fromEntries(draft.wheel.map(w=>[w,draft.fab[w]||["","",""]]))};
+  return draft;
+}
+addEventListener("beforeunload",e=>{if(dirty){e.preventDefault();e.returnValue=""}});
+start();
+window.__admin={state:()=>({tab,dirty,draft})};  // used by the automated tests
+})();
+</script>
+</body>
+</html>

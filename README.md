@@ -4,6 +4,17 @@ Facilitator console for the BML retail refresher session (Day 1 · Session 4). I
 
 It is a single static page (`public/index.html`) with no build step, backed by Supabase for sessions, teams and scores.
 
+## Editing content (/admin)
+
+All activity content lives in `public/content.js`: True or False statements, the Product Challenge quiz, the Listen for the Clue customers, the Spin & Explain wheel and its coaching notes, the product library and the audience screen's facts. Facilitators update outdated information on the admin page (`/admin`, linked from the Run of show):
+
+- The first visit sets the admin password (at least 8 characters). After that, sign in with it. Five wrong passwords lock the admin page for 5 minutes. The password is stored only as a salted hash.
+- Each section has its own tab: add, remove, reorder and edit items, with checks before saving (for example every quiz question needs four options and a ticked answer, and Listen for the Clue keeps at least four customers).
+- **Save for everyone** stores the section in Supabase. Open consoles and audience screens update at once; phones get it with the next question. The Run of show says which sections were edited, when and by whom.
+- **Reset to original** deletes the edited version so the built-in content is used again.
+
+The admin tables come from `supabase/migrations/20261024300000_content_admin.sql`.
+
 ## Product Library
 
 The **Product Library** view (last item in the menu) holds every Bank of Maldives product: 31 for individual customers (accounts, cards, financing, digital, what's new) and 25 for business customers (accounts and cards, SME financing, corporate and trade, payments and merchant services). Filter by Individual or Business and by family, or search any word, rate or customer type. Each card says who the product is for, its key facts and a one-line pitch. Facts come from bankofmaldives.com.mv; figures the bank's own pages disagree on (such as business debit card limits) are left out.
@@ -15,7 +26,7 @@ Business products also appear in the games: Product Passport teams can pick them
 - **Session…** in the top bar creates a session (a 6-character code). The device that creates it is the facilitator console: it holds a private host key and is the only device that can send questions or change scores.
 - **Show on screen** puts a join QR code on the projector. Each team joins on **one phone** at `/play`: it picks a free team or creates its own. A session has **at most 6 teams**, and a team that already has a phone can't be taken by another one. If a phone dies, **Release phone** in the session dialog frees the seat.
 - Teams answer on their phones. The facilitator sends each item to the phones and sees who has answered (not what) until the reveal:
-  - True or False: Start sends statement 1 to every phone; Reveal scores every team (+10 if right); Next sends the next statement. Next waits for Reveal during a game, and Finish ends it after the last statement.
+  - True or False (16 statements, four on business products): Start sends statement 1 to every phone; Reveal scores every team (+10 if right); Next sends the next statement. Next waits for Reveal during a game, and Finish ends it after the last statement.
   - Product Challenge: opening a tile sends it to every phone with a countdown (15, 20 or 30 seconds, chosen above the board). Answers lock at zero, or as soon as every team phone has answered, and are scored straight away: every correct team gets the tile value, the fastest correct team +50 and the second fastest +25 (by when each team last submitted). The choosing table still rotates.
   - Listen for the Clue runs by itself: press Start and each of the 8 customers gets three timed questions on the phones (the clue, the product to lead with, the best next question), 20 seconds each. Answers lock at zero or once every phone has answered; 20 points per correct answer, fastest correct +10. The answer and the matching clue card stay up for 8 seconds, then the next question goes out. Pause, Next now and Stop are there if needed; the last answer leads into the standings.
   - Product Passport covers Accounts, Cards and Financing (20 products). **Open picking on team phones**: each team takes 2 products, first come first served; a product one team takes is closed to the others, and the facilitator can free any pick. Then pick the presenting team (its 2 products are shown) and press Start (a 3-minute timer runs). Every other team scores the teach-back on its phone, 1–5 stars for a clear explanation, accurate facts and a customer-ready pitch, plus an optional comment. The presenting team's phone can't vote. Close voting & score gives the presenter 10 points per average star (max 50) and shows the averages and comments on the projector and phones.
