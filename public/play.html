@@ -123,6 +123,16 @@ textarea.field{min-height:92px;resize:vertical}
 .mine-grid small{color:var(--muted);font-size:.78rem}
 .games{display:grid;gap:6px}
 .games > div{display:flex;justify-content:space-between;gap:8px;background:var(--good-soft);color:var(--good);border-radius:10px;padding:8px 12px;font-weight:700}
+.crit{display:grid;gap:6px;padding:4px 0}
+.stars{display:flex;gap:6px}
+.star{flex:1;border:1.5px solid var(--line);background:var(--surface-2);border-radius:12px;font-size:1.6rem;line-height:1;padding:10px 0;color:var(--line)}
+.star[aria-pressed="true"]{color:var(--sun);border-color:var(--sun);background:var(--sun-soft)}
+.crit-list{margin:0;padding-left:22px;font-weight:700}
+.avg-row{display:grid;grid-template-columns:minmax(0,1fr) auto 2.4em;gap:8px;align-items:center;font-size:.95rem}
+.srow i{font-style:normal;color:var(--line)}
+.srow i.on{color:var(--sun)}
+.srow i.half{color:color-mix(in srgb,var(--sun) 50%,var(--line))}
+.note-row{border-left:3px solid var(--tc);padding-left:10px;font-size:.95rem}
 .toast{position:fixed;z-index:60;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 20px);transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:12px;font-weight:600;font-size:.92rem;box-shadow:var(--shadow);max-width:calc(100vw - 32px)}
 .toast.bad{background:var(--bad);color:#fff}
 @media (prefers-reduced-motion:reduce){*{animation:none!important}}
@@ -265,6 +275,7 @@ function renderWait(){
 function head(p){return `<div class="eyebrow">${esc(p.title||"Question")}</div>${p.sub?`<div class="sub">${esc(p.sub)}</div>`:""}`}
 function renderQuestion(){
   const r=round,p=r.payload||{},t=myTeam(),col=t?tcol(t):"";
+  if(p.type==="rate")return renderRate();
   const d=draft[r.id]||(draft[r.id]=p.type==="match"?{picks:[]}:p.type==="text"?{fields:(p.fields||[]).map(()=>"")}:{});
   if(r.kind==="choice"){
     app.innerHTML=`<div class="card ${p.type==="mf"?"mf":""}" style="--tc:${col}">${head(p)}<div class="q">${esc(p.text)}</div>
@@ -318,7 +329,50 @@ async function submit(answer){
     const s=$("#sent");if(s&&r.kind==="choice")s.textContent="Answer sent. You can change it until the facilitator reveals.";toast("Answer sent")}
   catch(e){if(String(e.message||"").includes("not the player")){me=null;store.set("play:"+sess.id,null);render(true)}}
 }
+/* ---------- teach-back score card ---------- */
+// Same scoring as the facilitator console: average stars per criterion, 10 points per average star.
+function rateScore(r){
+  const res=(r.result&&r.result.teams)||{},pres=(r.payload||{}).presenter,sums=[0,0,0],notes=[];let n=0;
+  for(const [tid,x] of Object.entries(res)){
+    const a=x&&x.answer;if(tid===pres||!a||!Array.isArray(a.ratings)||a.ratings.length!==3||a.ratings.some(v=>!(v>=1&&v<=5)))continue;
+    n++;a.ratings.forEach((v,i)=>sums[i]+=v);if(a.note&&String(a.note).trim())notes.push([tid,String(a.note).trim()]);
+  }
+  const avg=sums.map(v=>n?v/n:0);
+  return {avg,n,notes,pts:n?Math.round(avg.reduce((x,y)=>x+y,0)/3*10):0};
+}
+function renderRate(){
+  const r=round,p=r.payload||{},pt=teams.find(x=>x.id===p.presenter),pcol=pt?tcol(pt):"var(--accent)";
+  if(me.team_id===p.presenter){
+    app.innerHTML=`<div class="banner good">You're presenting!</div>
+      <div class="card" style="border-left:6px solid ${pcol}"><div class="eyebrow">Teach-back · ${esc(p.family)}</div><h2>The other teams are scoring you now</h2>
+      <p class="muted" style="margin:0">They give 1–5 stars for:</p><ol class="crit-list">${(p.criteria||[]).map(c=>`<li>${esc(c)}</li>`).join("")}</ol>
+      <p style="margin:0">Cover the two products customers ask about most, one detail people usually get wrong, and a one-line pitch.</p></div>${foot()}`;
+    bindFoot();return;
+  }
+  const d=draft[r.id]||(draft[r.id]={ratings:[0,0,0],note:""});
+  app.innerHTML=`<div class="card" style="border-left:6px solid ${pcol}"><div class="eyebrow">Rate the teach-back</div><h2>${esc(p.presenterName)}</h2>
+      <div class="sub">${esc(p.family)}${(p.products||[]).length?": "+esc(p.products.join(", ")):""}</div></div>
+    <div class="card">${(p.criteria||[]).map((c,i)=>`<div class="crit"><b>${esc(c)}</b><div class="stars" data-c="${i}">${[1,2,3,4,5].map(v=>`<button class="star" data-v="${v}" aria-pressed="${d.ratings[i]>=v}" aria-label="${v} of 5 for ${esc(c)}">★</button>`).join("")}</div></div>`).join("")}
+      <label class="eyebrow" for="note">Best line, or one thing to fix (optional)</label><textarea class="field" id="note" maxlength="200" placeholder="Shown on the big screen after the vote">${esc(d.note)}</textarea>
+      <button class="btn primary" id="send"></button><div class="sent" id="sent"></div></div>${foot()}`;
+  const upd=()=>{const all=d.ratings.every(v=>v>0);$("#send").disabled=!all;$("#send").textContent=!all?"Rate all three to send":sentFor[r.id]?"Update scores":"Send scores";$("#sent").textContent=sentFor[r.id]?"Scores sent. You can change them until the vote closes.":""};
+  app.querySelectorAll(".stars").forEach(g=>g.onclick=e=>{const b=e.target.closest(".star");if(!b)return;const c=+g.dataset.c,v=+b.dataset.v;d.ratings[c]=v;g.querySelectorAll(".star").forEach(x=>x.setAttribute("aria-pressed",+x.dataset.v<=v));upd()});
+  $("#note").oninput=e=>{d.note=e.target.value};
+  $("#send").onclick=async()=>{await submit({ratings:[...d.ratings],note:d.note.trim()});upd()};
+  upd();bindFoot();
+}
+function renderRateResult(){
+  const r=round,p=r.payload||{},sc=rateScore(r),mine=me.team_id===p.presenter;
+  const starRow=v=>[1,2,3,4,5].map(i=>`<i class="${v>=i-0.25?"on":v>=i-0.75?"half":""}">★</i>`).join("");
+  app.innerHTML=`<div class="banner ${sc.n?"good":"info"}">${mine?(sc.n?`Your teach-back scored +${sc.pts}`:"No team sent a rating"):`${esc(p.presenterName)} scored +${sc.pts}`}</div>
+    <div class="card"><div class="eyebrow">Teach-back · ${esc(p.family)} · ${sc.n} team${sc.n===1?"":"s"} rated</div>
+      ${(p.criteria||[]).map((c,i)=>`<div class="avg-row"><span>${esc(c)}</span><span class="srow">${starRow(sc.avg[i])}</span><span class="mono">${sc.avg[i].toFixed(1)}</span></div>`).join("")}
+      ${sc.notes.length?`<div class="eyebrow" style="margin-top:6px">What the room said</div>${sc.notes.map(([tid,n])=>{const t=teams.find(x=>x.id===tid);return `<div class="note-row" style="--tc:${t?tcol(t):"var(--line)"}"><b>${esc(t?t.name:"")}</b> “${esc(n)}”</div>`}).join("")}`:""}</div>
+    <div class="card"><div class="eyebrow">Scoreboard</div><div class="lb" id="lb">${lbRows()}</div></div>${foot()}`;
+  bindFoot();
+}
 function renderResult(){
+  if((round.payload||{}).type==="rate")return renderRateResult();
   const r=round,p=r.payload||{},res=(r.result&&r.result.teams)||{},mine=res[me.team_id]||{},key=(r.result&&r.result.key)||{};
   const a=mine.answer,pts=mine.points;
   let banner,body="";

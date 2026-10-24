@@ -370,6 +370,29 @@ span.pchip{display:inline-block}
 .dg{border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:.8rem;font-weight:600;color:var(--muted)}
 .dg.on{background:var(--good-soft);border-color:var(--good);color:var(--good)}
 
+/* teach-back */
+#teach{display:flex;flex-direction:column;gap:14px}
+.tb-title h3{font-size:1.3rem;font-weight:850;margin-top:2px}
+.tb-pick{display:grid;gap:8px}
+.tb-live{display:flex;flex-wrap:wrap;gap:16px;justify-content:space-between;align-items:center;border-left:6px solid var(--tc);background:color-mix(in srgb,var(--tc) 8%,var(--surface));border-radius:14px;padding:14px 16px}
+.tb-team{display:block;font-family:var(--f-display);font-stretch:115%;font-weight:900;font-size:clamp(1.5rem,3vw,2.2rem)}
+.tb-fam{font-weight:700;color:var(--muted)}
+.tb-crit{margin:0;padding-left:20px;font-weight:600}
+.tb-result{border:1px solid var(--line);border-left:6px solid var(--tc);border-radius:14px;padding:14px 16px;display:grid;gap:10px}
+.tb-res-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.tb-res-top b{display:block;font-size:1.25rem}
+.tb-pts{font-size:2rem;font-weight:700;color:var(--good)}
+.tb-avgs{display:grid;gap:4px}
+.tb-avgs > div{display:grid;grid-template-columns:minmax(0,1fr) auto 2.5em;gap:10px;align-items:center}
+.stars-row i{font-style:normal;color:var(--line);font-size:1.15rem}
+.stars-row i.on{color:var(--sun)}
+.stars-row i.half{color:color-mix(in srgb,var(--sun) 50%,var(--line))}
+.tb-notes{display:grid;gap:6px}
+.tb-notes > div{border-left:3px solid var(--tc);padding-left:10px;font-size:.95rem}
+.tb-sum{font-size:.92rem}
+.tb-override summary{cursor:pointer;color:var(--muted);font-weight:600;font-size:.88rem}
+.tb-override[open] summary{margin-bottom:8px}
+
 @media (max-width:1100px){
   .board{grid-template-columns:repeat(3,minmax(0,1fr))}
   .board .cat{display:none}
@@ -457,7 +480,7 @@ span.pchip{display:inline-block}
     <!-- LIBRARY -->
     <section class="view" id="v-library" data-title="Product Passport">
       <div class="hd"><div><div class="eyebrow">Activity 2 · 25 min · jigsaw teach-back</div><h2>Product Passport</h2>
-        <p>Each table gets one product family. Spend 10 minutes on its cards below, then teach it to the room in 3 minutes: the two products customers ask about most, one detail people usually get wrong, and a one-line pitch. The room rates each teach-back from 1 to 5 for clarity; tap the rating below and the points are added automatically.</p></div></div>
+        <p>Each table gets one product family. Spend 10 minutes on its cards below, then teach it to the room in 3 minutes: the two products customers ask about most, one detail people usually get wrong, and a one-line pitch. While a team presents, every other team scores it on their phones: 1 to 5 stars for a clear explanation, accurate facts and a customer-ready pitch. Close the vote and the presenting team gets 10 points per average star (up to 50).</p></div></div>
       <div class="jig" id="jig"></div>
       <div class="panel" id="teach"></div>
       <div class="row"><div class="fam-tabs" id="famTabs"></div><input class="search" id="libSearch" type="search" placeholder="Search products, rates, limits…" aria-label="Search products"></div>
@@ -579,7 +602,7 @@ const VIEWS=[
 
 const ROS=[
  {t:"0:00",d:"10 min",v:"warmup",h:"True or False warm-up",p:"Wakes the room up and shows what people don't know yet, before any teaching starts.",n:["Ask the 1–5 confidence question first and note the hand count.","Run 6–8 statements. Keep it fast: about 60 seconds each.","Start the session and show the join QR code. Each team joins on one phone (up to 6 teams)."]},
- {t:"0:10",d:"25 min",v:"library",h:"Product Passport: jigsaw teach-back",p:"Staff refresh the products by teaching each other. People remember what they explain far better than what they hear.",n:["Give each table one family: Accounts, Cards, Financing, Digital, What's New.","10 minutes to prepare, then 3 minutes per table to teach.","You correct and add detail after each teach-back, in under 60 seconds."]},
+ {t:"0:10",d:"25 min",v:"library",h:"Product Passport: jigsaw teach-back",p:"Staff refresh the products by teaching each other. People remember what they explain far better than what they hear.",n:["Give each table one family: Accounts, Cards, Financing, Digital, What's New.","10 minutes to prepare, then 3 minutes per table to teach.","The other tables score each teach-back on their phones. You correct and add detail in under 60 seconds."]},
  {t:"0:35",d:"20 min",v:"challenge",h:"BML Product Challenge quiz",p:"Checks recall across all families straight after the teach-backs. Includes the Islamic structure names customers will now ask about.",n:["Tables take turns choosing a tile. Every team answers on its phone, and every correct team scores.","Leave the 400-point questions until the end to build tension.","After each answer, ask: how would you say that to a customer?"]},
  {t:"0:55",d:"15 min",v:"clues",h:"Listen for the Clue",p:"Moves from knowing products to spotting needs. Introduces ASK · LISTEN · LINK · LEAD.",n:["2 minutes on the four clue types, then 6–8 customer quotes.","Reveal the clue, the need, the product and the next question one at a time.","Tick each table for a correct clue, need and good question: 10 points each, added automatically."]},
  {t:"1:10",d:"25 min",v:"match",h:"Match the Customer",p:"The core practical exercise. Tables build a complete recommendation, including cross-sells, for a realistic Maldivian customer.",n:["One persona per table, with 4 minutes to prepare.","Send the persona to the team phones. Teams pick products there; Reveal & score marks every team at once.","Discuss the red chips. They aren't always wrong, so ask the table to justify them."]},
@@ -957,8 +980,9 @@ function refreshRoundStatus(){
   $$("[data-rstat]").forEach(el=>{
     const ref=el.dataset.rstat;
     if(!liveRound||liveRound.ref!==ref){el.innerHTML="";return}
-    const st=sortedTeams(),n=st.filter(t=>liveAns[t.id]).length;
-    el.innerHTML=`<div class="rs-head"><span class="pulse"></span><b>Waiting for team phones</b><span class="mono">${n} of ${st.length} answered</span></div>
+    const pres=(liveRound.payload||{}).presenter,rate=(liveRound.payload||{}).type==="rate";
+    const st=sortedTeams().filter(t=>t.id!==pres),n=st.filter(t=>liveAns[t.id]).length;
+    el.innerHTML=`<div class="rs-head"><span class="pulse"></span><b>${rate?"Teams are scoring on their phones":"Waiting for team phones"}</b><span class="mono">${n} of ${st.length} ${rate?"rated":"answered"}</span></div>
      <div class="rs-teams">${st.map(t=>`<span class="rs-t ${liveAns[t.id]?"in":""}" style="--tc:${tcol(t)}">${liveAns[t.id]?"✓ ":""}${esc(t.name)}${t.claimed?"":" <small>(no phone)</small>"}</span>`).join("")}</div>`;
   });
 }
@@ -1193,11 +1217,76 @@ function renderLib(){
     <ul>${p.k.map(k=>`<li>${esc(k)}</li>`).join("")}</ul>
     <div class="pitch"><b>Say it in one line</b>${esc(p.pitch)}</div></article>`).join(""):`<div class="note">No products match "${esc(q)}". Try a product name, a rate such as "7.5%", or a word such as "USD".</div>`;
 }
-function renderTeach(){
-  $("#teach").innerHTML=`<div class="eyebrow">Teach-back score · tap the room's rating for each table (1 = unclear, 5 = crystal clear; 10 points per star)</div>
-   ${markGrid("teach",[1,2,3,4,5].map(r=>["",r+"★",r*10]),"teach")}`;
-  refreshMarks();
+/* ---- teach-back: the other teams score the presenting team on their phones ---- */
+// Each rating team gives 1–5 stars on three criteria. The presenter scores 10 points per average star (max 50).
+// The presenting team's own phone can't vote, and its answer is ignored if one arrives.
+const TB_CRIT=["Clear explanation","Accurate facts","Customer-ready pitch"];
+const TB_FAMS=[["acc","Accounts"],["card","Cards"],["fin","Financing"],["dig","Digital"],["new","What's new"]];
+const tbRef=id=>"teachback:"+id;
+let tbTeam=null,tbFam=null;
+function tbScore(r){
+  const res=(r.result&&r.result.teams)||{},pres=(r.payload||{}).presenter,sums=[0,0,0],notes=[];let n=0;
+  for(const [tid,x] of Object.entries(res)){
+    const a=x&&x.answer;if(tid===pres||!a||!Array.isArray(a.ratings)||a.ratings.length!==3||a.ratings.some(v=>!(v>=1&&v<=5)))continue;
+    n++;a.ratings.forEach((v,i)=>sums[i]+=v);if(a.note&&String(a.note).trim())notes.push([tid,String(a.note).trim()]);
+  }
+  const avg=sums.map(v=>n?v/n:0);
+  return {avg,n,notes,pts:n?Math.round(avg.reduce((x,y)=>x+y,0)/3*10):0};
 }
+const stars=v=>`<span class="stars-row" aria-label="${v.toFixed(1)} of 5">${[1,2,3,4,5].map(i=>`<i class="${v>=i-0.25?"on":v>=i-0.75?"half":""}">★</i>`).join("")}</span>`;
+function tbRounds(){return [...rounds.values()].filter(r=>r.ref.startsWith("teachback:")&&r.status==="closed").sort((a,b)=>b.id-a.id)}
+function renderTeach(){
+  const el=$("#teach"),st=sortedTeams();
+  if(tbTeam&&!teamById(tbTeam))tbTeam=null;
+  const live=liveRound&&liveRound.ref.startsWith("teachback:")?liveRound:null,done=tbRounds();
+  let h=`<div class="tb-title"><div><div class="eyebrow">Teach-back · scored by the other teams on their phones</div><h3>${live?"Now presenting":"Who presents next?"}</h3></div></div>`;
+  if(!teams.length)h+=noTeams();
+  else if(live){
+    const t=teamById(live.payload.presenter)||{name:live.payload.presenterName,color_idx:0};
+    h+=`<div class="tb-live" style="--tc:${tcol(t)}"><div><span class="tb-team">${esc(t.name)}</span><span class="tb-fam">${esc(live.payload.family)}</span></div>
+      <ol class="tb-crit">${TB_CRIT.map(c=>`<li>${c}</li>`).join("")}</ol></div>
+      ${rstatus(live.ref)}
+      ${isHost()?`<div class="row"><button class="btn primary" id="tbClose">Close voting &amp; score</button><button class="btn" data-round-cancel>Cancel</button></div>`:""}`;
+  }else if(isHost()){
+    const fi=tbFam||TB_FAMS[(st.findIndex(t=>t.id===tbTeam)>=0?st.findIndex(t=>t.id===tbTeam):0)%TB_FAMS.length][0];
+    h+=`<div class="tb-pick"><span class="eyebrow">1 · Presenting team</span><div class="marks">${st.map(t=>{const r=done.find(x=>x.payload.presenter===t.id);return `<button class="mk" style="--tc:${tcol(t)}" data-tbteam="${t.id}" aria-pressed="${tbTeam===t.id}">${esc(t.name)}${r?` · ${tbScore(r).pts}`:""}</button>`}).join("")}</div>
+      <span class="eyebrow">2 · Their product family</span><div class="marks">${TB_FAMS.map(([k,n])=>`<button class="mk" data-tbfam="${k}" aria-pressed="${fi===k}">${n}</button>`).join("")}</div>
+      <div class="row"><button class="btn primary" id="tbStart" ${tbTeam&&teams.length>1?"":"disabled"}>Start teach-back · 3 min</button><span class="muted">${teams.length<2?"Needs at least two teams.":"The other teams' phones get the score card; the timer starts."}</span></div></div>`;
+  }else h+=`<p class="muted">Waiting for the next teach-back.</p>`;
+  const last=done[0];
+  if(last&&!live){
+    const sc=tbScore(last),t=teamById(last.payload.presenter);
+    h+=`<div class="tb-result" style="--tc:${t?tcol(t):"var(--line)"}"><div class="tb-res-top"><div><span class="eyebrow">Latest result · ${esc(last.payload.family)}</span><b>${esc(t?t.name:last.payload.presenterName)}</b></div><span class="tb-pts mono">+${sc.pts}</span></div>
+      <div class="tb-avgs">${TB_CRIT.map((c,i)=>`<div><span>${c}</span>${stars(sc.avg[i])}<span class="mono">${sc.avg[i].toFixed(1)}</span></div>`).join("")}</div>
+      <small class="muted">${sc.n} team${sc.n===1?"":"s"} rated</small>
+      ${sc.notes.length?`<div class="tb-notes"><span class="eyebrow">What the room said</span>${sc.notes.map(([tid,n])=>{const r=teamById(tid);return `<div style="--tc:${r?tcol(r):"var(--line)"}"><b>${esc(r?r.name:"")}</b> “${esc(n)}”</div>`}).join("")}</div>`:""}</div>`;
+  }
+  if(done.length)h+=`<table class="stand tb-sum"><thead><tr><th>Team</th><th>Family</th>${TB_CRIT.map(c=>`<th class="num">${c}</th>`).join("")}<th class="num">Points</th></tr></thead><tbody>${
+    [...done].sort((a,b)=>tbScore(b).pts-tbScore(a).pts).filter((r,i,arr)=>arr.findIndex(x=>x.payload.presenter===r.payload.presenter)===i).map(r=>{const sc=tbScore(r),t=teamById(r.payload.presenter);
+      return `<tr style="--tc:${t?tcol(t):"var(--line)"}"><td><b>${esc(t?t.name:r.payload.presenterName)}</b></td><td>${esc(r.payload.family)}</td>${sc.avg.map(v=>`<td class="num mono">${v.toFixed(1)}</td>`).join("")}<td class="num mono tot">${sc.pts}</td></tr>`}).join("")}</tbody></table>`;
+  if(isHost()&&teams.length)h+=`<details class="tb-override"><summary>Facilitator override: set a team's teach-back points by hand</summary>${markGrid("teach",[1,2,3,4,5].map(r=>["",r+"★",r*10]),"teach")}</details>`;
+  const open=el.querySelector("details.tb-override")&&el.querySelector("details.tb-override").open;
+  el.innerHTML=h;if(open)el.querySelector("details.tb-override").open=true;
+  refreshMarks();refreshRoundStatus();
+}
+$("#teach").addEventListener("click",async e=>{
+  const t=e.target.closest("[data-tbteam]");if(t){tbTeam=t.dataset.tbteam;// Default the family to the table's jigsaw family; the facilitator can change it.
+    const i=sortedTeams().findIndex(x=>x.id===tbTeam);tbFam=TB_FAMS[i%TB_FAMS.length][0];renderTeach();return}
+  const f=e.target.closest("[data-tbfam]");if(f){tbFam=f.dataset.tbfam;renderTeach();return}
+  if(e.target.closest("#tbStart")){
+    const t=teamById(tbTeam);if(!t)return;const fam=TB_FAMS.find(x=>x[0]===tbFam)||TB_FAMS[0];
+    e.target.disabled=true;
+    try{await openRound("text","teach",tbRef(t.id),0,{type:"rate",title:"Rate the teach-back",presenter:t.id,presenterName:t.name,family:fam[1],criteria:TB_CRIT,products:PRODUCTS.filter(p=>p.f===fam[0]).map(p=>p.n)},{});clockSet(3);clockToggle()}catch(_){}
+    renderTeach();return;
+  }
+  if(e.target.closest("#tbClose")){
+    e.target.disabled=true;
+    try{const r=await closeRound();if(r){const sc=tbScore(r),pres=r.payload.presenter,t=teamById(pres);
+      if(sc.n){await award(pres,sc.pts,"teach","teach");toast(`${t?t.name:"Presenter"} +${sc.pts} (${sc.n} team${sc.n===1?"":"s"} rated)`)}
+      else toast("No team sent a rating, so no points were added.",true)}}catch(_){}
+    tbTeam=null;tbFam=null;renderTeach();
+  }
+});
 
 /* ================= QUIZ BOARD ================= */
 // The choosing table picks a tile; every team answers on its phone; Reveal scores every correct team.
