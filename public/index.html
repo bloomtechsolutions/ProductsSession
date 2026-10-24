@@ -141,9 +141,6 @@ nav.rail a[aria-current="page"] .n{color:var(--accent)}
 .pcard .pitch b{font-style:normal;font-family:var(--f-display);font-stretch:118%;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);display:block;margin-bottom:2px}
 .pcard .tags{display:flex;gap:6px;flex-wrap:wrap}
 .pcard.new{border-color:var(--sun)}
-.jig{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
-.jig div{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px;font-size:.86rem}
-.jig b{display:block;font-family:var(--f-display);font-stretch:115%;font-size:.95rem;margin-bottom:2px}
 
 /* quiz board */
 .board{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
@@ -393,11 +390,29 @@ span.pchip{display:inline-block}
 .tb-override summary{cursor:pointer;color:var(--muted);font-weight:600;font-size:.88rem}
 .tb-override[open] summary{margin-bottom:8px}
 
+/* product picks */
+#picks{display:flex;flex-direction:column;gap:12px}
+#picks .tb-title{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:10px}
+.pk-board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.pk-fam{display:flex;flex-direction:column;gap:6px}
+.pk-chips{display:flex;flex-direction:column;gap:6px}
+.pk{display:flex;justify-content:space-between;align-items:center;gap:8px;text-align:left;border:1.5px solid var(--line);background:var(--surface);border-radius:10px;padding:8px 10px;font-weight:650;font-size:.9rem;color:var(--ink)}
+.pk:disabled{cursor:default}
+.pk.taken{background:var(--tc);border-color:var(--tc);color:#fff}
+.pk.taken small{font-weight:700;font-size:.72rem;opacity:.9;white-space:nowrap}
+.pk-teams{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:8px}
+.pk-teams > div{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 8px;border-left:4px solid var(--tc);background:var(--surface-2);border-radius:10px;padding:8px 10px;font-size:.9rem}
+.pk-teams > div > span:nth-child(2){grid-column:1}
+.pk-teams .mono{grid-row:1;grid-column:2;font-weight:700}
+.tb-prods{display:flex;flex-wrap:wrap;gap:6px}
+.pcard.taken{border-color:var(--tc);box-shadow:0 0 0 1px var(--tc) inset}
+.picked-by{align-self:flex-start;background:var(--tc);color:#fff;border-radius:999px;padding:2px 10px;font-size:.75rem;font-weight:700}
+@media (max-width:900px){.pk-board{grid-template-columns:minmax(0,1fr)}}
+
 @media (max-width:1100px){
   .board{grid-template-columns:repeat(3,minmax(0,1fr))}
   .board .cat{display:none}
   .tile::before{content:attr(data-cat);display:block;font-size:.62rem;font-stretch:112%;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:2px}
-  .jig{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media (max-width:900px){
   .bar{position:static}
@@ -480,8 +495,8 @@ span.pchip{display:inline-block}
     <!-- LIBRARY -->
     <section class="view" id="v-library" data-title="Product Passport">
       <div class="hd"><div><div class="eyebrow">Activity 2 · 25 min · jigsaw teach-back</div><h2>Product Passport</h2>
-        <p>Each table gets one product family. Spend 10 minutes on its cards below, then teach it to the room in 3 minutes: the two products customers ask about most, one detail people usually get wrong, and a one-line pitch. While a team presents, every other team scores it on their phones: 1 to 5 stars for a clear explanation, accurate facts and a customer-ready pitch. Close the vote and the presenting team gets 10 points per average star (up to 50).</p></div></div>
-      <div class="jig" id="jig"></div>
+        <p>Open picking: each team chooses <b>2 products</b> on its phone from Accounts, Cards and Financing. A product one team takes is closed to the others. Teams spend 10 minutes on their two cards below, then teach them to the room in 3 minutes: who each product is for, one detail people usually get wrong, and a one-line pitch. While a team presents, every other team scores it on their phones: 1 to 5 stars for a clear explanation, accurate facts and a customer-ready pitch. Close the vote and the presenting team gets 10 points per average star (up to 50).</p></div></div>
+      <div class="panel" id="picks"></div>
       <div class="panel" id="teach"></div>
       <div class="row"><div class="fam-tabs" id="famTabs"></div><input class="search" id="libSearch" type="search" placeholder="Search products, rates, limits…" aria-label="Search products"></div>
       <div class="lib" id="lib"></div>
@@ -602,7 +617,7 @@ const VIEWS=[
 
 const ROS=[
  {t:"0:00",d:"10 min",v:"warmup",h:"True or False warm-up",p:"Wakes the room up and shows what people don't know yet, before any teaching starts.",n:["Ask the 1–5 confidence question first and note the hand count.","Run 6–8 statements. Keep it fast: about 60 seconds each.","Start the session and show the join QR code. Each team joins on one phone (up to 6 teams)."]},
- {t:"0:10",d:"25 min",v:"library",h:"Product Passport: jigsaw teach-back",p:"Staff refresh the products by teaching each other. People remember what they explain far better than what they hear.",n:["Give each table one family: Accounts, Cards, Financing, Digital, What's New.","10 minutes to prepare, then 3 minutes per table to teach.","The other tables score each teach-back on their phones. You correct and add detail in under 60 seconds."]},
+ {t:"0:10",d:"25 min",v:"library",h:"Product Passport: jigsaw teach-back",p:"Staff refresh the products by teaching each other. People remember what they explain far better than what they hear.",n:["Open product picking: each table takes 2 products on its phone, and no two tables can take the same one.","10 minutes to prepare, then 3 minutes per table to teach.","The other tables score each teach-back on their phones. You correct and add detail in under 60 seconds."]},
  {t:"0:35",d:"20 min",v:"challenge",h:"BML Product Challenge quiz",p:"Checks recall across all families straight after the teach-backs. Includes the Islamic structure names customers will now ask about.",n:["Tables take turns choosing a tile. Every team answers on its phone, and every correct team scores.","Leave the 400-point questions until the end to build tension.","After each answer, ask: how would you say that to a customer?"]},
  {t:"0:55",d:"15 min",v:"clues",h:"Listen for the Clue",p:"Moves from knowing products to spotting needs. Introduces ASK · LISTEN · LINK · LEAD.",n:["2 minutes on the four clue types, then 6–8 customer quotes.","Reveal the clue, the need, the product and the next question one at a time.","Tick each table for a correct clue, need and good question: 10 points each, added automatically."]},
  {t:"1:10",d:"25 min",v:"match",h:"Match the Customer",p:"The core practical exercise. Tables build a complete recommendation, including cross-sells, for a realistic Maldivian customer.",n:["One persona per table, with 4 minutes to prepare.","Send the persona to the team phones. Teams pick products there; Reveal & score marks every team at once.","Discuss the red chips. They aren't always wrong, so ask the table to justify them."]},
@@ -628,7 +643,11 @@ const MF=[
  {s:"Islamic Micro Financing is cheaper than Youth Entrepreneurship Financing, but a customer can't apply for it at a BML branch.",a:true,e:"True. Islamic Micro Financing is 2.5% against 7% for Youth Entrepreneurship Financing, and applications go only through SME Digital, BML's Shariah-compliant subsidiary."}
 ];
 
-const FAMS=[["all","All"],["acc","Accounts"],["card","Cards"],["fin","Financing"],["dig","Digital"],["new","What's new"]];
+// Product Passport covers Accounts, Cards and Financing; Digital and What's new stay in the data for the other activities.
+const PASS_FAMS=[["acc","Accounts"],["card","Cards"],["fin","Financing"]];
+const FAMS=[["all","All"],...PASS_FAMS];
+const PASS_PRODUCTS=()=>PRODUCTS.filter(p=>PASS_FAMS.some(f=>f[0]===p.f));
+const pid=p=>p.n.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
 const PRODUCTS=[
  // Accounts
  {f:"acc",n:"Current Account",tags:["Wadi'ah Yad al-Dhamanah","MVR · USD · EUR · INR · CNY"],who:"Everyday banking for salaries, payments and cards.",k:["Minimum balance MVR 200 / USD 50","Debit cards: Visa, Amex, Mastercard","Cheque book at MVR 5 / USD 0.35 per leaf","First account can be opened online (Maldivians)"],pitch:"Your money is held in safe custody, fully Shariah-compliant, and you can manage it all from your phone."},
@@ -829,7 +848,7 @@ async function reload(){
     sb.from("score_events").select("id,team_id,points,activity,ref,created_at").eq("session_id",sess.id).order("id").range(0,4999)]);
   if(t.error||e.error){toast((t.error||e.error).message,true);return}
   teams=t.data;events=new Map(e.data.map(x=>[x.id,x]));
-  await loadRounds();changed(true);
+  await Promise.all([loadRounds(),loadPicks()]);changed(true);
 }
 function subscribe(){
   const old=chan;chan=null;if(old)sb.removeChannel(old);
@@ -841,6 +860,8 @@ function subscribe(){
     .on("postgres_changes",{event:"INSERT",schema:"public",table:"score_events",filter:f},upEv)
     .on("postgres_changes",{event:"UPDATE",schema:"public",table:"score_events",filter:f},upEv)
     .on("postgres_changes",{event:"DELETE",schema:"public",table:"score_events"},p=>{if(events.delete(p.old.id))changed()})
+    .on("postgres_changes",{event:"INSERT",schema:"public",table:"product_picks",filter:f},p=>{picks.set(p.new.product,p.new.team_id);changed(true)})
+    .on("postgres_changes",{event:"DELETE",schema:"public",table:"product_picks"},p=>{if(p.old.session_id===sid&&picks.delete(p.old.product))changed(true)})
     .on("postgres_changes",{event:"INSERT",schema:"public",table:"teams",filter:f},upTeam)
     .on("postgres_changes",{event:"UPDATE",schema:"public",table:"teams",filter:f},upTeam)
     .on("postgres_changes",{event:"DELETE",schema:"public",table:"teams"},p=>{const n=teams.length;teams=teams.filter(t=>t.id!==p.old.id);if(teams.length!==n){for(const [k,e] of events)if(e.team_id===p.old.id)events.delete(k);changed(true)}})
@@ -891,7 +912,7 @@ function changed(full){
   chFull=chFull||!!full;if(chQueued)return;chQueued=true;
   queueMicrotask(()=>{chQueued=false;const f=chFull;chFull=false;
     renderTeams();renderBoard();renderLeader();
-    if(f){renderMF();renderTeach();renderClue();renderMatch();renderSpot();if(spinPick&&!spinning)renderSpinRes(spinPick);if(modalKind==="quiz")renderQuizLive()}
+    if(f){renderMF();renderPicks();renderLib();renderTeach();renderClue();renderMatch();renderSpot();if(spinPick&&!spinning)renderSpinRes(spinPick);if(modalKind==="quiz")renderQuizLive()}
     if(modalKind==="sess")renderSess();
     if(modalKind==="stand")renderStandings();
     if(f)renderFinishBtns();
@@ -923,7 +944,7 @@ $("#resetAll").onclick=async e=>{
   if(!isHost()){toast("Only the facilitator's device can reset scores.",true);return}
   if(!resetArm){resetArm=true;e.target.textContent="Tap again to reset";setTimeout(()=>{resetArm=false;e.target.textContent="Reset"},3000);return}
   resetArm=false;e.target.textContent="Reset";
-  try{await rpc("reset_scores",{});stopPoll();events=new Map();rounds=new Map();liveRound=null;finished=[];used=[];quizTurn=0;store.set("used",used);store.set("turn",0);changed(true);toast("Scores reset")}catch(_){}
+  try{await rpc("reset_scores",{});stopPoll();events=new Map();rounds=new Map();liveRound=null;finished=[];picks=new Map();used=[];quizTurn=0;store.set("used",used);store.set("turn",0);changed(true);toast("Scores reset")}catch(_){}
 };
 
 /* ---- marking = scoring: every tick button awards or removes points ---- */
@@ -953,6 +974,7 @@ async function loadRounds(){
   finished=st&&Array.isArray(st.payload.finished)?st.payload.finished.map(g=>g[0]):[];
   const open=data.filter(r=>r.status==="open").pop()||null;
   if(!open){liveRound=null;liveAns={};stopPoll()}else if(!liveRound||liveRound.id!==open.id){liveRound=open;liveAns={};if(isHost())startPoll()}
+  if(open&&open.payload&&open.payload.type==="pick"&&!pickPoll)startPickPoll();
 }
 async function openRound(kind,activity,ref,points,payload,answer){
   if(!teams.length){toast("No teams yet. Show the join code so teams can join on their phones.",true);throw new Error("no teams")}
@@ -1004,6 +1026,34 @@ document.addEventListener("click",async e=>{
   const o=e.target.closest("[data-round-open]");if(o){const f=ROUND_OPENERS[o.dataset.roundOpen.split(":")[0]];o.disabled=true;try{await f(o.dataset.roundOpen)}catch(_){}o.disabled=false;return}
   if(e.target.closest("[data-round-cancel]")){await cancelRound();toast("Stopped collecting answers")}
 });
+
+/* ---- Product Passport picks: product id -> team id, shared by every screen ---- */
+let picks=new Map(),pickPoll=null;
+async function loadPicks(){
+  const {data,error}=await sb.from("product_picks").select("product,team_id").eq("session_id",sess.id);
+  if(!error)picks=new Map(data.map(x=>[x.product,x.team_id]));
+}
+const picksOf=id=>PASS_PRODUCTS().filter(p=>picks.get(pid(p))===id);
+const pickingOpen=()=>!!(liveRound&&liveRound.payload&&liveRound.payload.type==="pick");
+function renderPicks(){
+  const el=$("#picks");if(!el)return;
+  const st=sortedTeams(),open=pickingOpen(),n=[...picks.values()].filter(id=>teamById(id)).length;
+  el.innerHTML=`<div class="tb-title"><div><div class="eyebrow">Step 1 · each team picks 2 products to teach</div>
+      <h3>${open?`Picking is open · ${n} of ${st.length*2} picked`:n?`${n} products picked`:"Products to teach"}</h3></div>
+      ${isHost()?`<div class="row">${open?`<button class="btn primary" id="pkClose">Close picking</button>`:`<button class="btn primary" id="pkOpen" ${teams.length?"":"disabled"}>${n?"Reopen picking":"Open picking on team phones"}</button>`}</div>`:""}</div>
+    ${open?`<p class="muted" style="margin:0">Teams tap 2 products on their phones. A product is closed to everyone else as soon as one team takes it.${isHost()?" Tap a taken product here to free it.":""}</p>`:""}
+    <div class="pk-board">${PASS_FAMS.map(([k,name])=>`<div class="pk-fam"><span class="eyebrow">${name}</span><div class="pk-chips">${PRODUCTS.filter(p=>p.f===k).map(p=>{const t=teamById(picks.get(pid(p)));
+      return `<button class="pk ${t?"taken":""}" style="${t?`--tc:${tcol(t)}`:""}" data-pk="${pid(p)}" ${t&&isHost()?"":"disabled"} title="${t?(isHost()?"Tap to free this product":"Taken"):"Free"}">${esc(p.n)}${t?`<small>${esc(t.name)}</small>`:""}</button>`}).join("")}</div></div>`).join("")}</div>
+    ${st.length?`<div class="pk-teams">${st.map(t=>{const mine=picksOf(t.id);return `<div style="--tc:${tcol(t)}"><b>${esc(t.name)}</b><span>${mine.length?mine.map(p=>esc(p.n)).join(" · "):"<i class='muted'>no products yet</i>"}</span><span class="mono">${mine.length}/2</span></div>`}).join("")}</div>`:noTeams()}`;
+}
+$("#picks").addEventListener("click",async e=>{
+  if(e.target.closest("#pkOpen")){e.target.disabled=true;try{await openRound("text","teach","pick:"+Date.now(),0,{type:"pick",title:"Pick 2 products to teach",max:2,families:PASS_FAMS.map(([k,n])=>[n,PRODUCTS.filter(p=>p.f===k).map(p=>[pid(p),p.n])])},{});startPickPoll()}catch(_){}renderPicks();return}
+  if(e.target.closest("#pkClose")){e.target.disabled=true;try{await closeRound()}catch(_){}stopPickPoll();await loadPicks();changed(true);toast("Picking closed");return}
+  const b=e.target.closest("[data-pk]");if(b&&isHost()&&picks.has(b.dataset.pk)){b.disabled=true;try{await rpc("release_product",{p_product:b.dataset.pk});picks.delete(b.dataset.pk);changed(true)}catch(_){}}
+});
+// Polling backs up the live channel while picking is open, so the projector board never lags far behind.
+function startPickPoll(){stopPickPoll();pickPoll=setInterval(async()=>{if(!pickingOpen()){stopPickPoll();return}const before=JSON.stringify([...picks]);await loadPicks();if(JSON.stringify([...picks])!==before)changed(true)},2000)}
+function stopPickPoll(){clearInterval(pickPoll);pickPoll=null}
 
 /* ---- finished games and standings ---- */
 // Finishing a game records it as complete and puts the standings on the projector and on every team phone:
@@ -1205,25 +1255,23 @@ function scoredToast(r){
 
 /* ================= LIBRARY ================= */
 let fam="all",q="";
-$("#jig").innerHTML=[["Accounts","Current, Savings, Kids' Saver, Investment, Expatriate"],["Cards","Debit, credit tiers, Islamic credit, Infinite, Student, Prepaid, Rewards"],["Financing","Lui, Home Purchase, Tourism Home, Construction, Lifestyle, Kiyavaa, Green"],["Digital","Mobile app, Mobile Pay, Aaya, Internet Banking"],["What's new","Islamic First, e-commerce limits, USD ATM limit, youth and micro financing, USD pools, grant"]].map((x,i)=>`<div><span class="eyebrow">Table ${i+1}</span><b>${x[0]}</b>${x[1]}</div>`).join("");
 $("#famTabs").innerHTML=FAMS.map(f=>`<button data-f="${f[0]}" aria-pressed="${f[0]===fam}">${f[1]}</button>`).join("");
 $("#famTabs").onclick=e=>{const b=e.target.closest("button");if(!b)return;fam=b.dataset.f;$$("#famTabs button").forEach(x=>x.setAttribute("aria-pressed",x===b));renderLib()};
 $("#libSearch").oninput=e=>{q=e.target.value.toLowerCase();renderLib()};
 function renderLib(){
-  const list=PRODUCTS.filter(p=>(fam==="all"||p.f===fam)&&(!q||JSON.stringify(p).toLowerCase().includes(q)));
-  $("#lib").innerHTML=list.length?list.map(p=>`<article class="pcard ${p.f==="new"?"new":""}">
-    <div class="tags">${p.tags.map((t,i)=>`<span class="pill ${p.f==="new"&&i===0?"sun":""}">${esc(t)}</span>`).join("")}</div>
+  const list=PASS_PRODUCTS().filter(p=>(fam==="all"||p.f===fam)&&(!q||JSON.stringify(p).toLowerCase().includes(q)));
+  $("#lib").innerHTML=list.length?list.map(p=>{const t=teamById(picks.get(pid(p)));return `<article class="pcard ${t?"taken":""}" style="${t?`--tc:${tcol(t)}`:""}">
+    ${t?`<span class="picked-by">Taught by ${esc(t.name)}</span>`:""}<div class="tags">${p.tags.map((t,i)=>`<span class="pill ${p.f==="new"&&i===0?"sun":""}">${esc(t)}</span>`).join("")}</div>
     <h3>${esc(p.n)}</h3><p class="who">${esc(p.who)}</p>
     <ul>${p.k.map(k=>`<li>${esc(k)}</li>`).join("")}</ul>
-    <div class="pitch"><b>Say it in one line</b>${esc(p.pitch)}</div></article>`).join(""):`<div class="note">No products match "${esc(q)}". Try a product name, a rate such as "7.5%", or a word such as "USD".</div>`;
+    <div class="pitch"><b>Say it in one line</b>${esc(p.pitch)}</div></article>`}).join(""):`<div class="note">No products match "${esc(q)}". Try a product name, a rate such as "7.5%", or a word such as "USD".</div>`;
 }
 /* ---- teach-back: the other teams score the presenting team on their phones ---- */
 // Each rating team gives 1–5 stars on three criteria. The presenter scores 10 points per average star (max 50).
 // The presenting team's own phone can't vote, and its answer is ignored if one arrives.
 const TB_CRIT=["Clear explanation","Accurate facts","Customer-ready pitch"];
-const TB_FAMS=[["acc","Accounts"],["card","Cards"],["fin","Financing"],["dig","Digital"],["new","What's new"]];
 const tbRef=id=>"teachback:"+id;
-let tbTeam=null,tbFam=null;
+let tbTeam=null;
 function tbScore(r){
   const res=(r.result&&r.result.teams)||{},pres=(r.payload||{}).presenter,sums=[0,0,0],notes=[];let n=0;
   for(const [tid,x] of Object.entries(res)){
@@ -1243,40 +1291,38 @@ function renderTeach(){
   if(!teams.length)h+=noTeams();
   else if(live){
     const t=teamById(live.payload.presenter)||{name:live.payload.presenterName,color_idx:0};
-    h+=`<div class="tb-live" style="--tc:${tcol(t)}"><div><span class="tb-team">${esc(t.name)}</span><span class="tb-fam">${esc(live.payload.family)}</span></div>
+    h+=`<div class="tb-live" style="--tc:${tcol(t)}"><div><span class="tb-team">${esc(t.name)}</span><span class="tb-fam">${esc((live.payload.products||[]).join(" · ")||live.payload.family||"")}</span></div>
       <ol class="tb-crit">${TB_CRIT.map(c=>`<li>${c}</li>`).join("")}</ol></div>
       ${rstatus(live.ref)}
       ${isHost()?`<div class="row"><button class="btn primary" id="tbClose">Close voting &amp; score</button><button class="btn" data-round-cancel>Cancel</button></div>`:""}`;
   }else if(isHost()){
-    const fi=tbFam||TB_FAMS[(st.findIndex(t=>t.id===tbTeam)>=0?st.findIndex(t=>t.id===tbTeam):0)%TB_FAMS.length][0];
-    h+=`<div class="tb-pick"><span class="eyebrow">1 · Presenting team</span><div class="marks">${st.map(t=>{const r=done.find(x=>x.payload.presenter===t.id);return `<button class="mk" style="--tc:${tcol(t)}" data-tbteam="${t.id}" aria-pressed="${tbTeam===t.id}">${esc(t.name)}${r?` · ${tbScore(r).pts}`:""}</button>`}).join("")}</div>
-      <span class="eyebrow">2 · Their product family</span><div class="marks">${TB_FAMS.map(([k,n])=>`<button class="mk" data-tbfam="${k}" aria-pressed="${fi===k}">${n}</button>`).join("")}</div>
+    const sel=teamById(tbTeam),selP=sel?picksOf(sel.id):[];
+    h+=`<div class="tb-pick"><span class="eyebrow">Step 2 · presenting team</span><div class="marks">${st.map(t=>{const r=done.find(x=>x.payload.presenter===t.id);return `<button class="mk" style="--tc:${tcol(t)}" data-tbteam="${t.id}" aria-pressed="${tbTeam===t.id}">${esc(t.name)}${r?` · ${tbScore(r).pts}`:""}</button>`}).join("")}</div>
+      ${sel?`<div class="tb-prods">${selP.length?selP.map(p=>`<span class="pill">${esc(p.n)}</span>`).join(""):`<span class="muted">${esc(sel.name)} hasn't picked products yet. Open picking first, or start anyway.</span>`}</div>`:""}
       <div class="row"><button class="btn primary" id="tbStart" ${tbTeam&&teams.length>1?"":"disabled"}>Start teach-back · 3 min</button><span class="muted">${teams.length<2?"Needs at least two teams.":"The other teams' phones get the score card; the timer starts."}</span></div></div>`;
   }else h+=`<p class="muted">Waiting for the next teach-back.</p>`;
   const last=done[0];
   if(last&&!live){
     const sc=tbScore(last),t=teamById(last.payload.presenter);
-    h+=`<div class="tb-result" style="--tc:${t?tcol(t):"var(--line)"}"><div class="tb-res-top"><div><span class="eyebrow">Latest result · ${esc(last.payload.family)}</span><b>${esc(t?t.name:last.payload.presenterName)}</b></div><span class="tb-pts mono">+${sc.pts}</span></div>
+    h+=`<div class="tb-result" style="--tc:${t?tcol(t):"var(--line)"}"><div class="tb-res-top"><div><span class="eyebrow">Latest result · ${esc((last.payload.products||[]).join(" · ")||last.payload.family||"")}</span><b>${esc(t?t.name:last.payload.presenterName)}</b></div><span class="tb-pts mono">+${sc.pts}</span></div>
       <div class="tb-avgs">${TB_CRIT.map((c,i)=>`<div><span>${c}</span>${stars(sc.avg[i])}<span class="mono">${sc.avg[i].toFixed(1)}</span></div>`).join("")}</div>
       <small class="muted">${sc.n} team${sc.n===1?"":"s"} rated</small>
       ${sc.notes.length?`<div class="tb-notes"><span class="eyebrow">What the room said</span>${sc.notes.map(([tid,n])=>{const r=teamById(tid);return `<div style="--tc:${r?tcol(r):"var(--line)"}"><b>${esc(r?r.name:"")}</b> “${esc(n)}”</div>`}).join("")}</div>`:""}</div>`;
   }
-  if(done.length)h+=`<table class="stand tb-sum"><thead><tr><th>Team</th><th>Family</th>${TB_CRIT.map(c=>`<th class="num">${c}</th>`).join("")}<th class="num">Points</th></tr></thead><tbody>${
+  if(done.length)h+=`<table class="stand tb-sum"><thead><tr><th>Team</th><th>Products</th>${TB_CRIT.map(c=>`<th class="num">${c}</th>`).join("")}<th class="num">Points</th></tr></thead><tbody>${
     [...done].sort((a,b)=>tbScore(b).pts-tbScore(a).pts).filter((r,i,arr)=>arr.findIndex(x=>x.payload.presenter===r.payload.presenter)===i).map(r=>{const sc=tbScore(r),t=teamById(r.payload.presenter);
-      return `<tr style="--tc:${t?tcol(t):"var(--line)"}"><td><b>${esc(t?t.name:r.payload.presenterName)}</b></td><td>${esc(r.payload.family)}</td>${sc.avg.map(v=>`<td class="num mono">${v.toFixed(1)}</td>`).join("")}<td class="num mono tot">${sc.pts}</td></tr>`}).join("")}</tbody></table>`;
+      return `<tr style="--tc:${t?tcol(t):"var(--line)"}"><td><b>${esc(t?t.name:r.payload.presenterName)}</b></td><td>${esc((r.payload.products||[]).join(" · ")||r.payload.family||"")}</td>${sc.avg.map(v=>`<td class="num mono">${v.toFixed(1)}</td>`).join("")}<td class="num mono tot">${sc.pts}</td></tr>`}).join("")}</tbody></table>`;
   if(isHost()&&teams.length)h+=`<details class="tb-override"><summary>Facilitator override: set a team's teach-back points by hand</summary>${markGrid("teach",[1,2,3,4,5].map(r=>["",r+"★",r*10]),"teach")}</details>`;
   const open=el.querySelector("details.tb-override")&&el.querySelector("details.tb-override").open;
   el.innerHTML=h;if(open)el.querySelector("details.tb-override").open=true;
   refreshMarks();refreshRoundStatus();
 }
 $("#teach").addEventListener("click",async e=>{
-  const t=e.target.closest("[data-tbteam]");if(t){tbTeam=t.dataset.tbteam;// Default the family to the table's jigsaw family; the facilitator can change it.
-    const i=sortedTeams().findIndex(x=>x.id===tbTeam);tbFam=TB_FAMS[i%TB_FAMS.length][0];renderTeach();return}
-  const f=e.target.closest("[data-tbfam]");if(f){tbFam=f.dataset.tbfam;renderTeach();return}
+  const t=e.target.closest("[data-tbteam]");if(t){tbTeam=t.dataset.tbteam;renderTeach();return}
   if(e.target.closest("#tbStart")){
-    const t=teamById(tbTeam);if(!t)return;const fam=TB_FAMS.find(x=>x[0]===tbFam)||TB_FAMS[0];
+    const t=teamById(tbTeam);if(!t)return;const prods=picksOf(t.id).map(p=>p.n);
     e.target.disabled=true;
-    try{await openRound("text","teach",tbRef(t.id),0,{type:"rate",title:"Rate the teach-back",presenter:t.id,presenterName:t.name,family:fam[1],criteria:TB_CRIT,products:PRODUCTS.filter(p=>p.f===fam[0]).map(p=>p.n)},{});clockSet(3);clockToggle()}catch(_){}
+    try{await openRound("text","teach",tbRef(t.id),0,{type:"rate",title:"Rate the teach-back",presenter:t.id,presenterName:t.name,family:prods.length?"Their products":"Teach-back",criteria:TB_CRIT,products:prods},{});clockSet(3);clockToggle()}catch(_){}
     renderTeach();return;
   }
   if(e.target.closest("#tbClose")){
@@ -1284,7 +1330,7 @@ $("#teach").addEventListener("click",async e=>{
     try{const r=await closeRound();if(r){const sc=tbScore(r),pres=r.payload.presenter,t=teamById(pres);
       if(sc.n){await award(pres,sc.pts,"teach","teach");toast(`${t?t.name:"Presenter"} +${sc.pts} (${sc.n} team${sc.n===1?"":"s"} rated)`)}
       else toast("No team sent a rating, so no points were added.",true)}}catch(_){}
-    tbTeam=null;tbFam=null;renderTeach();
+    tbTeam=null;renderTeach();
   }
 });
 
@@ -1474,7 +1520,7 @@ function renderSpinRes(p){
 cv.addEventListener("click",spin);
 
 /* ================= INIT ================= */
-renderFinishBtns();renderTeams();renderMF();renderLib();renderTeach();renderBoard();renderClue();renderMatch();renderSpot();renderSpinRes(null);renderLeader();drawClock();setConn("none");
+renderFinishBtns();renderTeams();renderMF();renderPicks();renderLib();renderTeach();renderBoard();renderClue();renderMatch();renderSpot();renderSpinRes(null);renderLeader();drawClock();setConn("none");
 const h=(location.hash||"").slice(1);show(VIEWS.some(v=>v[0]===h)?h:store.get("view","plan"));
 document.fonts&&document.fonts.ready.then(drawWheel);
 (async()=>{

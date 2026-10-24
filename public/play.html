@@ -133,6 +133,20 @@ textarea.field{min-height:92px;resize:vertical}
 .srow i.on{color:var(--sun)}
 .srow i.half{color:color-mix(in srgb,var(--sun) 50%,var(--line))}
 .note-row{border-left:3px solid var(--tc);padding-left:10px;font-size:.95rem}
+.mypicks{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.pk-mine,.pk-empty{border-radius:12px;padding:10px 12px;font-weight:700;font-size:.95rem;text-align:center}
+.pk-mine{background:var(--good-soft);color:var(--good);border:1.5px solid var(--good)}
+.pk-mine.big{font-size:1.15rem;text-align:left}
+.pk-empty{border:1.5px dashed var(--line);color:var(--muted)}
+.pk-list{display:grid;gap:8px}
+.pkb{display:flex;justify-content:space-between;align-items:center;gap:10px;text-align:left;border:1.5px solid var(--line);background:var(--surface);border-radius:12px;padding:12px 14px;font-weight:650;min-height:52px}
+.pkb small{font-weight:700;font-size:.75rem;color:var(--muted);white-space:nowrap}
+.pkb.mine{border-color:var(--good);background:var(--good-soft);color:var(--good)}
+.pkb.mine small{color:var(--good)}
+.pkb.taken{background:var(--surface-2);color:var(--muted);border-left:6px solid var(--tc)}
+.pkb.taken span{text-decoration:line-through}
+.pkb:disabled{cursor:default}
+.pkb:disabled:not(.taken){opacity:.55}
 .toast{position:fixed;z-index:60;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 20px);transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:12px;font-weight:600;font-size:.92rem;box-shadow:var(--shadow);max-width:calc(100vw - 32px)}
 .toast.bad{background:var(--bad);color:#fff}
 @media (prefers-reduced-motion:reduce){*{animation:none!important}}
@@ -154,6 +168,7 @@ const TCOL=["#c4122f","#0b7f83","#b77900","#4b5fb0","#7a3fa0","#16794a"],MAX_TEA
 const app=$("#app");
 
 let sess=null,me=null,teams=[],events=new Map(),round=null,chan=null,pollT=null;
+let picks=new Map();  // Product Passport: product id -> team id
 let draft={};       // round id -> answer being built on this phone
 let sentFor={};     // round id -> last answer this phone sent
 let shownKey="";    // what the stage currently shows, so typing is not interrupted by re-renders
@@ -182,11 +197,13 @@ async function openSession(code){
 async function checkSeat(){if(me&&!(await stillMine()))dropSeat("Another phone now plays for your team. Ask the facilitator if this is wrong.")}
 async function stillMine(){if(!me)return false;const {data,error}=await sb.rpc("player_status",{p_team:me.team_id,p_player_key:me.key});return error?true:!!data}
 async function load(){
-  const [t,e,r]=await Promise.all([
+  const [t,e,r,pk]=await Promise.all([
     sb.from("teams").select("*").eq("session_id",sess.id).order("position"),
     sb.from("score_events").select("id,team_id,points,activity").eq("session_id",sess.id).range(0,4999),
-    sb.from("rounds").select("id,kind,activity,ref,points,payload,status,result").eq("session_id",sess.id).order("id",{ascending:false}).limit(1)]);
+    sb.from("rounds").select("id,kind,activity,ref,points,payload,status,result").eq("session_id",sess.id).order("id",{ascending:false}).limit(1),
+    sb.from("product_picks").select("product,team_id").eq("session_id",sess.id)]);
   if(t.error||e.error){setConn(false);return}
+  if(!pk.error)picks=new Map(pk.data.map(x=>[x.product,x.team_id]));
   teams=t.data;events=new Map(e.data.map(x=>[x.id,x]));setRound(r.error?null:r.data[0]||null);
   if(me&&!myTeam())dropSeat("Your team was removed by the facilitator.");
   else if(me&&!myTeam().claimed)dropSeat("Your team's seat was released. Join again.");
@@ -214,6 +231,8 @@ function subscribe(){
     .on("postgres_changes",{event:"INSERT",schema:"public",table:"score_events",filter:f},p=>{events.set(p.new.id,p.new);renderHead()})
     .on("postgres_changes",{event:"UPDATE",schema:"public",table:"score_events",filter:f},p=>{events.set(p.new.id,p.new);renderHead()})
     .on("postgres_changes",{event:"DELETE",schema:"public",table:"score_events"},p=>{if(events.delete(p.old.id))renderHead()})
+    .on("postgres_changes",{event:"INSERT",schema:"public",table:"product_picks",filter:f},p=>{picks.set(p.new.product,p.new.team_id);render()})
+    .on("postgres_changes",{event:"DELETE",schema:"public",table:"product_picks"},p=>{if(p.old.session_id===sid&&picks.delete(p.old.product))render()})
     .on("postgres_changes",{event:"*",schema:"public",table:"teams"},async()=>{await load();await checkSeat();render()})
     .subscribe(st=>{if(chan!==my)return;setConn(st==="SUBSCRIBED");if(st==="SUBSCRIBED")load().then(()=>render())});
   // Polling backs up the live channel on weak venue Wi-Fi.
@@ -241,11 +260,14 @@ function render(force){
   if(!sb){app.innerHTML=`<div class="card">The page could not load its database library. Check the connection and reload.</div>`;return}
   if(!sess)return renderCode();
   if(!me)return renderPick();
+  // The product picker has no typing, so it redraws whenever picks change.
+  if(round&&round.status==="open"&&round.payload&&round.payload.type==="pick"){shownKey="pick:"+round.id;return renderProducts()}
   const key=round?round.id+":"+round.status:"none";
   if(!force&&key===shownKey)return;
   shownKey=key;
   if(!round||round.status==="cancelled")return renderWait();
   if(round.payload&&round.payload.type==="standings")return renderStandings();
+  if(round.payload&&round.payload.type==="pick")return renderProductsDone();
   if(round.status==="open")return renderQuestion();
   return renderResult();
 }
@@ -329,6 +351,37 @@ async function submit(answer){
     const s=$("#sent");if(s&&r.kind==="choice")s.textContent="Answer sent. You can change it until the facilitator reveals.";toast("Answer sent")}
   catch(e){if(String(e.message||"").includes("not the player")){me=null;store.set("play:"+sess.id,null);render(true)}}
 }
+/* ---------- Product Passport: pick 2 products; a taken product is closed to other teams ---------- */
+const myPicks=()=>{const p=(round&&round.payload)||{};return (p.families||[]).flatMap(g=>g[1]).filter(([id])=>picks.get(id)===me.team_id)};
+let picking=false;
+function renderProducts(){
+  const p=round.payload||{},max=p.max||2,mine=myPicks(),full=mine.length>=max;
+  app.innerHTML=`<div class="card"><div class="eyebrow">Product Passport</div><h2>Pick ${max} products your team will teach</h2>
+      <p class="muted" style="margin:0">First come, first served. Once a team takes a product, nobody else can. Tap one of yours to give it back.</p>
+      <div class="mypicks">${[0,1].map(i=>mine[i]?`<span class="pk-mine">${esc(mine[i][1])}</span>`:`<span class="pk-empty">Pick ${i+1}</span>`).join("")}</div></div>
+    ${(p.families||[]).map(([fam,list])=>`<div class="card"><div class="eyebrow">${esc(fam)}</div><div class="pk-list">${list.map(([id,name])=>{
+      const owner=picks.get(id),t=owner&&teams.find(x=>x.id===owner),isMine=owner===me.team_id;
+      return `<button class="pkb ${isMine?"mine":t?"taken":""}" style="${t?`--tc:${tcol(t)}`:""}" data-pk="${esc(id)}" ${(t&&!isMine)||(!t&&full)?"disabled":""}>
+        <span>${esc(name)}</span><small>${isMine?"Yours · tap to give back":t?esc(t.name):full?"You have 2":"Free"}</small></button>`}).join("")}</div></div>`).join("")}
+    ${foot()}`;
+  app.querySelectorAll(".pkb").forEach(b=>b.onclick=async()=>{
+    if(picking)return;picking=true;app.querySelectorAll(".pkb").forEach(x=>x.disabled=true);
+    const id=b.dataset.pk,isMine=picks.get(id)===me.team_id;
+    try{await call(isMine?"unpick_product":"pick_product",{p_team:me.team_id,p_player_key:me.key,p_product:id});
+      if(isMine)picks.delete(id);else picks.set(id,me.team_id)}catch(_){}
+    picking=false;await load();render();
+  });
+  bindFoot();
+}
+function renderProductsDone(){
+  const mine=myPicks();
+  app.innerHTML=`<div class="banner info">Picking is closed</div>
+    <div class="card"><div class="eyebrow">Your products to teach</div>${mine.length?mine.map(([,n])=>`<div class="pk-mine big">${esc(n)}</div>`).join(""):`<p class="muted" style="margin:0">Your team didn't pick any products. Ask the facilitator.</p>`}
+      <p style="margin:0">Prepare a 3-minute teach-back: who each product is for, one detail people usually get wrong, and a one-line pitch.</p></div>
+    <div class="card"><div class="eyebrow">Scoreboard</div><div class="lb" id="lb">${lbRows()}</div></div>${foot()}`;
+  bindFoot();
+}
+
 /* ---------- teach-back score card ---------- */
 // Same scoring as the facilitator console: average stars per criterion, 10 points per average star.
 function rateScore(r){
