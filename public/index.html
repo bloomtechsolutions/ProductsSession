@@ -223,7 +223,8 @@ nav.rail a[aria-current="page"] .n{color:var(--accent)}
 .scn .ticket{font-family:var(--f-mono);font-size:.8rem;color:var(--muted)}
 .scn p{margin:0;font-size:1.08rem}
 .opp{display:grid;gap:8px}
-.opp button.o{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:12px;align-items:start;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:14px;padding:12px}
+.opp .o{display:flex;flex-direction:column;gap:10px;border:1px solid var(--line);background:var(--surface);border-radius:14px;padding:12px}
+.opp .o-head{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:12px;align-items:start;text-align:left;border:0;background:transparent;padding:0;width:100%}
 .opp .num{font-family:var(--f-mono);font-weight:700;width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:var(--surface-2);border:1px solid var(--line)}
 .opp .o.shown .num{background:var(--lagoon);color:var(--surface);border-color:var(--lagoon)}
 .opp .o .txt b{display:block;font-size:1rem}
@@ -251,6 +252,66 @@ nav.rail a[aria-current="page"] .n{color:var(--accent)}
 .src{font-size:.82rem;color:var(--muted)}
 .src a{color:var(--lagoon)}
 .src ul{padding-left:18px;margin:6px 0 0}
+
+
+/* session, teams and automatic scoring */
+.conn{font-size:.75rem;font-weight:700;color:var(--bar-fg);opacity:.8;white-space:nowrap}
+.conn[data-s="live"]{color:#4cd38b;opacity:1}
+.conn[data-s="off"]{color:#ff7a6b;opacity:1}
+.teams-empty{font-size:.85rem;opacity:.8;color:var(--bar-fg);padding:4px 2px}
+.team input[readonly]{cursor:default}
+body.viewer #teamAdd,body.viewer #resetAll{display:none}
+.toast{position:fixed;z-index:60;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 20px);transform:translateX(-50%);background:var(--ink);color:var(--paper);padding:10px 16px;border-radius:12px;font-weight:600;font-size:.92rem;box-shadow:var(--shadow);max-width:calc(100vw - 32px)}
+.toast.bad{background:var(--bad);color:#fff}
+.muted{color:var(--muted)}
+.marks{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.marks > .eyebrow,.answering > .eyebrow,.votes > .eyebrow{width:100%}
+.mk{border:1.5px solid var(--tc,var(--line));background:var(--surface);color:var(--ink);border-radius:999px;padding:6px 12px;font-weight:700;font-size:.85rem}
+.mk:hover:not(:disabled){background:color-mix(in srgb,var(--tc) 12%,var(--surface))}
+.mk[aria-pressed="true"]{background:var(--tc);color:#fff}
+.mk[aria-pressed="true"]::before{content:"✓ "}
+.mk:disabled{cursor:default;opacity:.75}
+.mgrid{display:grid;gap:6px}
+.mg-row{display:grid;grid-template-columns:minmax(110px,180px) minmax(0,1fr) 3.5em;gap:10px;align-items:center;border-left:4px solid var(--tc);padding:4px 0 4px 10px}
+.mg-row b{font-size:.92rem;overflow-wrap:anywhere}
+.mg-cells{display:flex;flex-wrap:wrap;gap:6px}
+.mg-sum{text-align:right;font-weight:700;color:var(--good)}
+.panel.tight{padding:14px}
+.votes{display:grid;gap:8px}
+.vote{display:flex;align-items:center;gap:8px;border-left:4px solid var(--tc);padding-left:10px}
+.vote b{min-width:9em;font-size:.95rem}
+.vbtn{border:1.5px solid var(--line);background:var(--surface-2);border-radius:999px;padding:5px 14px;font-weight:700;font-size:.85rem}
+.vbtn[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.answering{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.qstatus{font-weight:700;min-height:1.4em}
+.qstatus.good{color:var(--good)}
+.qstatus.bad{color:var(--bad)}
+.sess-h{font-size:1.8rem;font-weight:850}
+.sess-top{display:grid;grid-template-columns:auto minmax(0,1fr);gap:20px;align-items:start}
+.sess-code{font-size:clamp(2.2rem,6vw,3.4rem);letter-spacing:.12em;color:var(--accent)}
+.sess-links{display:grid;gap:10px}
+.sess-links .row{flex-wrap:nowrap}
+.sess-links .search{font-size:.8rem}
+.code-in{text-transform:uppercase;letter-spacing:.15em;font-family:var(--f-mono);max-width:12em}
+.tlist{display:grid;gap:6px}
+.tl-row{display:grid;grid-template-columns:8px minmax(0,1fr) auto auto;gap:10px;align-items:center}
+.tl-row i{width:8px;height:28px;border-radius:4px;background:var(--tc)}
+.tl-row input{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:7px 10px;font:600 .95rem var(--f-body);color:var(--ink);min-width:0}
+.elog{display:grid;gap:4px;font-size:.9rem;max-height:220px;overflow:auto}
+.elog > div{display:grid;grid-template-columns:10px minmax(0,1fr) auto auto auto;gap:10px;align-items:center}
+.elog .dot{width:10px;height:10px;border-radius:50%}
+.elog .neg{color:var(--bad)}
+.elog .btn{padding:3px 10px;font-size:.8rem}
+.winner{font-size:clamp(1.5rem,3vw,2.2rem);font-weight:900;margin:4px 0 12px}
+.lb{display:grid;gap:10px}
+.lb-row{display:grid;grid-template-columns:2.2em minmax(0,1fr);gap:10px;align-items:center}
+.lb-rank{font-weight:700;font-size:1.2rem;color:var(--muted);text-align:center}
+.lb-row:first-child .lb-rank{color:var(--accent)}
+.lb-top{display:flex;justify-content:space-between;gap:10px;font-size:1.05rem}
+.lb-top .mono{font-weight:700}
+.lb-bar{height:10px;border-radius:5px;background:var(--surface-2);overflow:hidden;margin:4px 0}
+.lb-bar i{display:block;height:100%;background:var(--tc);border-radius:5px}
+@media (max-width:560px){.sess-top{grid-template-columns:minmax(0,1fr)}.mg-row{grid-template-columns:minmax(0,1fr)}.mg-sum{text-align:left}.vote b{min-width:0;flex:1}}
 
 @media (max-width:1100px){
   .board{grid-template-columns:repeat(3,minmax(0,1fr))}
@@ -297,8 +358,9 @@ nav.rail a[aria-current="page"] .n{color:var(--accent)}
       <button class="chipbtn" data-min="10">10m</button>
     </div>
     <div class="row">
-      <button class="chipbtn" id="teamAdd" title="Add a team">+ Team</button>
-      <button class="chipbtn" id="teamDel" title="Remove last team">− Team</button>
+      <span class="conn" id="conn" data-s="none">No session</span>
+      <button class="chipbtn solid" id="sessBtn" title="Create, join or manage the session and teams">Session…</button>
+      <button class="chipbtn" id="teamAdd" title="Create a team">+ Team</button>
       <button class="chipbtn" id="resetAll" title="Reset scores and used questions">Reset</button>
     </div>
   </div>
@@ -320,13 +382,13 @@ nav.rail a[aria-current="page"] .n{color:var(--accent)}
         <div class="kpi"><b>25 / 50 / 25</b><span>refresh / practice / reflect, as the programme asks</span></div>
       </div>
       <div class="ros" id="ros"></div>
-      <div class="note"><b>Before the session:</b> print one set of persona cards per table (or let tables use their phones on this page), put a bell or buzzer on each table, and prepare a small prize. Rename the teams in the bar above. Product facts were taken from bankofmaldives.com.mv on 24 Oct 2026. Rates, limits and fees change, so check each figure against the current Schedule of Charges on the morning of the session.</div>
+      <div class="note"><b>Before the session:</b> print one set of persona cards per table (or let tables use their phones on this page), put a bell or buzzer on each table, and prepare a small prize. Press <b>Session…</b> in the bar to start the session and create the teams. Scores are saved online and every activity scores automatically as you mark it. Share the scoreboard link so tables can follow the scores on their phones. Product facts were taken from bankofmaldives.com.mv on 24 Oct 2026. Rates, limits and fees change, so check each figure against the current Schedule of Charges on the morning of the session.</div>
     </section>
 
     <!-- WARM UP -->
     <section class="view" id="v-warmup" data-title="Myth or Fact">
       <div class="hd"><div><div class="eyebrow">Activity 1 · 10 min · whole room</div><h2>Myth or Fact?</h2>
-        <p>Read the statement aloud. Everyone stands for <b>Fact</b> and stays seated for <b>Myth</b>. Reveal, then ask one person who got it right to explain why. 10 points to each table where everyone got it right.</p></div>
+        <p>Read the statement aloud. Everyone stands for <b>Fact</b> and stays seated for <b>Myth</b>. Tap each table's call below, then Reveal: every table that called it right gets 10 points automatically. Ask one person who got it right to explain why.</p></div>
         <div class="row"><button class="btn" id="mfPrev">Back</button><button class="btn primary" id="mfReveal">Reveal</button><button class="btn" id="mfNext">Next</button></div></div>
       <div class="mf">
         <div class="mf-card" id="mfCard"></div>
@@ -337,8 +399,9 @@ nav.rail a[aria-current="page"] .n{color:var(--accent)}
     <!-- LIBRARY -->
     <section class="view" id="v-library" data-title="Product Passport">
       <div class="hd"><div><div class="eyebrow">Activity 2 · 25 min · jigsaw teach-back</div><h2>Product Passport</h2>
-        <p>Each table gets one product family. Spend 10 minutes on its cards below, then teach it to the room in 3 minutes: the two products customers ask about most, one detail people usually get wrong, and a one-line pitch. The room scores each teach-back from 1 to 5 for clarity.</p></div></div>
+        <p>Each table gets one product family. Spend 10 minutes on its cards below, then teach it to the room in 3 minutes: the two products customers ask about most, one detail people usually get wrong, and a one-line pitch. The room rates each teach-back from 1 to 5 for clarity; tap the rating below and the points are added automatically.</p></div></div>
       <div class="jig" id="jig"></div>
+      <div class="panel" id="teach"></div>
       <div class="row"><div class="fam-tabs" id="famTabs"></div><input class="search" id="libSearch" type="search" placeholder="Search products, rates, limits…" aria-label="Search products"></div>
       <div class="lib" id="lib"></div>
     </section>
@@ -346,8 +409,8 @@ nav.rail a[aria-current="page"] .n{color:var(--accent)}
     <!-- QUIZ -->
     <section class="view" id="v-challenge" data-title="Product Challenge">
       <div class="hd"><div><div class="eyebrow">Activity 3 · 20 min · team quiz</div><h2>BML Product Challenge</h2>
-        <p>Tables take turns choosing a category and a value. The choosing table answers first. If they miss, the first other table to ring the bell can steal it. Award the points from the question window.</p></div>
-        <div class="row"><span class="pill" id="qLeft">24 questions left</span></div></div>
+        <p>Tables take turns choosing a category and a value. The choosing table answers first. Tap the answer they give: a correct answer scores automatically. If they miss, tap the table that rings the bell first, then its answer, to steal.</p></div>
+        <div class="row"><span class="pill sun" id="qTurn"></span><span class="pill" id="qLeft">24 questions left</span></div></div>
       <div class="board" id="board"></div>
       <div class="note"><b>Facilitator tip:</b> after each answer, ask "How would you say that to a customer?" A correct fact is only half the point. The other half is being able to explain it in plain words.</div>
     </section>
@@ -355,7 +418,7 @@ nav.rail a[aria-current="page"] .n{color:var(--accent)}
     <!-- CLUES -->
     <section class="view" id="v-clues" data-title="Listen for the Clue">
       <div class="hd"><div><div class="eyebrow">Activity 4 · 15 min · needs discovery</div><h2>Listen for the Clue</h2>
-        <p>Customers rarely say "I need a product". They mention a life event, how they are paid, something that annoys them, or a goal. Read the customer's words aloud. Tables have 45 seconds to write down the clue, the need, and the question they would ask next.</p></div>
+        <p>Customers rarely say "I need a product". They mention a life event, how they are paid, something that annoys them, or a goal. Read the customer's words aloud. Tables have 45 seconds to write down the clue, the need, and the question they would ask next. Tick what each table got right: 10 points each, added automatically.</p></div>
         <div class="row"><button class="btn" id="clPrev">Back</button><button class="btn primary" id="clReveal">Reveal next</button><button class="btn" id="clNext">Next customer</button></div></div>
       <div class="alll">
         <div><b>ASK</b><span>Open questions about their life, work and plans, not just the transaction.</span></div>
@@ -372,11 +435,12 @@ nav.rail a[aria-current="page"] .n{color:var(--accent)}
     <!-- MATCH -->
     <section class="view" id="v-match" data-title="Match the Customer">
       <div class="hd"><div><div class="eyebrow">Activity 5 · 25 min · product matching</div><h2>Match the Customer</h2>
-        <p>Give each table a persona. They have 4 minutes to choose the products that fit best, including at least one cross-sell, and to write the first question they would ask. One table presents. Tap their picks below, then press Check.</p></div>
+        <p>Give each table a persona. They have 4 minutes to choose the products that fit best, including at least one cross-sell, and to write the first question they would ask. Choose the presenting table, tap their picks, then press Check: the table gets 10 points for every recommended product it found.</p></div>
         <div class="row"><button class="btn" id="mClear">Clear picks</button><button class="btn primary" id="mCheck">Check</button></div></div>
       <div class="match">
         <div class="plist" id="plist"></div>
         <div style="display:flex;flex-direction:column;gap:16px;min-width:0">
+          <div class="marks" id="mPresent"></div>
           <div class="panel persona" id="persona"></div>
           <div class="panel pool" id="pool"></div>
           <div class="legend"><span><i style="background:var(--good)"></i>Picked and recommended</span><span><i style="background:var(--good-soft);border:1px dashed var(--good)"></i>Recommended, missed</span><span><i style="background:var(--sun-soft);border:1px solid var(--sun)"></i>Also reasonable</span><span><i style="background:var(--bad-soft);border:1px solid var(--bad)"></i>Ask the table why</span></div>
@@ -388,7 +452,7 @@ nav.rail a[aria-current="page"] .n{color:var(--accent)}
     <!-- SPOT -->
     <section class="view" id="v-spot" data-title="Spot the Opportunity">
       <div class="hd"><div><div class="eyebrow">Activity 6 · 15 min · cross-selling in routine service</div><h2>Spot the Opportunity</h2>
-        <p>A routine request arrives at the counter. Tables get 2 minutes to list every genuine opportunity hidden in it. Reveal the opportunities one at a time. Each table earns the points shown for every one on their list.</p></div>
+        <p>A routine request arrives at the counter. Tables get 2 minutes to list every genuine opportunity hidden in it. Reveal the opportunities one at a time and tick the tables that listed each one; their points are added automatically.</p></div>
         <div class="row"><button class="btn" id="spPrev">Back</button><button class="btn" id="spNext">Next scenario</button></div></div>
       <div class="spot">
         <div class="scn" id="scn"></div>
@@ -399,7 +463,7 @@ nav.rail a[aria-current="page"] .n{color:var(--accent)}
     <!-- SPIN -->
     <section class="view" id="v-spin" data-title="Spin & Explain">
       <div class="hd"><div><div class="eyebrow">Activity 7 · 10 min · confidence round</div><h2>Spin &amp; Explain</h2>
-        <p>One volunteer per table. Spin, then explain the product to an imaginary customer in 30 seconds, using Feature, Advantage and Benefit. The room votes with thumbs up. A clear pitch earns 30 points.</p></div></div>
+        <p>One volunteer per table. Spin, then explain the product to an imaginary customer in 30 seconds, using Feature, Advantage and Benefit. The room votes with thumbs up. For a clear pitch, tick the volunteer's table and it gets 30 points.</p></div></div>
       <div class="spinwrap">
         <div class="wheel-box"><div class="pointer" aria-hidden="true"></div><canvas id="wheel" width="1040" height="1040" aria-label="Product wheel"></canvas></div>
         <div class="result" id="spinRes"></div>
@@ -409,7 +473,8 @@ nav.rail a[aria-current="page"] .n{color:var(--accent)}
     <!-- CLOSE -->
     <section class="view" id="v-close" data-title="Close">
       <div class="hd"><div><div class="eyebrow">Close · 5 min</div><h2>From knowing to doing</h2>
-        <p>Announce the winning table. Then ask everyone to write three commitments on a sticky note and post it on the wall on their way out. Collect the notes for the Day 2 sales simulation.</p></div></div>
+        <p>The scoreboard below picks the winner automatically. Announce the winning table. Then ask everyone to write three commitments on a sticky note and post it on the wall on their way out. Collect the notes for the Day 2 sales simulation.</p></div></div>
+      <div class="panel" id="leader"></div>
       <div class="commit">
         <div><b>One product</b>I will explain more confidently tomorrow, and the one line I will use.</div>
         <div><b>One question</b>I will ask every customer this week to uncover a need.</div>
@@ -437,8 +502,10 @@ nav.rail a[aria-current="page"] .n{color:var(--accent)}
   </main>
 </div>
 
+<div class="toast" id="toast" role="status" hidden></div>
 <div class="overlay" id="ov" hidden><div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="mq"></div></div>
 
+<script src="vendor/supabase-2.117.3.js"></script>
 <script>
 (()=>{
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
@@ -452,12 +519,12 @@ const VIEWS=[
  ["spot","Spot the Opportunity","Cross-sell · 15 min"],["spin","Spin & Explain","Confidence · 10 min"],["close","Close","Commit · 5 min"]];
 
 const ROS=[
- {t:"0:00",d:"10 min",v:"warmup",h:"Myth or Fact warm-up",p:"Wakes the room up and shows what people don't know yet, before any teaching starts.",n:["Ask the 1–5 confidence question first and note the hand count.","Run 6–8 statements. Keep it fast: about 60 seconds each.","Explain the scoring: every activity earns table points."]},
+ {t:"0:00",d:"10 min",v:"warmup",h:"Myth or Fact warm-up",p:"Wakes the room up and shows what people don't know yet, before any teaching starts.",n:["Ask the 1–5 confidence question first and note the hand count.","Run 6–8 statements. Keep it fast: about 60 seconds each.","Start the session and create the teams first. Every activity scores automatically as you mark it."]},
  {t:"0:10",d:"25 min",v:"library",h:"Product Passport: jigsaw teach-back",p:"Staff refresh the products by teaching each other. People remember what they explain far better than what they hear.",n:["Give each table one family: Accounts, Cards, Financing, Digital, What's New.","10 minutes to prepare, then 3 minutes per table to teach.","You correct and add detail after each teach-back, in under 60 seconds."]},
  {t:"0:35",d:"20 min",v:"challenge",h:"BML Product Challenge quiz",p:"Checks recall across all families straight after the teach-backs. Includes the Islamic structure names customers will now ask about.",n:["Tables take turns choosing. A missed question can be stolen with the bell.","Leave the 400-point questions until the end to build tension.","After each answer, ask: how would you say that to a customer?"]},
- {t:"0:55",d:"15 min",v:"clues",h:"Listen for the Clue",p:"Moves from knowing products to spotting needs. Introduces ASK · LISTEN · LINK · LEAD.",n:["2 minutes on the four clue types, then 6–8 customer quotes.","Reveal the clue, the need, the product and the next question one at a time.","Award 10 points for a correct clue, 10 for the need and 10 for a good question."]},
- {t:"1:10",d:"25 min",v:"match",h:"Match the Customer",p:"The core practical exercise. Tables build a complete recommendation, including cross-sells, for a realistic Maldivian customer.",n:["One persona per table, with 4 minutes to prepare.","Two or three tables present. Tap their picks and press Check.","Discuss the red chips. They aren't always wrong, so ask the table to justify them."]},
- {t:"1:35",d:"15 min",v:"spot",h:"Spot the Opportunity",p:"Cross-selling inside routine service: a cash withdrawal, a statement request, a declined card.",n:["2 minutes per scenario. All tables work at once.","Reveal the opportunities one by one and tables claim points.","Stress the difference between a genuine need and pushing a product."]},
+ {t:"0:55",d:"15 min",v:"clues",h:"Listen for the Clue",p:"Moves from knowing products to spotting needs. Introduces ASK · LISTEN · LINK · LEAD.",n:["2 minutes on the four clue types, then 6–8 customer quotes.","Reveal the clue, the need, the product and the next question one at a time.","Tick each table for a correct clue, need and good question: 10 points each, added automatically."]},
+ {t:"1:10",d:"25 min",v:"match",h:"Match the Customer",p:"The core practical exercise. Tables build a complete recommendation, including cross-sells, for a realistic Maldivian customer.",n:["One persona per table, with 4 minutes to prepare.","Two or three tables present. Choose the presenting table, tap its picks and press Check to score it.","Discuss the red chips. They aren't always wrong, so ask the table to justify them."]},
+ {t:"1:35",d:"15 min",v:"spot",h:"Spot the Opportunity",p:"Cross-selling inside routine service: a cash withdrawal, a statement request, a declined card.",n:["2 minutes per scenario. All tables work at once.","Reveal the opportunities one by one and tick the tables that listed each one.","Stress the difference between a genuine need and pushing a product."]},
  {t:"1:50",d:"10 min",v:"spin",h:"Spin & Explain",p:"Builds confidence through a 30-second product pitch using Feature, Advantage and Benefit.",n:["One volunteer per table. The timer starts automatically after the spin.","The room gives thumbs up or down. Coach in one sentence."]},
  {t:"2:00",d:"5 min",v:"close",h:"Close and commitments",p:"Winner announced, confidence check repeated, three commitments written on sticky notes.",n:["Ask the confidence question again and compare with the opening count.","Collect the sticky notes for the Day 2 sales simulation."]}
 ];
@@ -628,33 +695,199 @@ const FAB={
  "Mobile Pay & Aaya":["Scan or tap to pay, send to friends, AI help 24/7","No cash, no queues, help at midnight","Bank on your own time, wherever you are"]
 };
 
-/* ================= TEAMS & SCORE ================= */
-const TCOL=["#c4122f","#0b7f83","#b77900","#4b5fb0","#7a3fa0","#16794a"];
-let teams=store.get("teams",[{n:"Team Hulhumalé",s:0},{n:"Team Addu",s:0},{n:"Team Kulhudhuffushi",s:0},{n:"Team Fuvahmulah",s:0}]);
-const saveTeams=()=>store.set("teams",teams);
-function renderTeams(){
-  const max=Math.max(...teams.map(t=>t.s));
-  $("#teams").innerHTML=teams.map((t,i)=>`<div class="team ${t.s>0&&t.s===max?"lead":""}" style="--tc:${TCOL[i]}">
-    <input id="tn${i}" value="${esc(t.n)}" aria-label="Team ${i+1} name"><span class="sc" id="ts${i}">${t.s}</span>
-    <button data-d="-10" data-i="${i}" aria-label="Minus 10 for ${esc(t.n)}">−</button><button data-d="10" data-i="${i}" aria-label="Plus 10 for ${esc(t.n)}">+</button></div>`).join("");
+/* ================= SESSION, TEAMS & SCORE (Supabase) ================= */
+// Scores live in Supabase: a team's score is the sum of its score_events. Automatic awards carry a ref
+// (for example "quiz:2-3"), so awarding again replaces the points and unticking removes them.
+const SB_URL="https://jtofxcdoyzyyxdlbjrbh.supabase.co", SB_KEY="sb_publishable_UduFSvz4bpmCY41kxjLRww_iufXEQpx";
+const sb=window.supabase?window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:false,autoRefreshToken:false}}):null;
+const TCOL=["#c4122f","#0b7f83","#b77900","#4b5fb0","#7a3fa0","#16794a","#d0541a","#5a6b7d"];
+const ACT={manual:"Manual",mythfact:"Myth or Fact",teach:"Teach-back",quiz:"Quiz",clue:"Clues",match:"Match",spot:"Spot",spin:"Spin"};
+let sess=null,hostKey=null,teams=[],events=new Map(),chan=null,modalKind=null;
+const isHost=()=>!!(sess&&hostKey);
+const tcol=t=>TCOL[t.color_idx%TCOL.length];
+const sortedTeams=()=>[...teams].sort((a,b)=>a.position-b.position);
+const teamById=id=>teams.find(t=>t.id===id);
+const teamScore=id=>{let s=0;for(const e of events.values())if(e.team_id===id)s+=e.points;return s};
+const findRef=(team,ref)=>{for(const e of events.values())if(e.team_id===team&&e.ref===ref)return e;return null};
+
+function toast(msg,bad){const el=$("#toast");el.textContent=msg;el.classList.toggle("bad",!!bad);el.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>el.hidden=true,bad?5000:2200)}
+function setConn(state){const el=$("#conn");el.dataset.s=state;el.textContent={live:"● Live",connecting:"Connecting…",off:"Offline",none:"No session"}[state]}
+
+async function rpc(fn,args){
+  if(!isHost()){toast("Only the facilitator's device can change teams and scores.",true);throw new Error("not host")}
+  const {data,error}=await sb.rpc(fn,{p_session:sess.id,p_key:hostKey,...args});
+  if(error){toast(error.message||"Could not save. Check the connection and try again.",true);throw error}
+  return data;
 }
-function award(i,d){teams[i].s+=d;saveTeams();renderTeams();}
-$("#teams").addEventListener("click",e=>{const b=e.target.closest("button[data-i]");if(b)award(+b.dataset.i,+b.dataset.d)});
-$("#teams").addEventListener("input",e=>{const m=e.target.id.match(/^tn(\d)$/);if(m){teams[+m[1]].n=e.target.value;saveTeams()}});
-$("#teamAdd").onclick=()=>{if(teams.length<6){teams.push({n:"Team "+(teams.length+1),s:0});saveTeams();renderTeams()}};
-$("#teamDel").onclick=()=>{if(teams.length>2){teams.pop();saveTeams();renderTeams()}};
+async function award(team,pts,act="manual",ref=null,reason=null){
+  const id=await rpc("award",{p_team:team,p_points:pts,p_activity:act,p_ref:ref,p_reason:reason});
+  if(ref)for(const [k,e] of events)if(e.team_id===team&&e.ref===ref&&k!==id)events.delete(k);
+  events.set(id,{id,team_id:team,points:pts,activity:act,ref,created_at:new Date().toISOString()});changed();return id;
+}
+async function revoke(team,ref){
+  await rpc("revoke_award",{p_team:team,p_ref:ref});
+  for(const [k,e] of events)if(e.team_id===team&&e.ref===ref)events.delete(k);changed();
+}
+
+async function reload(){
+  const [t,e]=await Promise.all([
+    sb.from("teams").select("id,name,color_idx,position").eq("session_id",sess.id),
+    sb.from("score_events").select("id,team_id,points,activity,ref,created_at").eq("session_id",sess.id).order("id").range(0,4999)]);
+  if(t.error||e.error){toast((t.error||e.error).message,true);return}
+  teams=t.data;events=new Map(e.data.map(x=>[x.id,x]));changed(true);
+}
+function subscribe(){
+  if(chan)sb.removeChannel(chan);
+  const f="session_id=eq."+sess.id,sid=sess.id;
+  const upEv=p=>{if(p.new.session_id!==sid)return;events.set(p.new.id,p.new);changed()};
+  const upTeam=p=>{if(p.new.session_id!==sid)return;const i=teams.findIndex(t=>t.id===p.new.id);if(i>=0)teams[i]=p.new;else teams.push(p.new);changed(true)};
+  setConn("connecting");
+  chan=sb.channel("kykp:"+sid)
+    .on("postgres_changes",{event:"INSERT",schema:"public",table:"score_events",filter:f},upEv)
+    .on("postgres_changes",{event:"UPDATE",schema:"public",table:"score_events",filter:f},upEv)
+    .on("postgres_changes",{event:"DELETE",schema:"public",table:"score_events"},p=>{if(events.delete(p.old.id))changed()})
+    .on("postgres_changes",{event:"INSERT",schema:"public",table:"teams",filter:f},upTeam)
+    .on("postgres_changes",{event:"UPDATE",schema:"public",table:"teams",filter:f},upTeam)
+    .on("postgres_changes",{event:"DELETE",schema:"public",table:"teams"},p=>{const n=teams.length;teams=teams.filter(t=>t.id!==p.old.id);if(teams.length!==n){for(const [k,e] of events)if(e.team_id===p.old.id)events.delete(k);changed(true)}})
+    .subscribe(st=>{if(st==="SUBSCRIBED"){setConn("live");reload()}else if(st==="CHANNEL_ERROR"||st==="TIMED_OUT"||st==="CLOSED")setConn("off")});
+}
+async function joinSession(code,key){
+  if(!sb){toast("The database library did not load. Check the connection and reload.",true);return false}
+  code=String(code||"").trim().toUpperCase();
+  const {data,error}=await sb.from("sessions").select("id,code,name").eq("code",code).maybeSingle();
+  if(error||!data){toast(error?error.message:"No session found with code "+code,true);return false}
+  sess=data;
+  if(key)store.set("host:"+data.id,key);
+  hostKey=store.get("host:"+data.id,null);
+  store.set("sess",data.code);
+  try{const u=new URL(location.href);u.searchParams.delete("k");u.searchParams.set("s",data.code);history.replaceState(null,"",u)}catch(_){}
+  $("#sessBtn").textContent="Session "+data.code;
+  document.body.classList.toggle("viewer",!hostKey);
+  await reload();subscribe();return true;
+}
+async function createSession(name){
+  if(!sb){toast("The database library did not load. Check the connection and reload.",true);return}
+  const {data,error}=await sb.rpc("create_session",{p_name:name});
+  if(error){toast(error.message,true);return}
+  store.set("host:"+data.session_id,data.host_key);
+  used=[];matched={};mfVotes={};quizTurn=0;store.set("used",used);store.set("matched",matched);store.set("turn",0);
+  if(await joinSession(data.code))renderSess();
+}
+function leaveSession(){
+  if(chan)sb.removeChannel(chan);chan=null;sess=null;hostKey=null;teams=[];events=new Map();store.set("sess",null);
+  try{const u=new URL(location.href);u.searchParams.delete("s");history.replaceState(null,"",u)}catch(_){}
+  $("#sessBtn").textContent="Session…";document.body.classList.remove("viewer");setConn("none");changed(true);
+}
+async function addTeam(name){
+  if(!sess){openSess();return}
+  if(teams.length>=8){toast("A session can have at most 8 teams.",true);return}
+  const row=await rpc("add_team",{p_name:name||("Team "+(teams.length+1))});
+  if(!teamById(row.id))teams.push(row);changed(true);return row;
+}
+
+/* ---- re-rendering when scores or teams change ---- */
+let chFull=false,chQueued=false;
+function changed(full){
+  chFull=chFull||!!full;if(chQueued)return;chQueued=true;
+  queueMicrotask(()=>{chQueued=false;const f=chFull;chFull=false;
+    renderTeams();renderBoard();renderLeader();
+    if(f){renderMF();renderTeach();renderClue();renderPresent();renderSpot();if(spinPick&&!spinning)renderSpinRes(spinPick);if(modalKind==="quiz")renderWho()}
+    if(modalKind==="sess")renderSess();
+    refreshMarks();
+  });
+}
+let barSig="";
+function renderTeams(){
+  const list=sortedTeams(),max=Math.max(0,...list.map(t=>teamScore(t.id)));
+  const sig=(isHost()?"h":"v")+list.map(t=>t.id+t.name+t.color_idx).join("|");
+  if(sig===barSig&&list.length){list.forEach(t=>{const box=$("#teams").querySelector(`[data-team-box="${t.id}"]`);if(!box)return;const s=teamScore(t.id);box.querySelector(".sc").textContent=s;box.classList.toggle("lead",s>0&&s===max)});return}
+  barSig=sig;
+  $("#teams").innerHTML=list.length?list.map(t=>{const s=teamScore(t.id);return `<div class="team ${s>0&&s===max?"lead":""}" data-team-box="${t.id}" style="--tc:${tcol(t)}">
+    <input data-tn="${t.id}" value="${esc(t.name)}" aria-label="Team name" ${isHost()?"":"readonly"}><span class="sc">${s}</span>
+    ${isHost()?`<button data-d="-10" data-t="${t.id}" aria-label="Minus 10 for ${esc(t.name)}">−</button><button data-d="10" data-t="${t.id}" aria-label="Plus 10 for ${esc(t.name)}">+</button>`:""}</div>`}).join("")
+   :`<span class="teams-empty">${sess?(isHost()?"No teams yet. Press + Team to create the first one.":"Waiting for the facilitator to add teams…"):"Start or join a session with the Session button."}</span>`;
+}
+$("#teams").addEventListener("click",async e=>{const b=e.target.closest("button[data-t]");if(!b)return;b.disabled=true;try{await award(b.dataset.t,+b.dataset.d,"manual")}catch(_){}b.disabled=false});
+async function renameFrom(input){
+  const t=teamById(input.dataset.tn),v=input.value.trim();
+  if(!t||!isHost())return;if(!v){input.value=t.name;return}if(v===t.name)return;
+  try{await rpc("rename_team",{p_team:t.id,p_name:v});t.name=v;barSig="";changed(true)}catch(_){input.value=t.name}
+}
+document.addEventListener("change",e=>{if(e.target.matches("input[data-tn]"))renameFrom(e.target)});
+document.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.matches("input[data-tn]"))e.target.blur()});
+$("#teamAdd").onclick=async()=>{if(!sess){openSess();return}try{const row=await addTeam();setTimeout(()=>{const i=$(`#teams input[data-tn="${row.id}"]`);if(i){i.focus();i.select()}},0)}catch(_){}};
 let resetArm=false;
-$("#resetAll").onclick=e=>{
+$("#resetAll").onclick=async e=>{
+  if(!isHost()){toast("Only the facilitator's device can reset scores.",true);return}
   if(!resetArm){resetArm=true;e.target.textContent="Tap again to reset";setTimeout(()=>{resetArm=false;e.target.textContent="Reset"},3000);return}
-  teams.forEach(t=>t.s=0);used=[];matched={};saveTeams();store.set("used",used);store.set("matched",matched);renderTeams();renderBoard();renderPlist();
   resetArm=false;e.target.textContent="Reset";
+  try{await rpc("reset_scores",{});events=new Map();used=[];matched={};mfVotes={};quizTurn=0;store.set("used",used);store.set("matched",matched);store.set("turn",0);changed(true);renderPlist();toast("Scores reset")}catch(_){}
 };
-const awardRow=(pts)=>`<div class="award"><span class="eyebrow" style="margin-right:4px">Award ${pts}</span>${teams.map((t,i)=>`<button style="--tc:${TCOL[i]}" data-aw="${i}" data-pts="${pts}">${esc(t.n)}</button>`).join("")}<button class="minus" data-undo="1">Undo last</button></div>`;
-let lastAward=null;
-document.addEventListener("click",e=>{
-  const b=e.target.closest("[data-aw]");if(b){const i=+b.dataset.aw,p=+b.dataset.pts;award(i,p);lastAward=[i,p];b.textContent="+"+p+" ✓";setTimeout(()=>{b.textContent=teams[i].n},900);return}
-  const u=e.target.closest("[data-undo]");if(u&&lastAward){award(lastAward[0],-lastAward[1]);lastAward=null;u.textContent="Undone";setTimeout(()=>u.textContent="Undo last",900)}
+
+/* ---- marking = scoring: every tick button awards or removes points ---- */
+const noTeams=()=>`<div class="note">${sess?(isHost()?"Add teams with <b>+ Team</b> to start scoring.":"Waiting for the facilitator to add teams."):"Start a session with the <b>Session</b> button to score automatically."}</div>`;
+const mkBtn=(t,ref,pts,act,label)=>`<button class="mk" style="--tc:${tcol(t)}" data-mk="${esc(ref)}" data-pts="${pts}" data-act="${act}" data-team="${t.id}" aria-pressed="false" ${isHost()?"":"disabled"}>${esc(label)}</button>`;
+const markRow=(ref,pts,act,label)=>teams.length?`<div class="marks"><span class="eyebrow">${esc(label)}</span>${sortedTeams().map(t=>mkBtn(t,ref,pts,act,t.name)).join("")}</div>`:noTeams();
+const markGrid=(base,cols,act)=>teams.length?`<div class="mgrid">${sortedTeams().map(t=>`<div class="mg-row" style="--tc:${tcol(t)}"><b>${esc(t.name)}</b><span class="mg-cells">${cols.map(([k,l,p])=>mkBtn(t,base+k,p,act,l)).join("")}</span><span class="mg-sum mono" data-sum="${esc(base)}" data-team="${t.id}"></span></div>`).join("")}</div>`:noTeams();
+function refreshMarks(){
+  $$("[data-mk]").forEach(b=>{const e=findRef(b.dataset.team,b.dataset.mk);b.setAttribute("aria-pressed",!!(e&&e.points===+b.dataset.pts))});
+  $$("[data-sum]").forEach(s=>{let n=0;for(const e of events.values())if(e.team_id===s.dataset.team&&e.ref&&e.ref.startsWith(s.dataset.sum))n+=e.points;s.textContent=n?"+"+n:""});
+}
+document.addEventListener("click",async e=>{
+  const b=e.target.closest("button[data-mk]");if(!b||b.disabled)return;
+  const team=b.dataset.team,ref=b.dataset.mk,pts=+b.dataset.pts,on=b.getAttribute("aria-pressed")==="true";
+  b.disabled=true;try{if(on)await revoke(team,ref);else await award(team,pts,b.dataset.act,ref)}catch(_){}b.disabled=!isHost();
 });
+
+/* ---- session dialog ---- */
+function openSess(){modalKind="sess";renderSess();$("#ov").hidden=false}
+$("#sessBtn").onclick=openSess;
+function renderSess(){
+  const m=$("#modal"),keep=$("#stName")?$("#stName").value:"",hadFocus=document.activeElement&&document.activeElement.id==="stName";
+  if(!sess){
+    m.innerHTML=`<div class="row" style="justify-content:space-between"><span class="pill">Session</span><button class="btn ghost" data-close>Close</button></div>
+     <h2 id="mq" class="sess-h">Start the session</h2>
+     <p class="muted">Creating a session makes this device the facilitator's console. Teams and scores are saved online and update live on every screen that joins.</p>
+     <form class="row" id="snForm"><input class="search" id="snName" value="KYC/KYP · Day 1 Session 4" aria-label="Session name"><button class="btn primary">Create session</button></form>
+     <div class="eyebrow" style="margin-top:6px">Or join an existing session to watch the scoreboard</div>
+     <form class="row" id="sjForm"><input class="search code-in" id="sjCode" placeholder="Code, e.g. 7KQ2MX" maxlength="6" autocapitalize="characters" aria-label="Session code"><button class="btn">Join</button></form>`;
+    $("#snForm").onsubmit=e=>{e.preventDefault();createSession($("#snName").value)};
+    $("#sjForm").onsubmit=async e=>{e.preventDefault();if(await joinSession($("#sjCode").value))renderSess()};
+    return;
+  }
+  const base=location.origin+location.pathname,view=base+"?s="+sess.code,host=hostKey?view+"&k="+hostKey:"";
+  const recent=[...events.values()].sort((a,b)=>b.id-a.id).slice(0,10);
+  m.innerHTML=`<div class="row" style="justify-content:space-between"><span class="pill ${isHost()?"":"sun"}">${isHost()?"Facilitator":"Viewer"}</span><button class="btn ghost" data-close>Close</button></div>
+   <div class="sess-top"><div><div class="eyebrow">${esc(sess.name)}</div><h2 id="mq" class="sess-code mono">${esc(sess.code)}</h2></div>
+     <div class="sess-links"><div><span class="eyebrow">Scoreboard link for tables</span><div class="row"><input class="search" readonly value="${esc(view)}" aria-label="Viewer link"><button class="btn" data-copy="${esc(view)}">Copy</button></div></div>
+     ${host?`<div><span class="eyebrow">Facilitator link (keep private)</span><div class="row"><input class="search" readonly value="${esc(host)}" aria-label="Facilitator link"><button class="btn" data-copy="${esc(host)}">Copy</button></div><small class="muted">Opens this session with scoring controls on another device.</small></div>`:""}</div></div>
+   <div class="eyebrow">Teams (${teams.length}/8)</div>
+   <div class="tlist">${sortedTeams().map(t=>`<div class="tl-row" style="--tc:${tcol(t)}"><i></i><input data-tn="${t.id}" value="${esc(t.name)}" aria-label="Team name" ${isHost()?"":"readonly"}><span class="mono">${teamScore(t.id)} pts</span>${isHost()?`<button class="btn ghost" data-rm="${t.id}">Remove</button>`:""}</div>`).join("")||`<div class="muted">No teams yet.</div>`}</div>
+   ${isHost()?`<form class="row" id="stForm"><input class="search" id="stName" placeholder="New team name, e.g. Team Hulhumalé" maxlength="60" aria-label="New team name"><button class="btn primary" ${teams.length>=8?"disabled":""}>Add team</button></form>`:""}
+   <div class="eyebrow">Latest points</div>
+   <div class="elog">${recent.map(e=>{const t=teamById(e.team_id);return `<div><span class="dot" style="background:${t?tcol(t):"var(--line)"}"></span><b>${esc(t?t.name:"Removed team")}</b><span class="mono ${e.points<0?"neg":""}">${e.points>0?"+":""}${e.points}</span><span class="muted">${esc(ACT[e.activity]||e.activity)}</span>${isHost()?`<button class="btn ghost" data-undo="${e.id}">Undo</button>`:""}</div>`}).join("")||`<div class="muted">No points yet.</div>`}</div>
+   <div class="row"><button class="btn" id="sLeave">Leave session</button>${isHost()?"":`<span class="muted">This device can only watch. Open the facilitator link to score.</span>`}</div>`;
+  const f=$("#stForm");if(f){$("#stName").value=keep;if(hadFocus)$("#stName").focus();f.onsubmit=async e=>{e.preventDefault();const v=$("#stName").value.trim();try{await addTeam(v||undefined);$("#stName").value="";$("#stName").focus()}catch(_){}}}
+  $("#sLeave").onclick=()=>{leaveSession();renderSess()};
+}
+$("#modal").addEventListener("click",async e=>{
+  if(e.target.closest("[data-close]")){closeQ();return}
+  const c=e.target.closest("[data-copy]");if(c){try{await navigator.clipboard.writeText(c.dataset.copy);toast("Link copied")}catch(_){toast("Copy failed. Select the link and copy it.",true)}return}
+  const r=e.target.closest("[data-rm]");if(r){if(r.dataset.armed){try{await rpc("remove_team",{p_team:r.dataset.rm});teams=teams.filter(t=>t.id!==r.dataset.rm);for(const [k,ev] of events)if(ev.team_id===r.dataset.rm)events.delete(k);barSig="";changed(true)}catch(_){}}else{r.dataset.armed=1;r.textContent="Tap to confirm";setTimeout(()=>{if(r.isConnected){delete r.dataset.armed;r.textContent="Remove"}},3000)}return}
+  const u=e.target.closest("[data-undo]");if(u){try{await rpc("undo_event",{p_event:+u.dataset.undo});events.delete(+u.dataset.undo);changed()}catch(_){}}
+});
+
+/* ---- leaderboard (Close view) ---- */
+function renderLeader(){
+  const list=sortedTeams().map(t=>({t,s:teamScore(t.id)})).sort((a,b)=>b.s-a.s),max=Math.max(1,...list.map(x=>x.s));
+  if(!list.length){$("#leader").innerHTML=`<div class="eyebrow">Final scoreboard</div>${noTeams()}`;return}
+  const top=list[0].s,winners=list.filter(x=>x.s===top&&top>0);
+  $("#leader").innerHTML=`<div class="eyebrow">Final scoreboard · updates live</div>
+   <h3 class="winner">${winners.length?(winners.length>1?"Tie: ":"Winner: ")+winners.map(x=>esc(x.t.name)).join(" & "):"No points yet"}</h3>
+   <div class="lb">${list.map((x,i)=>{const by={};for(const e of events.values())if(e.team_id===x.t.id)by[e.activity]=(by[e.activity]||0)+e.points;
+     return `<div class="lb-row" style="--tc:${tcol(x.t)}"><span class="lb-rank mono">${i+1}</span><div class="lb-main"><div class="lb-top"><b>${esc(x.t.name)}</b><span class="mono">${x.s}</span></div>
+     <div class="lb-bar"><i style="width:${Math.max(0,x.s)/max*100}%"></i></div><small class="muted">${Object.entries(by).filter(([,v])=>v).map(([k,v])=>esc(ACT[k]||k)+" "+v).join(" · ")||"—"}</small></div></div>`}).join("")}</div>`;
+}
 
 /* ================= TIMER ================= */
 let tLeft=300,tRun=false,tInt=null,actx=null;
@@ -689,15 +922,26 @@ $("#ros").innerHTML=ROS.map(r=>`<div class="ros-row"><div class="ros-time">${r.t
   <ul>${r.n.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`).join("");
 
 /* ================= MYTH OR FACT ================= */
-let mfI=0,mfShown=false;
+// Before the reveal, record each table's call. Reveal awards 10 to every table that called it right.
+let mfI=0,mfShown=false,mfVotes={};
 function renderMF(){
-  const m=MF[mfI];
+  const m=MF[mfI],v=mfVotes[mfI]||{};
+  const votes=teams.length?`<div class="votes"><span class="eyebrow">Each table's call</span>${sortedTeams().map(t=>`<div class="vote" style="--tc:${tcol(t)}"><b>${esc(t.name)}</b><button class="vbtn" data-vt="${t.id}" data-vv="1" aria-pressed="${v[t.id]===true}" ${isHost()?"":"disabled"}>Fact</button><button class="vbtn" data-vt="${t.id}" data-vv="0" aria-pressed="${v[t.id]===false}" ${isHost()?"":"disabled"}>Myth</button></div>`).join("")}</div>`:noTeams();
   $("#mfCard").innerHTML=`<div class="eyebrow">Statement ${mfI+1} of ${MF.length}</div><div class="mf-q">${esc(m.s)}</div>`+
-   (mfShown?`<div class="verdict ${m.a?"fact":"myth"}">${m.a?"FACT":"MYTH"}</div><div class="mf-ex">${esc(m.e)}</div>${awardRow(10)}`:`<div class="row"><span class="pill">Stand = Fact</span><span class="pill red">Sit = Myth</span></div>`);
+   (mfShown?`<div class="verdict ${m.a?"fact":"myth"}">${m.a?"FACT":"MYTH"}</div><div class="mf-ex">${esc(m.e)}</div>${markRow("mf:"+mfI,10,"mythfact","Tables that called it right (+10)")}`
+     :`<div class="row"><span class="pill">Stand = Fact</span><span class="pill red">Sit = Myth</span></div>${votes}`);
   $("#mfProg").innerHTML=MF.map((_,i)=>`<i class="${i<mfI?"done":i===mfI?"cur":""}"></i>`).join("");
   $("#mfReveal").disabled=mfShown;
+  refreshMarks();
 }
-$("#mfReveal").onclick=()=>{mfShown=true;renderMF()};
+$("#mfCard").addEventListener("click",e=>{const b=e.target.closest("[data-vt]");if(!b)return;const v=mfVotes[mfI]=mfVotes[mfI]||{},t=b.dataset.vt,val=b.dataset.vv==="1";if(v[t]===val)delete v[t];else v[t]=val;renderMF()});
+$("#mfReveal").onclick=async()=>{
+  const i=mfI,m=MF[i],v=mfVotes[i]||{};mfShown=true;renderMF();
+  if(!isHost())return;
+  const right=teams.filter(t=>v[t.id]===m.a),wrong=teams.filter(t=>t.id in v&&v[t.id]!==m.a&&findRef(t.id,"mf:"+i));
+  try{await Promise.all([...right.map(t=>award(t.id,10,"mythfact","mf:"+i)),...wrong.map(t=>revoke(t.id,"mf:"+i))]);
+    if(Object.keys(v).length)toast(right.length?"+10 to "+right.map(t=>t.name).join(", "):"No table called it right")}catch(_){}
+};
 $("#mfNext").onclick=()=>{mfI=(mfI+1)%MF.length;mfShown=false;renderMF()};
 $("#mfPrev").onclick=()=>{mfI=(mfI-1+MF.length)%MF.length;mfShown=false;renderMF()};
 
@@ -715,32 +959,66 @@ function renderLib(){
     <ul>${p.k.map(k=>`<li>${esc(k)}</li>`).join("")}</ul>
     <div class="pitch"><b>Say it in one line</b>${esc(p.pitch)}</div></article>`).join(""):`<div class="note">No products match "${esc(q)}". Try a product name, a rate such as "7.5%", or a word such as "USD".</div>`;
 }
+function renderTeach(){
+  $("#teach").innerHTML=`<div class="eyebrow">Teach-back score · tap the room's rating for each table (1 = unclear, 5 = crystal clear; 10 points per star)</div>
+   ${markGrid("teach",[1,2,3,4,5].map(r=>["",r+"★",r*10]),"teach")}`;
+  refreshMarks();
+}
 
 /* ================= QUIZ BOARD ================= */
-let used=store.get("used",[]);
+// Tap the answering table's answer: a correct answer scores automatically. A miss opens a steal for the other tables.
+let used=store.get("used",[]),quizTurn=store.get("turn",0),qs=null;
 function renderBoard(){
-  let h=QCATS.map(c=>`<div class="cat">${c}</div>`).join("");
-  for(let r=0;r<4;r++)for(let c=0;c<6;c++){const k=c+"-"+r,u=used.includes(k);h+=`<button class="tile ${u?"used":""}" data-k="${k}" data-cat="${QCATS[c]}" aria-label="${QCATS[c]} for ${(r+1)*100}${u?" (used)":""}">${(r+1)*100}</button>`}
-  $("#board").innerHTML=h;$("#qLeft").textContent=(24-used.length)+" questions left";
+  const auto=new Set();for(const e of events.values())if(e.ref&&e.ref.startsWith("quiz:"))auto.add(e.ref.slice(5));
+  let h=QCATS.map(c=>`<div class="cat">${c}</div>`).join(""),n=0;
+  for(let r=0;r<4;r++)for(let c=0;c<6;c++){const k=c+"-"+r,u=used.includes(k)||auto.has(k);if(u)n++;h+=`<button class="tile ${u?"used":""}" data-k="${k}" data-cat="${QCATS[c]}" aria-label="${QCATS[c]} for ${(r+1)*100}${u?" (used)":""}">${(r+1)*100}</button>`}
+  $("#board").innerHTML=h;$("#qLeft").textContent=(24-n)+" questions left";
+  const st=sortedTeams();$("#qTurn").textContent=st.length?"Choosing next: "+st[quizTurn%st.length].name:"";
 }
 $("#board").onclick=e=>{const b=e.target.closest(".tile");if(b)openQ(b.dataset.k)};
+function renderWho(){
+  if(!qs||!$("#qWho"))return;
+  const el=$("#qWho");
+  if(qs.done||!teams.length){el.innerHTML=teams.length?"":noTeams();return}
+  const left=sortedTeams().filter(t=>!qs.tried.has(t.id));
+  el.innerHTML=`<span class="eyebrow">${qs.tried.size?"Steal: who rang first?":"Answering"}</span>${left.map(t=>`<button class="mk" style="--tc:${tcol(t)}" data-who="${t.id}" aria-pressed="${qs.answering===t.id}" ${isHost()?"":"disabled"}>${esc(t.name)}</button>`).join("")}`;
+}
 function openQ(k){
-  const [c,r]=k.split("-").map(Number),it=Q[c][r],pts=(r+1)*100;
+  const [c,r]=k.split("-").map(Number),it=Q[c][r],pts=(r+1)*100,st=sortedTeams();
+  qs={k,it,pts,tried:new Set(),done:false,used:false,answering:st.length?st[quizTurn%st.length].id:null};
+  modalKind="quiz";
   const m=$("#modal");
-  m.innerHTML=`<div class="row" style="justify-content:space-between"><span class="pill red">${QCATS[c]} · ${pts}</span><button class="btn ghost" id="qClose">Close</button></div>
+  m.innerHTML=`<div class="row" style="justify-content:space-between"><span class="pill red">${QCATS[c]} · ${pts}</span><button class="btn ghost" data-close>Close</button></div>
    <div class="q" id="mq">${esc(it.q)}</div>
+   <div class="answering" id="qWho"></div>
    <div class="opts">${it.o.map((o,i)=>`<button class="opt" data-o="${i}"><span class="k">${"ABCD"[i]}</span><span>${esc(o)}</span></button>`).join("")}</div>
-   <div id="qAfter" hidden><div class="explain">${esc(it.e)}</div><div style="margin-top:12px">${awardRow(pts)}</div></div>
+   <div class="qstatus" id="qStatus" aria-live="polite"></div>
+   <div id="qAfter" hidden><div class="explain">${esc(it.e)}</div><div style="margin-top:12px">${markRow("quiz:"+k,pts,"quiz","Points for this question (tap to correct)")}</div></div>
    <div class="row"><button class="btn" id="qShow">Show answer</button></div>`;
   $("#ov").hidden=false;
-  const done=()=>{if(!used.includes(k)){used.push(k);store.set("used",used);renderBoard()}};
-  const reveal=(pick)=>{$$(".opt").forEach((b,i)=>{b.disabled=true;b.classList.add(i===it.a?"right":(i===pick?"wrong":"dim"))});$("#qAfter").hidden=false;$("#qShow").hidden=true;done()};
-  m.querySelectorAll(".opt").forEach(b=>b.onclick=()=>reveal(+b.dataset.o));
-  $("#qShow").onclick=()=>reveal(-1);
-  $("#qClose").onclick=closeQ;
+  renderWho();refreshMarks();
+  const status=(t,cls)=>{const s=$("#qStatus");s.textContent=t;s.className="qstatus "+(cls||"")};
+  const reveal=()=>{qs.done=true;qs.used=true;$$(".opt").forEach((b,i)=>{b.disabled=true;if(i===it.a)b.classList.add("right");else if(!b.classList.contains("wrong"))b.classList.add("dim")});$("#qAfter").hidden=false;$("#qShow").hidden=true;renderWho();
+    if(!used.includes(k)){used.push(k);store.set("used",used)}renderBoard()};
+  m.querySelectorAll(".opt").forEach(b=>b.onclick=async()=>{
+    if(qs.done)return;const i=+b.dataset.o;
+    if(!isHost()||!teams.length){reveal();return}
+    if(!qs.answering){status("Tap the table that is answering first.","bad");return}
+    const t=teamById(qs.answering);
+    if(i===it.a){reveal();try{await award(t.id,pts,"quiz","quiz:"+k);status(`Correct! +${pts} to ${t.name}${qs.tried.size?" (steal)":""}`,"good")}catch(_){status("Correct, but the points could not be saved. Tap the team below to retry.","bad")}}
+    else{b.classList.add("wrong");b.disabled=true;qs.tried.add(t.id);qs.answering=null;
+      if(qs.tried.size>=teams.length){reveal();status(`${t.name} missed it. No table got it, so no points.`,"bad")}
+      else{renderWho();status(`${t.name} missed it. Steal: tap the table that rang first, then its answer.`,"bad")}}
+  });
+  $("#qShow").onclick=()=>{reveal();status("Answer shown. No points awarded.")};
   m.querySelector(".opt").focus();
 }
-function closeQ(){$("#ov").hidden=true}
+$("#modal").addEventListener("click",e=>{const b=e.target.closest("[data-who]");if(!b||!qs)return;qs.answering=b.dataset.who;renderWho()});
+function closeQ(){
+  $("#ov").hidden=true;
+  if(modalKind==="quiz"&&qs&&qs.used){quizTurn++;store.set("turn",quizTurn);renderBoard()}
+  modalKind=null;qs=null;
+}
 $("#ov").addEventListener("click",e=>{if(e.target.id==="ov")closeQ()});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#ov").hidden)closeQ()});
 
@@ -750,22 +1028,30 @@ const CL_PARTS=[["clue","The clue"],["need","The need"],["lead","Lead with"],["a
 function renderClue(){
   const c=CLUES[clI];
   $("#clQuote").innerHTML=`<span class="eyebrow">Customer ${clI+1} of ${CLUES.length}</span><p>“${esc(c.q)}”</p><span class="by">${esc(c.by)}</span>`;
-  $("#clReveal-grid").innerHTML=CL_PARTS.map((p,i)=>`<div class="rv ${i<clStep?"":"hidden-rv"}"><span class="eyebrow">${p[1]}</span><div>${esc(c[p[0]])}</div></div>`).join("")+(clStep>=4?awardRow(10):"");
+  $("#clReveal-grid").innerHTML=CL_PARTS.map((p,i)=>`<div class="rv ${i<clStep?"":"hidden-rv"}"><span class="eyebrow">${p[1]}</span><div>${esc(c[p[0]])}</div></div>`).join("")+
+    (clStep>=1?`<div class="panel tight"><div class="eyebrow">Tick what each table wrote down (+10 each)</div>${markGrid("clue:"+clI+":",[["clue","Clue",10],["need","Need",10],["ask","Question",10]],"clue")}</div>`:"");
   $("#clReveal").disabled=clStep>=4;
+  refreshMarks();
 }
 $("#clReveal").onclick=()=>{if(clStep<4){clStep++;renderClue()}};
 $("#clNext").onclick=()=>{clI=(clI+1)%CLUES.length;clStep=0;renderClue()};
 $("#clPrev").onclick=()=>{clI=(clI-1+CLUES.length)%CLUES.length;clStep=0;renderClue()};
 
 /* ================= MATCH ================= */
-let pI=0,picks=new Set(),checked=false,matched=store.get("matched",{});
+// Check awards the presenting table 10 points per recommended product it picked.
+let pI=0,picks=new Set(),checked=false,matched=store.get("matched",{}),mPresent=null;
 const ini=n=>n.slice(0,1);
 function renderPlist(){
   $("#plist").innerHTML=PERSONAS.map((p,i)=>`<button data-p="${i}" aria-pressed="${i===pI}"><span class="av" style="background:${p.col}">${ini(p.n)}</span><span>${esc(p.n)}, ${p.age}<small>${esc(p.place)}</small></span>${matched[p.id]!=null?`<span class="done-mark">${matched[p.id]}/${Object.keys(p.ideal).length}</span>`:""}</button>`).join("");
 }
+function renderPresent(){
+  if(mPresent&&!teamById(mPresent))mPresent=null;
+  $("#mPresent").innerHTML=teams.length?`<span class="eyebrow">Presenting table</span>${sortedTeams().map(t=>`<button class="mk" style="--tc:${tcol(t)}" data-pres="${t.id}" aria-pressed="${mPresent===t.id}" ${checked||!isHost()?"disabled":""}>${esc(t.name)}</button>`).join("")}`:noTeams();
+}
+$("#mPresent").addEventListener("click",e=>{const b=e.target.closest("[data-pres]");if(!b||b.disabled)return;mPresent=b.dataset.pres;renderPresent()});
 $("#plist").onclick=e=>{const b=e.target.closest("button");if(!b)return;pI=+b.dataset.p;picks=new Set();checked=false;renderMatch()};
 function renderMatch(){
-  renderPlist();
+  renderPlist();renderPresent();
   const p=PERSONAS[pI];
   $("#persona").innerHTML=`<div class="big-av" style="background:${p.col}">${ini(p.n)}</div><div style="min-width:0"><div class="eyebrow">Persona ${pI+1} of ${PERSONAS.length}</div><h3>${esc(p.n)}, ${p.age}</h3><div class="meta">${esc(p.place)}</div><p class="story">${esc(p.story)}</p><div class="says">${esc(p.says)}</div></div>`;
   $("#pool").innerHTML=POOL.map(g=>`<div class="pool-fam"><span>${g[0]}</span>${g[1].map(([id,n])=>{
@@ -774,38 +1060,45 @@ function renderMatch(){
   const ans=$("#answer");
   if(!checked){ans.hidden=true;$("#mCheck").disabled=false;return}
   const hits=Object.keys(p.ideal).filter(id=>picks.has(id)).length,tot=Object.keys(p.ideal).length;
-  const extra=[...picks].filter(id=>!(id in p.ideal)&&!p.ok.includes(id));
+  const extra=[...picks].filter(id=>!(id in p.ideal)&&!p.ok.includes(id)),pt=teamById(mPresent);
   ans.hidden=false;$("#mCheck").disabled=true;
-  ans.innerHTML=`<div class="row" style="justify-content:space-between"><div class="scoreline">${hits} of ${tot} recommended products found</div><span class="pill">${hits*10} points</span></div>
+  ans.innerHTML=`<div class="row" style="justify-content:space-between"><div class="scoreline">${hits} of ${tot} recommended products found</div><span class="pill">${pt?`+${hits*10} to ${esc(pt.name)}`:`${hits*10} points`}</span></div>
    ${Object.entries(p.ideal).map(([id,why])=>`<div class="ln"><b>${picks.has(id)?"✓ ":""}${esc(PNAME[id])}</b><span>${esc(why)}</span></div>`).join("")}
    ${p.ok.length?`<div class="ln"><b>Also reasonable</b><span>${p.ok.map(id=>esc(PNAME[id])).join(", ")}</span></div>`:""}
    ${extra.length?`<div class="ln"><b>Ask the table why</b><span>${extra.map(id=>esc(PNAME[id])).join(", ")}. Is there a real need, or is this a product push?</span></div>`:""}
    <div class="ln"><b>A strong first question</b><span>${esc(p.q)}</span></div>
-   ${awardRow(hits*10||10)}`;
+   ${pt?"":`<div class="note">No presenting table was chosen, so no points were added. Clear picks, choose the table, and check again.</div>`}`;
   matched[p.id]=hits;store.set("matched",matched);renderPlist();
 }
 $("#pool").onclick=e=>{const b=e.target.closest(".pchip");if(!b||checked)return;const id=b.dataset.id;picks.has(id)?picks.delete(id):picks.add(id);b.setAttribute("aria-pressed",picks.has(id))};
-$("#mCheck").onclick=()=>{checked=true;renderMatch()};
+$("#mCheck").onclick=async()=>{
+  if(isHost()&&teams.length&&!mPresent){toast("Choose the presenting table first.",true);return}
+  checked=true;renderMatch();
+  const p=PERSONAS[pI],hits=Object.keys(p.ideal).filter(id=>picks.has(id)).length;
+  if(isHost()&&mPresent){try{if(hits)await award(mPresent,hits*10,"match","match:"+p.id);else await revoke(mPresent,"match:"+p.id)}catch(_){}}
+};
 $("#mClear").onclick=()=>{picks=new Set();checked=false;renderMatch()};
 
 /* ================= SPOT ================= */
+// Reveal each opportunity, then tick the tables that listed it; its points are added straight away.
 let sI=0,sShown=new Set();
 function renderSpot(){
   const s=SPOT[sI];
   $("#scn").innerHTML=`<span class="ticket">Scenario ${sI+1} of ${SPOT.length} · ${esc(s.tk)}</span><h3>${esc(s.h)}</h3><p>${esc(s.p)}</p>
    <div class="row"><button class="btn primary" id="spTimer">Start 2-minute timer</button><button class="btn" id="spAll">Reveal all</button></div>
-   <div class="note">Total available: <b class="mono">${s.o.reduce((a,o)=>a+o[2],0)}</b> points per table. Award with the + buttons in the scoreboard or below.</div>
-   ${awardRow(10)}`;
-  $("#opp").innerHTML=s.o.map((o,i)=>`<button class="o ${sShown.has(i)?"shown":""}" data-i="${i}" aria-label="${sShown.has(i)?esc(o[0]):"Reveal opportunity "+(i+1)}"><span class="num">${i+1}</span><span class="txt"><b>${esc(o[0])}</b><span>${esc(o[1])}</span></span><span class="pts">+${o[2]}</span></button>`).join("");
+   <div class="note">Total available: <b class="mono">${s.o.reduce((a,o)=>a+o[2],0)}</b> points per table. Under each revealed opportunity, tick the tables that listed it.</div>`;
+  $("#opp").innerHTML=s.o.map((o,i)=>`<div class="o ${sShown.has(i)?"shown":""}"><button class="o-head" data-i="${i}" aria-label="${sShown.has(i)?esc(o[0]):"Reveal opportunity "+(i+1)}"><span class="num">${i+1}</span><span class="txt"><b>${esc(o[0])}</b><span>${esc(o[1])}</span></span><span class="pts">+${o[2]}</span></button>
+    ${sShown.has(i)?markRow(`spot:${sI}:${i}`,o[2],"spot","Listed it"):""}</div>`).join("");
   $("#spTimer").onclick=()=>{clockSet(2);clockToggle()};
   $("#spAll").onclick=()=>{s.o.forEach((_,i)=>sShown.add(i));renderSpot()};
+  refreshMarks();
 }
-$("#opp").onclick=e=>{const b=e.target.closest("button.o");if(!b)return;sShown.add(+b.dataset.i);renderSpot()};
+$("#opp").onclick=e=>{const b=e.target.closest("button.o-head");if(!b)return;sShown.add(+b.dataset.i);renderSpot()};
 $("#spNext").onclick=()=>{sI=(sI+1)%SPOT.length;sShown=new Set();renderSpot()};
 $("#spPrev").onclick=()=>{sI=(sI-1+SPOT.length)%SPOT.length;sShown=new Set();renderSpot()};
 
 /* ================= SPIN ================= */
-const cv=$("#wheel"),cx=cv.getContext("2d");let ang=0,spinning=false,spinPick=null,spT=30,spInt=null;
+const cv=$("#wheel"),cx=cv.getContext("2d");let ang=0,spinning=false,spinPick=null,spinId=0,spT=30,spInt=null;
 const WCOL=["#c4122f","#0f2238","#0b7f83","#b77900","#4b5fb0","#16794a"];
 function drawWheel(){
   const W=cv.width,R=W/2-10,n=WHEEL.length,seg=2*Math.PI/n;
@@ -822,7 +1115,7 @@ function spin(){
   if(spinning)return;spinning=true;clearInterval(spInt);
   const start=ang,delta=2*Math.PI*(5+Math.random()*3)+Math.random()*2*Math.PI,dur=matchMedia("(prefers-reduced-motion: reduce)").matches?10:4200,t0=performance.now();
   renderSpinRes(null);
-  const step=now=>{const k=Math.min(1,(now-t0)/dur),e=1-Math.pow(1-k,4);ang=start+delta*e;drawWheel();if(k<1)requestAnimationFrame(step);else{spinning=false;spinPick=WHEEL[pickAt(ang)];renderSpinRes(spinPick);startSpinTimer()}};
+  const step=now=>{const k=Math.min(1,(now-t0)/dur),e=1-Math.pow(1-k,4);ang=start+delta*e;drawWheel();if(k<1)requestAnimationFrame(step);else{spinning=false;spinPick=WHEEL[pickAt(ang)];spinId=Date.now();renderSpinRes(spinPick);startSpinTimer()}};
   requestAnimationFrame(step);
 }
 function startSpinTimer(){spT=30;clearInterval(spInt);const el=()=>$("#spT");spInt=setInterval(()=>{spT--;if(el()){el().textContent=fmt(spT);el().classList.toggle("low",spT<=5)}if(spT<=0){clearInterval(spInt);beep()}},1000)}
@@ -832,18 +1125,25 @@ function renderSpinRes(p){
     <div class="row"><button class="btn primary" id="spinBtn" ${spinning?"disabled":""}>Spin</button></div>`;
     const b=$("#spinBtn");if(b)b.onclick=spin;return}
   const f=FAB[p];
-  $("#spinRes").innerHTML=`<div class="eyebrow">Explain in 30 seconds</div><h3>${esc(p)}</h3><div class="bigtimer" id="spT">00:30</div>
+  $("#spinRes").innerHTML=`<div class="eyebrow">Explain in 30 seconds</div><h3>${esc(p)}</h3><div class="bigtimer" id="spT">${fmt(spT)}</div>
    <div class="fab"><div><b>Feature</b><span>${esc(f[0])}</span></div><div><b>Advantage</b><span>${esc(f[1])}</span></div><div><b>Benefit</b><span>${esc(f[2])}</span></div></div>
    <p style="margin:0;color:var(--muted);font-size:.9rem">These are coaching notes. Compare them with the pitch once the volunteer has finished.</p>
-   ${awardRow(30)}<div class="row"><button class="btn primary" id="spinBtn">Spin again</button></div>`;
+   ${markRow("spin:"+spinId,30,"spin","Thumbs up from the room: tick the volunteer's table (+30)")}<div class="row"><button class="btn primary" id="spinBtn">Spin again</button></div>`;
   $("#spinBtn").onclick=spin;
+  refreshMarks();
 }
 cv.addEventListener("click",spin);
 
 /* ================= INIT ================= */
-renderTeams();renderMF();renderLib();renderBoard();renderClue();renderMatch();renderSpot();renderSpinRes(null);drawClock();
+renderTeams();renderMF();renderLib();renderTeach();renderBoard();renderClue();renderMatch();renderSpot();renderSpinRes(null);renderLeader();drawClock();setConn("none");
 const h=(location.hash||"").slice(1);show(VIEWS.some(v=>v[0]===h)?h:store.get("view","plan"));
 document.fonts&&document.fonts.ready.then(drawWheel);
+(async()=>{
+  const p=new URLSearchParams(location.search),code=p.get("s"),key=p.get("k"),saved=store.get("sess",null);
+  if(code){if(!(await joinSession(code,key)))openSess()}
+  else if(saved){if(!(await joinSession(saved)))openSess()}
+  else openSess();
+})();
 })();
 </script>
 
