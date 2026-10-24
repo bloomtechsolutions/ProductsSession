@@ -572,17 +572,21 @@ const ROS=[
  {t:"2:00",d:"5 min",v:"close",h:"Close and commitments",p:"Winner announced, confidence check repeated, three commitments written on sticky notes.",n:["Ask the confidence question again and compare with the opening count.","Collect the sticky notes for the Day 2 sales simulation."]}
 ];
 
+// Statements are deliberately near-misses: the right product with a wrong threshold, a swapped condition,
+// or a rule that only holds up to a limit. Every answer follows from the product facts in PRODUCTS below.
 const MF=[
- {s:"A Maldivian customer must visit a branch to open their first BML account.",a:false,e:"False. Maldivians opening their first BML account can apply online with instant approval. Existing customers add accounts through Internet Banking: Services → Applications → Additional Account."},
- {s:"Lui Financing needs a guarantor or security.",a:false,e:"False. Lui is unsecured, with no guarantee or security, from MVR 10,000 up to MVR 1.2 million."},
- {s:"An old-age pension counts as income for Lui Financing.",a:false,e:"False. Salary, business income, rental income and early-retirement Government pension count. Old-age pension does not."},
- {s:"Since 13 September 2026, a customer who prefers conventional banking can still ask for it.",a:true,e:"True. New personal accounts and financing are now processed under Islamic principles by default, but customers who prefer conventional services can request them directly from the Bank."},
- {s:"The new USD 3,500 monthly ATM limit replaces the USD 1,600 daily limit.",a:false,e:"False. Both apply from 1 October 2026: USD 1,600 a day per card, and USD 3,500 a month per customer."},
- {s:"The Visa Infinite is the first metal card in the Maldives.",a:true,e:"True. It comes with Priority Pass lounge access, 24/7 Visa concierge and travel insurance, for credit limits above USD 45,000."},
- {s:"Green Financing charges a processing fee.",a:false,e:"False. Green Financing has no deposit and no processing fee. Unsecured is 12% p.a. and secured is 10% p.a."},
- {s:"Home Construction Financing can refinance a loan taken from another bank.",a:true,e:"True. Existing home construction loans can be refinanced, whether they came from BML or another institution."},
- {s:"Parents can freeze their child's BML Student Card from the app.",a:true,e:"True. Parents apply through the BML Mobile App, get real-time alerts, and can freeze or unfreeze the card and change its PIN."},
- {s:"Every new BML account holder automatically gets a virtual prepaid card.",a:true,e:"True. Opening an account registers the customer for a virtual MVR Mastercard Prepaid card linked to BML Pay, with free top-ups."}
+ {s:"A Savings Account starts earning profit as soon as the balance is above the MVR 200 minimum.",a:false,e:"False. MVR 200 is only the minimum balance to keep it open. Profit is earned from MVR 5,000 (USD 1,000)."},
+ {s:"Lui Financing will not count an old-age pension as income, but it will count a Government early-retirement pension.",a:true,e:"True. Salary, business income, rental income and the Government early-retirement pension count. The old-age pension does not."},
+ {s:"A customer's 11th contactless tap of the day needs a PIN, even if the purchase is only MVR 50.",a:true,e:"True. Visa contactless works without a PIN under MVR 750, but only for the first 10 contactless payments in a day. After that a PIN is required whatever the amount."},
+ {s:"A USD earner gets a lower rate on Home Purchase Financing than a resort worker gets on Home Financing for Tourism Employees.",a:false,e:"False. Both are 7.5% p.a. Home Purchase Financing is up to 9%, with 7.5% for USD earners, and the tourism-employee product is also 7.5%."},
+ {s:"Unsecured Kiyavaa Financing can pay for any degree abroad, as long as the money is disbursed in USD.",a:false,e:"False. Unsecured Kiyavaa (10% p.a., up to 100%) is for professional qualifications only. Disbursement in USD is a feature, not the condition."},
+ {s:"A customer earning exactly MVR 30,000 a month can be offered a Lui Financing limit of MVR 360,000.",a:true,e:"True. The limit is 8× monthly income, rising to 12× at MVR 30,000 or more: 12 × 30,000 = MVR 360,000, well under the MVR 1.2 million cap."},
+ {s:"A USD Investment Account always earns a higher expected profit than a USD Kids' Saver Account.",a:false,e:"False. USD Investment rates run from 2.70% to 3.50% by amount and tenor. The USD Kids' Saver earns 3.5%, so the Investment Account is never higher and is usually lower."},
+ {s:"Green Financing of MVR 1 million can run for up to 20 years, but only as secured financing with 15% equity.",a:true,e:"True. Unsecured Green Financing stops at MVR 500,000 and 5 years. Above MVR 500,000 it is secured (10% p.a., 15% equity) and can run up to 20 years."},
+ {s:"A customer who wants MVR 400,000 of Lifestyle Financing will have to offer security.",a:true,e:"True. Unsecured Lifestyle Financing stops at MVR 300,000 (15% p.a.). From MVR 300,000 to MVR 1.5 million it is secured, at 12% p.a."},
+ {s:"To apply for a Classic credit card, a customer needs MVR 4,000 a month routed to BML for at least 12 months.",a:false,e:"False. The income is right, the period isn't: credit cards need income routed to BML for 6 months. 12 months of payroll is what unlocks instant limit approval (and Lui Financing)."},
+ {s:"A customer who has already withdrawn USD 3,200 in cash from BML ATMs this month can still take out USD 500 more this month.",a:false,e:"False. The monthly limit is USD 3,500 per customer, so only USD 300 is left. The USD 1,600 daily limit per card doesn't help once the monthly limit is reached."},
+ {s:"Islamic Micro Financing is cheaper than Youth Entrepreneurship Financing, but a customer can't apply for it at a BML branch.",a:true,e:"True. Islamic Micro Financing is 2.5% against 7% for Youth Entrepreneurship Financing, and applications go only through SME Digital, BML's Shariah-compliant subsidiary."}
 ];
 
 const FAMS=[["all","All"],["acc","Accounts"],["card","Cards"],["fin","Financing"],["dig","Digital"],["new","What's new"]];
