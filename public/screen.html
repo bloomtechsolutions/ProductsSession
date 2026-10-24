@@ -148,7 +148,7 @@ body{font-family:var(--f-body);display:flex;align-items:center;justify-content:c
 </head>
 <body>
 <div class="stage" id="stage">
-  <div class="top"><span class="live" id="live"></span><span>BML · Know your customer, know your product</span><span class="right" id="topRight"></span></div>
+  <div class="top"><span class="live" id="live"></span><span>Refresher Training 2026 - Know your customer, know your product</span><span class="right" id="topRight"></span></div>
   <main class="scene" id="scene" aria-live="polite"></main>
   <div class="ticker" id="ticker" hidden><b>Did you know?</b><span id="fact"></span></div>
   <canvas id="confetti" aria-hidden="true"></canvas>
@@ -291,7 +291,7 @@ function teamRowsHtml(){
 }
 function sHome(m){
   const b=flapBoard(["KNOW YOUR","CUSTOMER","KNOW YOUR","PRODUCT"],10,{colors:["","sun","","red"]});
-  scene.innerHTML=`<div class="grid2" style="align-items:center"><div id="hb"></div><div class="card" style="gap:1.4cqw"><div class="label">Teams · <b>check in on one phone</b></div><div class="rows" id="teamRows">${teamRowsHtml()}</div>
+  scene.innerHTML=`<div class="grid2" style="align-items:center"><div id="hb"></div><div class="card" style="gap:1.4cqw"><div class="label">Teams · <b>Each team leader to check in</b></div><div class="rows" id="teamRows">${teamRowsHtml()}</div>
     ${m&&m.join?`<div class="qrbox">${qrSvg(m.join)}<div><small>Scan to join · one phone per team</small><div class="code">${esc(m.code)}</div></div></div>`:""}</div></div>`;
   $("#hb").appendChild(b);b.play();
 }
