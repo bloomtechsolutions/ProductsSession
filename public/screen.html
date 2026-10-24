@@ -64,6 +64,10 @@ body{font-family:var(--f-body);display:flex;align-items:center;justify-content:c
 .qrbox svg{display:block;width:9cqw;height:9cqw}
 .qrbox .code{font-family:var(--f-mono);font-weight:800;font-size:3.2cqw;letter-spacing:.25em}
 .qrbox small{display:block;font-size:1.2cqw;font-weight:700;color:#444}
+.fbn{font-family:var(--f-mono);font-weight:800;font-size:4.4cqw;line-height:1;color:var(--sun)}
+.fbbars{display:grid;grid-template-columns:1fr 1fr;gap:1.6cqw}
+.fbbars .row5{display:grid;grid-template-columns:1.4cqw minmax(0,1fr) 2.4cqw;gap:.6cqw;align-items:center;font-family:var(--f-mono);font-size:1.1cqw;margin:.15cqw 0}
+.fbbars i{display:block;height:1.1cqw;border-radius:.6cqw;background:var(--c);min-width:2px;transition:width .6s}
 .grid2{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:2.4cqw;align-items:start;min-height:0;flex:1}
 .opts{display:grid;grid-template-columns:1fr 1fr;gap:1cqw}
 .opts.one{grid-template-columns:1fr}
@@ -247,7 +251,7 @@ function sceneKey(m){
     case "challenge":{const o=m.quiz.open;return o?`quiz:${o.k}:${o.revealed}`:"quiz:board"}
     case "clues":return `cl:${m.cl.i}:${m.cl.step}:${m.cl.phase}`;
     case "spin":{const s=m.sp;return `sp:${s.phase}:${s.team}:${s.pick}:${s.spin?s.spin.id:""}`}
-    case "close":return "winner";
+    case "close":return m.fb?"fb":"winner";
     default:return m.join?"home:join":"home";
   }
 }
@@ -258,7 +262,7 @@ function render(force){
   if(key===curKey&&!force){update();return}
   const prev=curKey;curKey=key;
   const [kind]=key.split(":");
-  const fn={home:sHome,join:sJoin,intro:sIntro,mf:sMF,pp:sPP,quiz:sQuiz,cl:sClue,sp:sSpin,stand:sStand,winner:sWinner}[kind]||sHome;
+  const fn={home:sHome,join:sJoin,intro:sIntro,mf:sMF,pp:sPP,quiz:sQuiz,cl:sClue,sp:sSpin,stand:sStand,winner:sWinner,fb:sFb}[kind]||sHome;
   scene.innerHTML="";fn(m,prev);update();
 }
 function update(){
@@ -270,6 +274,7 @@ function update(){
   put($("#teamRows"),teamRowsHtml());
   if(m.pp)put($("#pkBoard"),picksHtml(m.pp));
   if(m.quiz)put($("#qBoard"),quizBoardHtml(m.quiz));
+  if(m.fb)put($("#fbLive"),fbLiveHtml(m.fb));
   tickTimers(now);
 }
 let lastSec={};
@@ -407,6 +412,21 @@ function sStand(m){
     lb.appendChild(row);
     setTimeout(()=>{row.style.top=(list.indexOf(t)*H)+"cqw";row.querySelector(".bar i").style.width=(Math.max(0,t.score)/max*100)+"%"},reduce?0:900)});
   setTimeout(()=>{sApplause(2.2);if(list[0])confetti([list[0].col])},reduce?0:1600);
+}
+function fbLiveHtml(f){
+  const bars=(d,c)=>{const m=Math.max(1,...d);return d.map((n,i)=>`<div class="row5" style="--c:${c}"><span>${i+1}</span><span><i style="width:${n/m*100}%"></i></span><span>${n}</span></div>`).join("")};
+  return `<div style="display:flex;align-items:baseline;gap:1.2cqw"><span class="fbn">${f.n}</span><span class="big" style="font-size:2cqw">${f.n===1?"response":"responses"}</span></div>
+    ${f.n?`<div class="big" style="font-size:2.2cqw">Confidence ${esc(f.before)} → <span style="color:var(--sun)">${esc(f.after)}</span></div>
+    <div class="fbbars"><div><div class="label">Before</div>${bars(f.dB,"#7d8ea3")}</div><div><div class="label">After</div>${bars(f.dA,"#4cd38b")}</div></div>`:`<div class="label">Waiting for the first answer…</div>`}`;
+}
+function sFb(m){
+  const b=flapBoard(["YOUR","FEEDBACK"],8,{colors:["","sun"],size:"5.4cqw"});
+  scene.innerHTML=`<div class="grid2" style="align-items:center"><div style="display:flex;flex-direction:column;gap:2cqw"><div id="fbb"></div>
+      <div class="big" style="font-size:2.2cqw">Scan with your own phone · 2 minutes<br><span style="color:var(--muted);font-size:1.6cqw">How confident were you before, and how confident are you now?</span></div>
+      <div class="card" id="fbLive">${fbLiveHtml(m.fb)}</div></div>
+    <div class="qrbox" style="flex-direction:column;align-items:center;padding:2cqw"><div style="width:26cqw">${qrSvg(m.fb.url)}</div><small style="font-size:1.6cqw">Everyone · one form each</small></div></div>`;
+  scene.querySelector(".qrbox svg").style.cssText="width:26cqw;height:26cqw";
+  $("#fbb").appendChild(b);b.play();sChime();
 }
 function sWinner(){
   const list=[...teams()].sort((a,b)=>b.score-a.score);

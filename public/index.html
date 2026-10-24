@@ -362,6 +362,19 @@ span.pchip{display:inline-block}
 .stand .num{text-align:right}
 .stand .hl{background:var(--lagoon-soft);color:var(--lagoon);font-weight:800}
 .stand .tot{font-weight:800;font-size:1.15rem}
+.fb-grid{display:grid;grid-template-columns:150px minmax(0,1fr);gap:16px;align-items:start}
+.fb-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:14px 0}
+.fb-stat{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.fb-stat b{display:block;font-family:var(--f-mono);font-size:1.5rem}
+.fb-stat small{color:var(--muted);font-size:.8rem}
+.fb-dist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.fb-bars{display:grid;gap:4px}
+.fb-bars div{display:grid;grid-template-columns:1.2em minmax(0,1fr) 2em;gap:8px;align-items:center;font-size:.85rem}
+.fb-bars i{display:block;height:12px;border-radius:6px;background:var(--tc);min-width:2px}
+.fb-list{display:grid;gap:8px;margin-top:8px;max-height:340px;overflow:auto}
+.fb-list div{border-left:3px solid var(--lagoon);padding:2px 0 2px 10px;font-size:.92rem}
+.fb-list small{color:var(--muted)}
+@media (max-width:560px){.fb-grid,.fb-dist{grid-template-columns:minmax(0,1fr)}.fb-grid .qr{max-width:160px}.fb-stats{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
 .done-games{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:10px}
 .done-games .eyebrow{margin-right:4px}
 .dg{border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:.8rem;font-weight:600;color:var(--muted)}
@@ -610,9 +623,10 @@ span.pchip{display:inline-block}
         <div><b>One question</b>I will ask every customer this week to uncover a need.</div>
         <div><b>One customer</b>I will move to self-service on the app, with me beside them the first time.</div>
       </div>
-      <div class="panel">
-        <div class="eyebrow">Confidence check</div>
-        <p style="margin:6px 0 0">Ask the same question at the start and at the end: <b>"On a scale of 1 to 5, how confident are you explaining BML's financing products to a customer?"</b> Count hands for each number and write both counts on the flipchart. The change in the room is your quickest measure of whether the session worked.</p>
+      <div class="panel" id="fbPanel">
+        <div class="eyebrow">Confidence check and staff feedback</div>
+        <p style="margin:6px 0 12px">Ask the same question at the start and at the end: <b>"On a scale of 1 to 5, how confident are you explaining BML's financing products to a customer?"</b> At the end, every staff member scans the feedback QR code on their own phone. The form asks the confidence question for before and after the session, so the change in the room is counted for you, along with a rating, the most helpful activity, a commitment and suggestions.</p>
+        <div id="fbBox"></div>
       </div>
       <div class="src panel">
         <div class="eyebrow">Sources for product facts (checked 24 Oct 2026)</div>
@@ -767,7 +781,8 @@ async function joinSession(code,key){
   try{const u=new URL(location.href);u.searchParams.delete("k");u.searchParams.set("s",data.code);history.replaceState(null,"",u)}catch(_){}
   $("#sessBtn").textContent="Session "+data.code;
   document.body.classList.toggle("viewer",!hostKey);
-  await reload();subscribe();return true;
+  fbRows=[];fbErr=null;fbShow=false;
+  await reload();subscribe();fbPoll();return true;
 }
 async function createSession(name){
   if(!sb){toast("The database library did not load. Check the connection and reload.",true);return}
@@ -780,6 +795,7 @@ async function createSession(name){
 function leaveSession(){
   clearTimeout(retryT);retryT=null;
   const old=chan;chan=null;if(old)sb.removeChannel(old);stopPoll();sess=null;hostKey=null;teams=[];events=new Map();rounds=new Map();liveRound=null;store.set("sess",null);
+  fbRows=[];fbErr=null;fbShow=false;fbPoll();
   try{const u=new URL(location.href);u.searchParams.delete("s");history.replaceState(null,"",u)}catch(_){}
   $("#sessBtn").textContent="Session…";document.body.classList.remove("viewer");setConn("none");changed(true);
 }
@@ -796,7 +812,7 @@ function changed(full){
   chFull=chFull||!!full;if(chQueued)return;chQueued=true;
   queueMicrotask(()=>{chQueued=false;const f=chFull;chFull=false;
     renderTeams();renderBoard();renderLeader();
-    if(f){renderMF();renderPicks();renderLib();renderTeach();renderClue();if(!spinning)renderSpin();if(modalKind==="quiz")renderQuizLive()}
+    if(f){renderFeedback();renderMF();renderPicks();renderLib();renderTeach();renderClue();if(!spinning)renderSpin();if(modalKind==="quiz")renderQuizLive()}
     if(modalKind==="sess")renderSess();
     if(modalKind==="stand")renderStandings();
     if(f)renderFinishBtns();
@@ -1057,6 +1073,51 @@ function renderLeader(){
      <div class="lb-bar"><i style="width:${Math.max(0,x.s)/max*100}%"></i></div><small class="muted">${Object.entries(by).filter(([,v])=>v).map(([k,v])=>esc(ACT[k]||k)+" "+v).join(" · ")||"—"}</small></div></div>`}).join("")}</div>`;
 }
 
+/* ---- staff feedback (Close view) ---- */
+// Each staff member answers on their own phone at /feedback. Only the facilitator's device can read the answers;
+// it re-reads them every 5 seconds while the Close view is open.
+let fbRows=[],fbErr=null,fbShow=false,fbT=null;
+const FB_ACTS=["True or False","Product Passport","Product Challenge","Listen for the Clue","Spin & Explain"];
+const feedbackUrl=()=>(location.protocol==="file:"?location.href.replace(/[^/]*$/,"")+"feedback.html":location.origin+location.pathname.replace(/[^/]*$/,"")+"feedback")+"?s="+(sess?sess.code:"");
+function fbSummary(){
+  const n=fbRows.length,avg=k=>n?(fbRows.reduce((a,r)=>a+r[k],0)/n).toFixed(1):"–",dist=k=>[1,2,3,4,5].map(v=>fbRows.filter(r=>r[k]===v).length);
+  return {n,before:avg("conf_before"),after:avg("conf_after"),rating:avg("rating"),dB:dist("conf_before"),dA:dist("conf_after"),
+    up:fbRows.filter(r=>r.conf_after>r.conf_before).length,acts:FB_ACTS.map(a=>[a,fbRows.filter(r=>r.useful===a).length])};
+}
+async function loadFeedback(){
+  if(!isHost()||!sb)return;
+  const {data,error}=await sb.rpc("feedback_results",{p_session:sess.id,p_key:hostKey});
+  if(error)fbErr=error.code==="PGRST202"?"setup":"net";else{fbErr=null;fbRows=data||[]}
+  renderFeedback();sendScreen();
+}
+function fbPoll(){clearInterval(fbT);fbT=null;renderFeedback();if(curView==="close"&&isHost()){loadFeedback();fbT=setInterval(loadFeedback,5000)}}
+function renderFeedback(){
+  const box=$("#fbBox");if(!box)return;
+  if(!sess){box.innerHTML=`<p class="muted" style="margin:0">Create or join a session to show the feedback QR code.</p>`;return}
+  const url=feedbackUrl(),s=fbSummary(),host=isHost();
+  const bars=(d,col)=>{const m=Math.max(1,...d);return `<div class="fb-bars" style="--tc:${col}">${d.map((c,i)=>`<div><span class="mono">${i+1}</span><span><i style="width:${c/m*100}%"></i></span><span class="mono">${c}</span></div>`).join("")}</div>`};
+  const list=(title,k)=>{const rs=fbRows.filter(r=>r[k]);return rs.length?`<div class="eyebrow" style="margin-top:14px">${title} · ${rs.length}</div><div class="fb-list">${rs.map(r=>`<div>${esc(r[k])}<br><small>${esc([r.name,r.unit].filter(Boolean).join(" · ")||"Anonymous")}</small></div>`).join("")}</div>`:""};
+  box.innerHTML=`<div class="fb-grid"><div class="qr">${qrSvg(url)}</div><div>
+      <div class="join-url mono">${esc(url.replace(/^https?:\/\//,""))}</div>
+      <div class="row">${host?`<button class="btn primary" id="fbScreen">${fbShow?"Show the winner on the screen":"Show feedback QR on the screen"}</button><button class="btn" id="fbCsv" ${s.n?"":"disabled"}>Download CSV</button>`:""}<a class="btn ghost" style="text-decoration:none" href="${esc(url)}" target="_blank" rel="noopener">Open the form</a></div>
+      ${fbErr==="setup"?`<p class="pill red" style="margin-top:10px;white-space:normal">Feedback is not set up yet: run supabase/migrations/20261024400000_feedback.sql in the Supabase SQL Editor.</p>`:fbErr?`<p class="pill red" style="margin-top:10px">Could not load the answers. Retrying…</p>`:""}
+      ${host?"":`<p class="muted" style="margin:10px 0 0">Only the facilitator's device can see the answers.</p>`}</div></div>
+    ${host&&s.n?`<div class="fb-stats"><div class="fb-stat"><b>${s.n}</b><small>responses</small></div><div class="fb-stat"><b>${s.before} → ${s.after}</b><small>average confidence, before → after</small></div><div class="fb-stat"><b>${s.rating}<small> / 5</small></b><small>usefulness · ${s.up} of ${s.n} more confident</small></div></div>
+      <div class="fb-dist"><div><div class="eyebrow">Confidence before</div>${bars(s.dB,"var(--muted)")}</div><div><div class="eyebrow">Confidence after</div>${bars(s.dA,"var(--good)")}</div></div>
+      <div class="done-games"><span class="eyebrow">Most helpful</span>${s.acts.map(([a,c])=>`<span class="dg ${c?"on":""}">${esc(a)} · ${c}</span>`).join("")}</div>
+      ${list("Commitments","commitment")}${list("Suggestions","comment")}`
+     :host&&!fbErr?`<p class="muted" style="margin:12px 0 0">No responses yet. They appear here a few seconds after each person sends the form.</p>`:""}`;
+  const b=$("#fbScreen");if(b)b.onclick=()=>{fbShow=!fbShow;renderFeedback();sendScreen()};
+  const c=$("#fbCsv");if(c)c.onclick=fbCsv;
+}
+function fbCsv(){
+  const q=v=>`"${String(v??"").replace(/"/g,'""')}"`;
+  const head=["Time","Name","Branch or department","Confidence before","Confidence after","Usefulness","Most helpful activity","Commitment","Suggestions"];
+  const rows=fbRows.map(r=>[new Date(r.updated_at).toLocaleString(),r.name,r.unit,r.conf_before,r.conf_after,r.rating,r.useful,r.commitment,r.comment]);
+  const blob=new Blob(["﻿"+[head,...rows].map(r=>r.map(q).join(",")).join("\r\n")],{type:"text/csv"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`feedback-${sess.code}.csv`;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+
 /* ================= TIMER ================= */
 let tLeft=300,tRun=false,tInt=null,actx=null;
 const fmt=s=>String(Math.floor(s/60)).padStart(2,"0")+":"+String(Math.floor(s%60)).padStart(2,"0");
@@ -1078,7 +1139,7 @@ function show(id){
   if(!VIEWS.some(v=>v[0]===id))id="plan";
   $$(".view").forEach(s=>s.classList.toggle("on",s.id==="v-"+id));
   $$("#rail a").forEach(a=>{if(a.dataset.v===id)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});
-  store.set("view",id);curView=id;sendScreen();
+  store.set("view",id);curView=id;fbPoll();sendScreen();
   if(id==="spin")drawWheel();
 }
 $("#rail").addEventListener("click",e=>{const a=e.target.closest("a");if(!a)return;e.preventDefault();show(a.dataset.v);try{history.replaceState(null,"","#"+a.dataset.v)}catch(_){}window.scrollTo({top:0})});
@@ -1560,6 +1621,7 @@ function screenModel(){
   const m={v:curView,sound:screenSound,code:sess?sess.code:"",join:sess?playUrl():"",teams:sortedTeams().map(tinfo),finished:GAMES.filter(g=>finished.includes(g[0])).map(g=>[g[0],g[1]]),
     answered:liveRound?Object.keys(liveAns):[],at:Date.now()};
   if(modalKind==="qr")m.modal="qr";
+  if(curView==="close"&&fbShow){const s=fbSummary();m.fb={url:feedbackUrl(),n:s.n,before:s.before,after:s.after,dB:s.dB,dA:s.dA}}
   if(modalKind==="stand"){m.modal="stand";m.just=standJust;
     // Scores per finished game, so the screen can show the game column and how places changed.
     m.by=Object.fromEntries(sortedTeams().map(t=>[t.id,Object.fromEntries(GAMES.map(g=>[g[0],gameScore(t.id,g[0])]))]))}
@@ -1632,7 +1694,7 @@ function renderContentNote(){
 }
 
 /* ================= INIT ================= */
-renderSnd();renderContentNote();loadContent();renderProductLib();renderQSec();renderFinishBtns();renderTeams();renderMF();renderPicks();renderLib();renderTeach();renderBoard();renderClue();renderSpin();renderLeader();drawClock();setConn("none");
+renderSnd();renderContentNote();loadContent();renderFeedback();renderProductLib();renderQSec();renderFinishBtns();renderTeams();renderMF();renderPicks();renderLib();renderTeach();renderBoard();renderClue();renderSpin();renderLeader();drawClock();setConn("none");
 const h=(location.hash||"").slice(1);show(VIEWS.some(v=>v[0]===h)?h:store.get("view","plan"));
 document.fonts&&document.fonts.ready.then(drawWheel);
 (async()=>{

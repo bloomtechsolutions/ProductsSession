@@ -35,6 +35,17 @@ Business products also appear in the games: Product Passport teams can pick them
   - Close: the leaderboard picks the winner and shows points by activity.
 - Answer keys go to the server with each question and never reach the team phones, so answers can't be read from the phone page. The server marks True or False, quiz and match answers when the round closes.
 
+## Staff feedback (/feedback)
+
+At the end of the session, open the Close view: it shows a QR code for `/feedback?s=CODE`. Press **Show feedback QR on the screen** to put it on the projector. Every staff member scans it with their own phone (not one per team) and answers:
+
+1. Before today's session, how confident were you explaining BML's financing products to a customer? (1 to 5)
+2. Now, after the session, how confident are you? (1 to 5)
+3. How useful was the session? (1 to 5)
+4. Which activity helped most (optional), a commitment (optional), suggestions (optional), name and branch (optional).
+
+Answers update live on the console (count, average confidence before → after, both distributions, the most helpful activity, commitments and suggestions) and on the projector (count and confidence shift only, no comments). **Download CSV** saves every answer. Sending again from the same phone replaces that person's earlier answer. Only the facilitator's device can read the answers. Needs `supabase/migrations/20261024400000_feedback.sql`.
+
 ## Audience screen (/screen)
 
 Put `/screen?s=CODE` on the projector (the session dialog has the link) and keep the console on the facilitator's laptop. The screen has no controls: the console broadcasts what to show over the session's realtime channel on every change and every 2 seconds, and answers a new screen's "hello" straight away. The design is a split-flap departures board:
