@@ -1,6 +1,6 @@
 # Know Your Customer, Know Your Product
 
-Facilitator console for the BML retail refresher session (Day 1 · Session 4). It runs on a projector and holds the run of show, session timer, team scoreboard and five activities: True or False, Product Passport, Product Challenge quiz, Listen for the Clue, and Spin & Explain.
+Facilitator console for the BML retail refresher session (Day 1 · Session 4). It runs on a projector and holds the run of show, session timer, team scoreboard and five activities: True or False, Product Passport, Listen for the Clue, Spin & Explain, and the Product Challenge quiz as the finale.
 
 It is a single static page (`public/index.html`) with no build step, backed by Supabase for sessions, teams and scores.
 
