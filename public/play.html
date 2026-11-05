@@ -152,6 +152,8 @@ textarea.field{min-height:92px;resize:vertical}
 .cdbar span{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;height:100%;font-weight:700;color:var(--lagoon)}
 .cdbar.low i{background:var(--accent-soft)}
 .cdbar.low span{color:var(--accent)}
+.banner.streakb{background:#ffe9dc;color:#b4410f;font-size:1.15rem;margin-top:-6px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .banner.streakb{background:#3d1f10;color:#ffa36b}}
 .banner.speedb{background:var(--sun-soft);color:var(--sun);font-size:1.15rem;margin-top:-6px}
 .spinbtn{margin:10px auto 0;width:min(240px,70vw);aspect-ratio:1;border-radius:50%;border:0;background:var(--tc);color:#fff;font-family:var(--f-display);font-stretch:125%;font-weight:900;font-size:2.6rem;letter-spacing:.06em;box-shadow:0 10px 30px color-mix(in srgb,var(--tc) 45%,transparent);animation:throb 1.4s ease-in-out infinite}
 .spinbtn:disabled{animation:none;opacity:.6}
@@ -209,7 +211,7 @@ async function stillMine(){if(!me)return false;const {data,error}=await sb.rpc("
 async function load(){
   const [t,e,r,pk]=await Promise.all([
     sb.from("teams").select("*").eq("session_id",sess.id).order("position"),
-    sb.from("score_events").select("id,team_id,points,activity,ref").eq("session_id",sess.id).range(0,4999),
+    sb.from("score_events").select("id,team_id,points,activity,ref,reason").eq("session_id",sess.id).range(0,4999),
     sb.from("rounds").select("id,kind,activity,ref,points,payload,status,result").eq("session_id",sess.id).order("id",{ascending:false}).limit(1),
     sb.from("product_picks").select("product,team_id").eq("session_id",sess.id)]);
   if(t.error||e.error){setConn(false);return}
@@ -375,7 +377,10 @@ function speedHtml(){
   // Quiz bonuses use "quiz-speed:<tile>" (fastest +50, 2nd +25); other timed games use "<round ref>:speed".
   const ref=String(round.ref),quiz=ref.startsWith("quiz:"),want=quiz?"quiz-speed:"+ref.slice(5):ref+":speed";
   const e=[...events.values()].find(x=>x.team_id===me.team_id&&x.ref===want);
-  return e?`<div class="banner speedb">⚡ ${!quiz||e.points>=50?"Fastest":"2nd fastest"} correct answer · +${e.points}</div>`:"";
+  // Winning streak bonus, stored under "streak:<round ref>" with the streak length in its reason.
+  const st=[...events.values()].find(x=>x.team_id===me.team_id&&x.ref==="streak:"+ref),n=st?+String(st.reason||"").replace(/\D/g,""):0;
+  return (e?`<div class="banner speedb">⚡ ${!quiz||e.points>=50?"Fastest":"2nd fastest"} correct answer · +${e.points}</div>`:"")+
+    (st?`<div class="banner streakb">🔥 ${n?n+" in a row!":"Winning streak!"} Streak bonus · +${st.points}</div>`:"");
 }
 async function submit(answer){
   const r=round;if(!r||r.status!=="open"){toast("This question is closed.",true);return}
@@ -424,7 +429,7 @@ function renderSpinTurn(){
   }
   const done=!!sentFor[round.id];
   app.innerHTML=`<div class="card" style="border-left:6px solid ${col};text-align:center"><div class="eyebrow">Spin &amp; Explain</div><h2>${done?"Spinning! Watch the big screen":"Your turn!"}</h2>
-      <p class="muted" style="margin:0">${done?"Pick your volunteer to pitch. The facilitator starts your 30 seconds.":"Press SPIN: the wheel picks your product on the big screen."}</p>
+      <p class="muted" style="margin:0">${done?"Pick your volunteer to pitch. The facilitator starts your 1.5 minutes.":"Press SPIN: the wheel picks your product on the big screen."}</p>
       <button class="spinbtn" id="spinGo" ${done?"disabled":""} style="--tc:${col}">SPIN</button></div>${foot()}`;
   $("#spinGo").onclick=async()=>{$("#spinGo").disabled=true;await submit({spin:true});render(true)};
   bindFoot();

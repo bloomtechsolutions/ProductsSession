@@ -68,6 +68,18 @@ body{font-family:var(--f-body);display:flex;align-items:center;justify-content:c
 .fbbars{display:grid;grid-template-columns:1fr 1fr;gap:1.6cqw}
 .fbbars .row5{display:grid;grid-template-columns:1.4cqw minmax(0,1fr) 2.4cqw;gap:.6cqw;align-items:center;font-family:var(--f-mono);font-size:1.1cqw;margin:.15cqw 0}
 .fbbars i{display:block;height:1.1cqw;border-radius:.6cqw;background:var(--c);min-width:2px;transition:width .6s}
+.pphead{display:grid;grid-template-columns:auto minmax(0,1fr);gap:2cqw;align-items:center;border-left:.6cqw solid var(--c);padding-left:1.4cqw}
+.ppscore{min-width:0}
+.pcards{display:grid;gap:1.4cqw;min-height:0;flex:1}.pcards.n1{grid-template-columns:minmax(0,1fr)}.pcards.n2{grid-template-columns:1fr 1fr}.pcards.n3{grid-template-columns:1fr 1fr 1fr}
+.pcard{background:var(--board);border:1px solid var(--line);border-top:.5cqw solid var(--c);border-radius:1.2cqw;padding:1.4cqw 1.6cqw;display:flex;flex-direction:column;gap:.7cqw;min-width:0;animation:pin .5s ease both}
+.pcard:nth-child(2){animation-delay:.15s}.pcard:nth-child(3){animation-delay:.3s}
+@keyframes pin{from{opacity:0;transform:translateY(1.2cqw)}to{opacity:1;transform:none}}
+.pcard .pn{font-family:var(--f-display);font-weight:800;font-size:2.4cqw;line-height:1.1}
+.ptags{display:flex;flex-wrap:wrap;gap:.5cqw}.ptags span{font-family:var(--f-mono);font-size:1cqw;letter-spacing:.08em;text-transform:uppercase;border:1px solid var(--line);border-radius:999px;padding:.2cqw .8cqw;color:var(--sun)}
+.pwho{font-size:1.45cqw;color:var(--muted)}
+.pcard ul{margin:0;padding-left:1.6cqw;font-size:1.5cqw;line-height:1.35}.pcard li{margin:.2cqw 0}
+.ppitch{margin-top:auto;font-size:1.45cqw;font-style:italic;border-left:.3cqw solid var(--c);padding-left:.9cqw}
+.speed.streak{border-color:#ff7a3d}
 .grid2{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:2.4cqw;align-items:start;min-height:0;flex:1}
 .opts{display:grid;grid-template-columns:1fr 1fr;gap:1cqw}
 .opts.one{grid-template-columns:1fr}
@@ -226,6 +238,7 @@ const qrSvg=t=>{try{const q=qrcode(0,"M");q.addData(t);q.make();return q.createS
 const starRow=v=>`<span class="stars">${[1,2,3,4,5].map(i=>`<i class="${v>=i-.25?"on":v>=i-.75?"half":""}">★</i>`).join("")}</span>`;
 const answeredChips=(ids,except)=>`<div class="chips">${teams().filter(t=>t.id!==except).map(t=>`<span class="chip ${ids.includes(t.id)?"in":""}" style="--c:${t.col}">${ids.includes(t.id)?"✓ ":""}${esc(t.name)}</span>`).join("")}</div>`;
 const resultChips=res=>`<div class="chips">${(res||[]).map(x=>{const t=team(x.id);if(!t)return "";return `<span class="chip ${x.pts>0?"ok":x.ans?"no":"no"}" style="--c:${t.col}">${esc(t.name)} · ${x.ans?esc(x.ans):"—"}${x.pts>0?" +"+x.pts:""}</span>`}).join("")}</div>`;
+const streakChips=st=>(st||[]).length?`<div class="chips">${st.map(([id,n,p])=>{const t=team(id);return t?`<span class="speed streak" style="--c:${t.col}">🔥 ${n} in a row · <b>${esc(t.name)}</b> +${p}</span>`:""}).join("")}</div>`:"";
 const speedChips=sp=>(sp||[]).length?`<div class="chips">${sp.map(([id,p])=>{const t=team(id);return t?`<span class="speed" style="--c:${t.col}">⚡ <b>${esc(t.name)}</b> +${p}</span>`:""}).join("")}</div>`:"";
 const ring=(id,secs)=>`<div class="ring" id="${id}" data-secs="${secs}"><svg viewBox="0 0 44 44"><circle cx="22" cy="22" r="19"/><circle class="arc" cx="22" cy="22" r="19"/></svg><span>${secs}</span></div>`;
 const scorerColors=res=>(res||[]).filter(x=>x.pts>0).map(x=>(team(x.id)||{}).col).filter(Boolean);
@@ -247,7 +260,7 @@ function sceneKey(m){
   if(Date.now()<introUntil)return "intro:"+m.v;
   switch(m.v){
     case "warmup":return `mf:${m.mf.i}:${m.mf.shown}:${m.mf.open}`;
-    case "library":{const p=m.pp;return `pp:${p.picking}:${p.live?p.live.team:""}:${p.last?p.last.team+p.last.pts:""}`}
+    case "library":{const p=m.pp;return `pp:${p.picking}:${p.live?p.live.team:""}:${p.next?"n"+p.next.team+p.next.products.join():""}:${p.last?p.last.team+p.last.pts:""}`}
     case "challenge":{const o=m.quiz.open;return o?`quiz:${o.k}:${o.revealed}`:"quiz:board"}
     case "clues":return `cl:${m.cl.i}:${m.cl.step}:${m.cl.phase}`;
     case "spin":{const s=m.sp;return `sp:${s.phase}:${s.team}:${s.pick}:${s.spin?s.spin.id:""}`}
@@ -258,7 +271,7 @@ function sceneKey(m){
 function render(force){
   const m=M,key=sceneKey(m);
   $("#topRight").textContent=m&&m.code?`Join · ${m.code}`:(sess?`Session ${sess.code}`:"");
-  $("#ticker").hidden=!(key==="home"||key==="join"||key.startsWith("stand")||key==="quiz:board"||(key.startsWith("pp:")&&!(m.pp.live||m.pp.last)));
+  $("#ticker").hidden=!(key==="home"||key==="join"||key.startsWith("stand")||key==="quiz:board"||(key.startsWith("pp:")&&!(m.pp.live||m.pp.last||m.pp.next)));
   if(key===curKey&&!force){update();return}
   const prev=curKey;curKey=key;
   const [kind]=key.split(":");
@@ -274,6 +287,7 @@ function update(){
   put($("#teamRows"),teamRowsHtml());
   if(m.pp)put($("#pkBoard"),picksHtml(m.pp));
   if(m.quiz)put($("#qBoard"),quizBoardHtml(m.quiz));
+  const st=(m.mf&&m.mf.streak)||(m.quiz&&m.quiz.open&&m.quiz.open.streak)||(m.cl&&m.cl.streak);put($("#streakBox"),streakChips(st));
   if(m.fb)put($("#fbLive"),fbLiveHtml(m.fb));
   tickTimers(now);
 }
@@ -284,8 +298,8 @@ function tickTimers(now){
     else{el.textContent=String(Math.floor(n/60)).padStart(2,"0")+":"+String(n%60).padStart(2,"0");el.classList.toggle("low",n<=5&&n>0)}
     if(n!==lastSec[id]&&n<=5&&n>0)sTick();lastSec[id]=n;};
   if(M&&M.quiz&&M.quiz.open)tick("qRing",DL.quiz,M.quiz.open.secs||20);
-  if(M&&M.cl)tick("clRing",DL.clue,M.cl.secs||20);
-  if(M&&M.sp){tick("spPitch",DL.pitch,M.sp.secs||30);tick("spVote",DL.vote,20)}
+  if(M&&M.cl){tick("clRing",DL.clue,M.cl.secs||15);const u=$("#clUpS");if(u)u.hidden=!(DL.clue!=null&&now>=DL.clue)}
+  if(M&&M.sp)tick("spPitch",DL.pitch,M.sp.secs||90);
   const nb=$("#nextBar");if(nb&&DL.clueNext!=null){const left=Math.max(0,DL.clueNext-now);nb.querySelector("i").style.width=(100-left/80)+"%";nb.querySelector("span").textContent=`Next question in ${Math.ceil(left/1000)}…`}
 }
 setInterval(()=>{if(M&&introUntil&&Date.now()>=introUntil){introUntil=0;render()}else tickTimers(Date.now())},100);
@@ -318,7 +332,7 @@ function sMF(m,prev){
   const s=m.mf;
   scene.innerHTML=`<div class="label">Round 1 · True or false · <b>statement ${s.i+1} of ${s.n}</b></div>
     <div class="big" style="font-size:3.6cqw">${esc(s.s)}</div>
-    ${s.shown?`<div class="verdict"><div id="vb"></div><div style="font-size:1.8cqw;max-width:60cqw">${esc(s.e)}</div></div>${resultChips(s.results)}`
+    ${s.shown?`<div class="verdict"><div id="vb"></div><div style="font-size:1.8cqw;max-width:60cqw">${esc(s.e)}</div></div>${resultChips(s.results)}<div id="streakBox"></div>`
       :`<div class="label">${s.open?"<b>Answer on your phones now</b>":"Get ready…"}</div><div id="answered"></div>`}`;
   if(s.shown){const b=flapBoard([s.answer],5,{colors:[s.answer==="TRUE"?"good":"red"],size:"6.4cqw"});$("#vb").appendChild(b);b.play();
     if(prev&&prev.startsWith("mf:")){sChime();confetti(scorerColors(s.results))}}
@@ -326,13 +340,23 @@ function sMF(m,prev){
 function picksHtml(p){
   return p.products.map(([fam,list])=>`<div class="fam"><div class="label"><b>${esc(fam)}</b></div>${list.map(([id,n])=>{const t=team(p.picks[id]);return `<div class="p ${t?"t":""}" style="${t?`--c:${t.col}`:""}"><span>${esc(n)}</span>${t?`<small>${esc(t.name)}</small>`:""}</div>`}).join("")}</div>`).join("");
 }
+// Product cards for the presenting team: who each product suits, its key facts and the one-line pitch.
+const prodCards=(ds,col)=>`<div class="pcards n${Math.min(ds.length,3)}">${ds.map(d=>`<div class="pcard" style="--c:${col}"><div class="pn">${esc(d.n)}</div>
+  ${d.tags.length?`<div class="ptags">${d.tags.map(x=>`<span>${esc(x)}</span>`).join("")}</div>`:""}${d.who?`<div class="pwho">${esc(d.who)}</div>`:""}
+  <ul>${d.k.slice(0,5).map(x=>`<li>${esc(x)}</li>`).join("")}</ul>${d.pitch?`<div class="ppitch">“${esc(d.pitch)}”</div>`:""}</div>`).join("")}</div>`;
 function sPP(m,prev){
   const p=m.pp;
   if(p.live){const t=team(p.live.team)||{name:"",col:"#666"};
     scene.innerHTML=`<div class="label">Round 2 · Product Passport · <b>teach-back</b></div>
-      <div class="grid2"><div class="card" style="border-left:.6cqw solid ${t.col}"><div class="label">Now presenting</div><div class="big" style="font-size:4.6cqw">${esc(t.name)}</div>
-        <div class="chips">${p.live.products.map(x=>`<span class="chip in" style="--c:${t.col}">${esc(x)}</span>`).join("")}</div></div>
-        <div class="card"><div class="label"><b>Score them on your phones</b></div><div style="font-size:1.6cqw">Clear explanation · Accurate facts · Customer-ready pitch</div><div id="answered" data-except="${esc(p.live.team)}"></div></div></div>`;
+      <div class="pphead" style="--c:${t.col}"><div><div class="label">Now presenting</div><div class="big" style="font-size:3.4cqw;color:${t.col}">${esc(t.name)}</div></div>
+        <div class="ppscore"><div class="label"><b>Score them on your phones</b> · Clear explanation · Accurate facts · Customer-ready pitch</div><div id="answered" data-except="${esc(p.live.team)}"></div></div></div>
+      ${(p.live.details||[]).length?prodCards(p.live.details,t.col):`<div class="chips">${p.live.products.map(x=>`<span class="chip in" style="--c:${t.col}">${esc(x)}</span>`).join("")}</div>`}`;
+    return;}
+  if(p.next){const t=team(p.next.team)||{name:"",col:"#666"};
+    scene.innerHTML=`<div class="label">Round 2 · Product Passport · <b>up next</b></div>
+      <div class="pphead" style="--c:${t.col}"><div><div class="label">Getting ready to present</div><div class="big" style="font-size:3.4cqw;color:${t.col}">${esc(t.name)}</div></div>
+        <div class="ppscore"><div class="label">Their products</div><div style="font-size:1.6cqw">${esc(p.next.products.join(" · ")||"No products picked yet")}</div></div></div>
+      ${(p.next.details||[]).length?prodCards(p.next.details,t.col):""}`;
     return;}
   if(p.last){const t=team(p.last.team)||{name:"",col:"#666"};
     scene.innerHTML=`<div class="label">Round 2 · Product Passport · <b>result</b></div>
@@ -351,7 +375,7 @@ function sQuiz(m,prev){
   scene.innerHTML=`<div class="label">Round 5 · Product Challenge · <b>${esc(o.cat)} · ${o.pts}</b></div>
     <div class="qhead"><div class="big">${esc(o.q)}</div>${o.revealed?"":ring("qRing",o.secs||20)}</div>
     <div class="opts">${o.options.map((x,i)=>`<div class="opt ${o.revealed?(i===o.correct?"right":"dim"):""}"><i>${"ABCD"[i]}</i><span>${esc(x)}</span></div>`).join("")}</div>
-    ${o.revealed?resultChips(o.results)+speedChips(o.speed):`<div id="answered"></div>`}`;
+    ${o.revealed?resultChips(o.results)+speedChips(o.speed)+`<div id="streakBox"></div>`:`<div id="answered"></div>`}`;
   if(o.revealed&&prev&&prev.startsWith("quiz:")){sChime();confetti(scorerColors(o.results))}
 }
 function sClue(m,prev){
@@ -361,7 +385,7 @@ function sClue(m,prev){
     <div class="grid2"><div class="card"><div class="quote">“${esc(c.q)}”</div><div class="by">${esc(c.by)}</div>${c.parts.length?`<div class="parts">${c.parts.map(([l,t])=>`<div><span>${esc(l)}</span>${esc(t)}</div>`).join("")}</div>`:""}</div>
       <div style="display:flex;flex-direction:column;gap:1.2cqw;min-width:0"><div class="qhead"><div class="big" style="font-size:2.4cqw">${esc(c.question)}</div>${rev||c.phase!=="ask"?"":ring("clRing",c.secs||20)}</div>
         <div class="opts one">${c.options.map((x,i)=>`<div class="opt ${rev?(i===c.correct?"right":"dim"):""}" style="font-size:1.45cqw"><i>${"ABCD"[i]}</i><span>${esc(x)}</span></div>`).join("")}</div>
-        ${rev?resultChips(c.results)+speedChips(c.speed)+(c.paused?`<div class="nextbar"><span>Paused</span></div>`:`<div class="nextbar" id="nextBar"><i></i><span>Next question…</span></div>`):`<div id="answered"></div>`}</div></div>`;
+        ${rev?resultChips(c.results)+speedChips(c.speed)+`<div id="streakBox"></div>`:`<div id="answered"></div><div class="label" id="clUpS" hidden><b>Time's up</b></div>`}</div></div>`;
   if(rev&&prev&&prev.startsWith("cl:")){sChime();confetti(scorerColors(c.results))}
 }
 // The wheel replays the console's spin with the same start angle, distance and duration.
@@ -376,14 +400,14 @@ function drawWheel(cv,labels,ang){
 function sSpin(m,prev){
   const s=m.sp,t=team(s.team)||team(s.up)||{name:"",col:"#666"};
   let side="";
-  if(s.phase==="idle")side=`<div class="label">Up next</div><div class="big" style="font-size:5cqw;color:${t.col}">${esc(t.name)}</div><div style="font-size:1.8cqw">Spin for a product, then pitch it in ${s.secs} seconds.</div>`;
+  if(s.phase==="idle")side=`<div class="label">Up next</div><div class="big" style="font-size:5cqw;color:${t.col}">${esc(t.name)}</div><div style="font-size:1.8cqw">Spin for a product, then pitch it in ${s.secs>=60?s.secs/60+" minutes":s.secs+" seconds"}.</div>`;
   else if(s.phase==="waiting")side=`<div class="label"><b>Over to you</b></div><div class="big" style="font-size:4.4cqw;color:${t.col}">${esc(t.name)}</div><div class="big" style="font-size:2.4cqw">Press SPIN on your phone!</div>`;
   else if(s.phase==="spinning")side=`<div class="label">${esc(t.name)}</div><div class="big" style="font-size:4cqw">Spinning…</div>`;
-  else if(["ready","pitch","pitched","vote"].includes(s.phase))side=`<div class="label">${esc(t.name)} · ${s.secs}-second pitch</div><div id="pickB"></div>
-    ${s.phase==="pitch"?`<div class="timer" id="spPitch">00:${String(s.secs).padStart(2,"0")}</div><div class="label"><b>Feature · Advantage · Benefit</b></div>`:""}
+  else if(["ready","pitch","pitched","vote"].includes(s.phase))side=`<div class="label">${esc(t.name)} · ${s.secs>=60?s.secs/60+"-minute":s.secs+"-second"} pitch</div><div id="pickB"></div>
+    ${s.phase==="pitch"?`<div class="timer" id="spPitch">${String(Math.floor(s.secs/60)).padStart(2,"0")}:${String(s.secs%60).padStart(2,"0")}</div><div class="label"><b>Feature · Advantage · Benefit</b></div>`:""}
     ${s.phase==="ready"?`<div class="label"><b>Get ready…</b></div>`:""}
     ${s.phase==="pitched"?`<div class="timer">00:00</div><div class="label"><b>Time's up</b></div>`:""}
-    ${s.phase==="vote"?`<div class="timer vote" id="spVote">00:20</div><div class="label"><b>Vote now on your phones!</b></div><div id="answered" data-except="${esc(s.team)}"></div>`:""}`;
+    ${s.phase==="vote"?`<div class="big" style="font-size:3.2cqw">Vote now on your phones!</div><div class="label">Feature · Advantage · Benefit</div><div id="answered" data-except="${esc(s.team)}"></div>`:""}`;
   else if(s.phase==="result"&&s.result){const rt=team(s.result.team)||t;
     side=`<div class="label">${esc(s.result.pick)}</div><div class="big" style="font-size:3.6cqw;color:${rt.col}">${esc(rt.name)}</div><div class="pts">+${s.result.pts}</div>
       ${s.result.crit.map((c,i)=>`<div class="avg"><span>${esc(c)}</span>${starRow(s.result.avg[i])}<span class="mono">${s.result.avg[i].toFixed(1)}</span></div>`).join("")}`;
@@ -403,7 +427,7 @@ function sStand(m){
   const b=flapBoard(lines,14,{colors:lines.map((_,i)=>i===lines.length-1&&just?"good":"sun"),size:"3cqw"});
   const H=6.2;
   scene.innerHTML=`<div id="sb"></div><div class="lb" id="lb" style="height:${list.length*H}cqw"></div>
-    <div class="done"><span style="border:0">GAMES FINISHED</span>${["True or False","Product Passport","Product Challenge","Listen for the Clue","Spin & Explain"].map(n=>`<span class="${m.finished.some(g=>g[1]===n)?"on":""}">${m.finished.some(g=>g[1]===n)?"✓ ":""}${esc(n)}</span>`).join("")}</div>`;
+    <div class="done"><span style="border:0">GAMES FINISHED</span>${["True or False","Product Passport","Listen for the Clue","Spin & Explain","Product Challenge"].map(n=>`<span class="${m.finished.some(g=>g[1]===n)?"on":""}">${m.finished.some(g=>g[1]===n)?"✓ ":""}${esc(n)}</span>`).join("")}</div>`;
   $("#sb").appendChild(b);b.play();
   const lb=$("#lb");
   list.forEach(t=>{const r=rankOf(list,t),pr=prevRank[t.id]||r,mv=pr-r,row=document.createElement("div");row.className="lbr";row.style.setProperty("--c",t.col);

@@ -550,7 +550,7 @@ span.pchip{display:inline-block}
     <!-- WARM UP -->
     <section class="view" id="v-warmup" data-title="True or False">
       <div class="hd"><div><div class="eyebrow">Activity 1 · 10 min · whole room</div><h2>True or False?</h2>
-        <p>Read the statement aloud. Everyone stands for <b>True</b> and stays seated for <b>False</b>. Press <b>Start</b>: the statement appears on every team phone. <b>Reveal</b> shows the answer and adds 10 points to every team that called it right. <b>Next</b> sends the next statement to the phones. Ask one person who got it right to explain why.</p></div>
+        <p>Read the statement aloud. Everyone stands for <b>True</b> and stays seated for <b>False</b>. Press <b>Start</b>: the statement appears on every team phone. <b>Reveal</b> shows the answer and adds 10 points to every team that called it right. <b>Next</b> sends the next statement to the phones. Ask one person who got it right to explain why. 🔥 <b>Streak bonus:</b> from the 3rd correct answer in a row, +5 for each further one.</p></div>
         <div class="row"><button class="btn primary" id="mfStart">Start</button><button class="btn" id="mfPrev">Back</button><button class="btn primary" id="mfReveal">Reveal</button><button class="btn" id="mfNext">Next</button></div></div>
       <div class="mf">
         <div class="mf-card" id="mfCard"></div>
@@ -571,7 +571,7 @@ span.pchip{display:inline-block}
     <!-- QUIZ -->
     <section class="view" id="v-clues" data-title="Listen for the Clue">
       <div class="hd"><div><div class="eyebrow">Activity 3 · 15 min · needs discovery</div><h2>Listen for the Clue</h2>
-        <p>Customers rarely say "I need a product". They mention a life event, how they are paid, something that annoys them, or a goal. Press <b>Start</b> and it runs by itself: each customer's words appear on the screen and the phones, and teams answer three timed questions: <b>the clue</b>, <b>the product to lead with</b> and <b>the best next question</b>. 20 points for each correct answer, +10 for the fastest. Read the quote aloud while teams think.</p></div>
+        <p>Customers rarely say "I need a product". They mention a life event, how they are paid, something that annoys them, or a goal. Press <b>Start</b>: the customer's words appear on the screen and the phones, and teams answer three questions in turn: <b>the clue</b>, <b>the product to lead with</b> and <b>the best next question</b>. Each question has a 15-second timer. When it runs out, press <b>Close &amp; reveal</b>, talk it through, then press <b>Next question</b>. 20 points for each correct answer, +10 for the fastest. 🔥 <b>Streak bonus:</b> from the 3rd correct answer in a row, +10 for each further one.</p></div>
         <div class="row"><button class="btn" id="clPrev" title="Previous customer">◀</button><button class="btn primary" id="clStart">Start</button><button class="btn" id="clPause" hidden>Pause</button><button class="btn" id="clSkip" hidden>Next now</button><button class="btn ghost" id="clStop" hidden>Stop</button><button class="btn" id="clNext" title="Next customer">▶</button></div></div>
       <div class="alll">
         <div><b>ASK</b><span>Open questions about their life, work and plans, not just the transaction.</span></div>
@@ -588,7 +588,7 @@ span.pchip{display:inline-block}
     <!-- SPIN -->
     <section class="view" id="v-spin" data-title="Spin & Explain">
       <div class="hd"><div><div class="eyebrow">Activity 4 · 20 min · confidence round</div><h2>Spin &amp; Explain</h2>
-        <p>Teams take turns. The team presses <b>SPIN</b> on its phone and the wheel picks a product. Press <b>Start pitch timer</b> when the volunteer is ready: 30 seconds using Feature, Advantage and Benefit. Then press <b>Open voting</b>: every other team rates the pitch on its phone, voting closes after 20 seconds, and the team scores 10 points per average star (up to 50).</p></div></div>
+        <p>Teams take turns. The team presses <b>SPIN</b> on its phone and the wheel picks a product. Press <b>Start pitch timer</b> when the volunteer is ready: 1.5 minutes using Feature, Advantage and Benefit. Then press <b>Open voting</b>: every other team rates the pitch on its phone. Press <b>Close voting &amp; score</b> when the teams have voted; the team scores 10 points per average star (up to 50).</p></div></div>
       <div class="spinwrap">
         <div class="wheel-box"><div class="pointer" aria-hidden="true"></div><canvas id="wheel" width="1040" height="1040" aria-label="Product wheel"></canvas></div>
         <div class="result" id="spinRes"></div>
@@ -598,7 +598,7 @@ span.pchip{display:inline-block}
     <!-- PRODUCT LIBRARY -->
     <section class="view" id="v-challenge" data-title="Product Challenge">
       <div class="hd"><div><div class="eyebrow">Activity 5 · 20 min · team quiz</div><h2>BML Product Challenge</h2>
-        <p>Tables take turns choosing a category and a value. The tile goes to every team phone at once with a countdown (choose 15, 20 or 30 seconds). Answers lock at zero or as soon as every team has answered. Every correct team scores the tile value, and the fastest correct team gets <b>+50</b>, the second fastest <b>+25</b>.</p></div>
+        <p>Tables take turns choosing a category and a value. The tile goes to every team phone at once with a countdown (choose 15, 20 or 30 seconds). Answers lock at zero or as soon as every team has answered. Every correct team scores the tile value, and the fastest correct team gets <b>+50</b>, the second fastest <b>+25</b>. 🔥 <b>Streak bonus:</b> from the 3rd correct answer in a row, +50 for each further one.</p></div>
         <div class="row"><span class="qsec" id="qSec" aria-label="Time per question"></span><span class="pill sun" id="qTurn"></span><span class="pill" id="qLeft">24 questions left</span></div></div>
       <div class="board" id="board"></div>
       <div class="note"><b>Facilitator tip:</b> after each answer, ask "How would you say that to a customer?" A correct fact is only half the point. The other half is being able to explain it in plain words.</div>
@@ -668,8 +668,8 @@ const VIEWS=[
 const ROS=[
  {t:"0:00",d:"10 min",v:"warmup",h:"True or False warm-up",p:"Wakes the room up and shows what people don't know yet, before any teaching starts.",n:["Ask the 1–5 confidence question first and note the hand count.","Run 6–8 statements. Keep it fast: about 60 seconds each.","Start the session and show the join QR code. Each team joins on one phone (up to 6 teams)."]},
  {t:"0:10",d:"25 min",v:"library",h:"Product Passport: jigsaw teach-back",p:"Staff refresh the products by teaching each other. People remember what they explain far better than what they hear.",n:["Open product picking: each table takes 2 products on its phone, and no two tables can take the same one.","10 minutes to prepare, then 3 minutes per table to teach.","The other tables score each teach-back on their phones. You correct and add detail in under 60 seconds."]},
- {t:"0:35",d:"15 min",v:"clues",h:"Listen for the Clue",p:"Moves from knowing products to spotting needs. Introduces ASK · LISTEN · LINK · LEAD.",n:["2 minutes on the four clue types, then press Start.","It runs by itself: each customer gets 3 timed questions on the phones (clue, product, next question), 20 points each, +10 for the fastest.","Read each quote aloud and use the 8-second answer pause to say why the right answer wins."]},
- {t:"0:50",d:"20 min",v:"spin",h:"Spin & Explain",p:"Builds confidence through a 30-second product pitch, scored by the other teams on their phones.",n:["Each team takes a turn: it presses SPIN on its phone and the wheel picks a product.","Start the pitch timer when the volunteer is ready, then open voting: the other teams rate it on their phones.","Voting closes by itself; coach in one sentence, then press Next team."]},
+ {t:"0:35",d:"15 min",v:"clues",h:"Listen for the Clue",p:"Moves from knowing products to spotting needs. Introduces ASK · LISTEN · LINK · LEAD.",n:["2 minutes on the four clue types, then press Start.","Each customer gets 3 questions on the phones (clue, product, next question), 15 seconds each, 20 points, +10 for the fastest.","When the timer runs out, press Close & reveal, say why the right answer wins, then press Next question."]},
+ {t:"0:50",d:"20 min",v:"spin",h:"Spin & Explain",p:"Builds confidence through a 1.5-minute product pitch, scored by the other teams on their phones.",n:["Each team takes a turn: it presses SPIN on its phone and the wheel picks a product.","Start the pitch timer when the volunteer is ready, then open voting: the other teams rate it on their phones.","Press Close voting & score when the teams have voted; coach in one sentence, then press Next team."]},
  {t:"1:10",d:"20 min",v:"challenge",h:"BML Product Challenge quiz",p:"The grand finale: checks recall across all families, and the 400-point tiles can still change the winner. Includes the Islamic structure names customers will now ask about.",n:["Tables take turns choosing a tile. Every team answers on its phone, and every correct team scores.","Leave the 400-point questions until the end to build tension.","After each answer, ask: how would you say that to a customer?"]},
  {t:"1:30",d:"5 min",v:"close",h:"Close and commitments",p:"Winner announced, confidence check repeated, three commitments written on sticky notes.",n:["Ask the confidence question again and compare with the opening count.","Collect the sticky notes for the Day 2 sales simulation."]}
 ];
@@ -731,7 +731,7 @@ async function rpc(fn,args){
 async function award(team,pts,act="manual",ref=null,reason=null){
   const id=await rpc("award",{p_team:team,p_points:pts,p_activity:act,p_ref:ref,p_reason:reason});
   if(ref)for(const [k,e] of events)if(e.team_id===team&&e.ref===ref&&k!==id)events.delete(k);
-  events.set(id,{id,team_id:team,points:pts,activity:act,ref,created_at:new Date().toISOString()});changed();return id;
+  events.set(id,{id,team_id:team,points:pts,activity:act,ref,reason,created_at:new Date().toISOString()});changed();return id;
 }
 async function revoke(team,ref){
   await rpc("revoke_award",{p_team:team,p_ref:ref});
@@ -741,7 +741,7 @@ async function revoke(team,ref){
 async function reload(){
   const [t,e]=await Promise.all([
     sb.from("teams").select("*").eq("session_id",sess.id), // "*" keeps working before the claimed column exists
-    sb.from("score_events").select("id,team_id,points,activity,ref,created_at").eq("session_id",sess.id).order("id").range(0,4999)]);
+    sb.from("score_events").select("id,team_id,points,activity,ref,reason,created_at").eq("session_id",sess.id).order("id").range(0,4999)]);
   if(t.error||e.error){toast((t.error||e.error).message,true);return}
   teams=t.data;events=new Map(e.data.map(x=>[x.id,x]));
   await Promise.all([loadRounds(),loadPicks()]);changed(true);
@@ -1164,7 +1164,7 @@ function renderMF(){
   const status=mfLive?`<span class="pill">Game on · statement ${mfI+1} of ${MF.length}</span>`:`<span class="pill">True or False?</span>`;
   $("#mfCard").innerHTML=`<div class="eyebrow">Statement ${mfI+1} of ${MF.length}</div><div class="mf-q">${esc(m.s)}</div>`+
    (mfShown?`<div class="verdict ${m.a?"fact":"myth"}">${m.a?"TRUE":"FALSE"}</div><div class="mf-ex">${esc(m.e)}</div>
-      ${resultsRow(r,a=>a.choice===0?"True":"False")}${markRow(ref,10,"mythfact","Correct the points if needed")}`
+      ${resultsRow(r,a=>a.choice===0?"True":"False")}${streakLine(ref)}${markRow(ref,10,"mythfact","Correct the points if needed")}`
      :`<div class="row">${status}<span class="pill red">Teams answer on their phone</span></div>
       ${!teams.length?noTeams():mfLive?rstatus(ref):isHost()?`<div class="note">Press <b>Start</b> to send statement ${mfI+1} to every team phone.</div>`:rstatus(ref)}`);
   $("#mfProg").innerHTML=MF.map((_,i)=>`<i class="${i<mfI?"done":i===mfI?"cur":""}"></i>`).join("");
@@ -1184,7 +1184,7 @@ $("#mfStart").onclick=async()=>{
 };
 $("#mfReveal").onclick=async()=>{
   const ref=mfRef(mfI);
-  if(isHost()&&liveRound&&liveRound.ref===ref){try{const r=await closeRound();scoredToast(r)}catch(_){return}}
+  if(isHost()&&liveRound&&liveRound.ref===ref){try{const r=await closeRound();scoredToast(r);await awardStreaks("mythfact",ref)}catch(_){return}}
   mfShown=true;renderMF();
 };
 async function goMF(d){
@@ -1285,7 +1285,7 @@ function renderTeach(){
   refreshMarks();refreshRoundStatus();
 }
 $("#teach").addEventListener("click",async e=>{
-  const t=e.target.closest("[data-tbteam]");if(t){tbTeam=t.dataset.tbteam;renderTeach();return}
+  const t=e.target.closest("[data-tbteam]");if(t){tbTeam=tbTeam===t.dataset.tbteam?null:t.dataset.tbteam;renderTeach();sendScreen();return}
   if(e.target.closest("#tbStart")){
     const t=teamById(tbTeam);if(!t)return;const prods=picksOf(t.id).map(p=>p.n);
     e.target.disabled=true;
@@ -1314,6 +1314,28 @@ $("#qSec").onclick=e=>{const b=e.target.closest("[data-qsec]");if(!b)return;qSec
 ROUND_OPENERS.quiz=ref=>{const k=ref.slice(5),[c,r]=k.split("-").map(Number),it=Q[c][r];
   return openRound("choice","quiz",ref,(r+1)*100,{type:"quiz",title:QCATS[c]+" · "+(r+1)*100,text:it.q,options:it.o,seconds:qSec},{correct:it.a})};
 // Rank the correct answers by when they were (last) submitted and award the speed bonus under ref.
+// Winning streak: from the 3rd correct answer in a row within a game, every further correct answer earns a bonus.
+// A wrong or missing answer resets the streak. The bonus is stored under "streak:<round ref>" with the streak length
+// in its reason, so the console, the projector and the phones can show it.
+const STREAK={mythfact:5,clue:10,quiz:50},STREAK_MIN=3;
+function streaksIn(activity){
+  const list=[...rounds.values()].filter(r=>r.activity===activity&&r.kind==="choice"&&r.status==="closed").sort((a,b)=>a.id-b.id),s={};
+  for(const r of list){const res=(r.result&&r.result.teams)||{};for(const t of teams){const x=res[t.id];s[t.id]=x&&x.points>0?(s[t.id]||0)+1:0}}
+  return s;
+}
+async function awardStreaks(activity,ref){
+  const pts=STREAK[activity];if(!pts||!isHost())return [];
+  const s=streaksIn(activity),sref="streak:"+ref,won=[];
+  for(const t of teams){
+    if((s[t.id]||0)>=STREAK_MIN){await award(t.id,pts,activity,sref,"Streak "+s[t.id]);won.push(t)}
+    else if(findRef(t.id,sref))await revoke(t.id,sref);
+  }
+  if(won.length)setTimeout(()=>toast("🔥 Streak bonus: "+won.map(t=>`${t.name} ×${s[t.id]} +${pts}`).join(", ")),2400);
+  return won;
+}
+// [team id, streak length, points] for every streak bonus won on this round.
+const streakOf=ref=>[...events.values()].filter(e=>e.ref==="streak:"+ref).map(e=>[e.team_id,+String(e.reason||"").replace(/\D/g,"")||STREAK_MIN,e.points]);
+const streakLine=ref=>{const w=streakOf(ref).map(([id,n,p])=>{const t=teamById(id);return t?`<span class="speed streak" style="--tc:${tcol(t)}">🔥 ${n} in a row: <b>${esc(t.name)}</b> +${p}</span>`:""}).join("");return w?`<div class="speeds">${w}</div>`:""};
 async function awardSpeed(roundId,correct,ref,bonuses,activity){
   const {data,error}=await sb.rpc("round_answers",{p_session:sess.id,p_key:hostKey,p_round:roundId});
   if(error)return [];
@@ -1336,7 +1358,7 @@ $("#board").onclick=e=>{const b=e.target.closest(".tile");if(b)openQ(b.dataset.k
 function renderQuizLive(){
   if(!qs)return;const r=roundFor(qRef(qs.k));
   const live=$("#qLive");if(live&&!qs.revealed)live.innerHTML=teams.length?(liveRound&&liveRound.ref===qRef(qs.k)?rstatus(qRef(qs.k)):roundCtl(qRef(qs.k),"Send to team phones")):noTeams();
-  const res=$("#qRes");if(res&&qs.revealed)res.innerHTML=resultsRow(r,a=>"ABCD"[a.choice]||"?")+speedLine(qs.k);
+  const res=$("#qRes");if(res&&qs.revealed)res.innerHTML=resultsRow(r,a=>"ABCD"[a.choice]||"?")+speedLine(qs.k)+streakLine(qRef(qs.k));
   refreshRoundStatus();refreshMarks();
   sendScreen();
 }
@@ -1356,7 +1378,7 @@ function openQ(k){
   const reveal=async()=>{
     if(qs.revealed||qs.revealing)return;qs.revealing=true;clearInterval(qs.timer);$("#qReveal").disabled=true;
     if(isHost()&&liveRound&&liveRound.ref===ref){const id=liveRound.id;
-      try{scoredToast(await closeRound());const w=await speedBonus(k,id,it.a);if(w.length){const t=teamById(w[0]);if(t)setTimeout(()=>toast(`⚡ Fastest correct answer: ${t.name} +${SPEED_BONUS[0]}`),1600)}}
+      try{scoredToast(await closeRound());const w=await speedBonus(k,id,it.a);await awardStreaks("quiz",ref);if(w.length){const t=teamById(w[0]);if(t)setTimeout(()=>toast(`⚡ Fastest correct answer: ${t.name} +${SPEED_BONUS[0]}`),1600)}}
       catch(_){qs.revealing=false;$("#qReveal").disabled=false;return}}
     qs.revealed=true;qs.used=true;$("#qCd").classList.add("done");
     $$(".opt").forEach((b,i)=>b.classList.add(i===it.a?"right":"dim"));
@@ -1395,7 +1417,7 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#ov").hidden)cl
 // questions: the clue, the product to lead with, and the best next question. Answers lock at zero or once every
 // team phone has answered, the server scores them (20 each, fastest correct team +10), the answer stays up for a
 // few seconds and the next question goes out automatically. Pause holds the game after the current answer.
-const CL_SECS=20,CL_SHOW=8,CL_PTS=20,CL_SPEED=[10];
+const CL_SECS=15,CL_PTS=20,CL_SPEED=[10];
 const CL_PARTS=[["clue","The clue"],["need","The need"],["lead","Lead with"],["ask","Ask next"]];
 const CL_STEPS=["What's the clue in what this customer said?","Which product do you lead with?","What's the best next question to ask?"];
 // The one product to lead with for each customer, in CLUES order.
@@ -1422,22 +1444,22 @@ function renderClue(){
   let h="";
   if(clPhase==="idle"||clPhase==="done"){
     h=`<div class="panel tight cl-intro"><div class="eyebrow">${clPhase==="done"?"Game over":"How it works"}</div>
-      <h3>${clPhase==="done"?"All customers done":"Teams answer on their phones. It runs by itself."}</h3>
-      <p class="muted" style="margin:0">${CLUES.length} customers × 3 questions: <b>the clue</b>, <b>the product to lead with</b>, <b>the best next question</b>. ${CL_SECS} seconds each. ${CL_PTS} points for a correct answer, +${CL_SPEED[0]} for the fastest. The answer shows for ${CL_SHOW} seconds, then the next question goes out.</p>
+      <h3>${clPhase==="done"?"All customers done":"Teams answer on their phones. You move it on."}</h3>
+      <p class="muted" style="margin:0">${CLUES.length} customers × 3 questions: <b>the clue</b>, <b>the product to lead with</b>, <b>the best next question</b>. ${CL_SECS} seconds each. ${CL_PTS} points for a correct answer, +${CL_SPEED[0]} for the fastest. When the timer runs out, press <b>Close &amp; reveal</b>, then <b>Next question</b> when you are ready.</p>
       ${teams.length?"":noTeams()}</div>`;
   }else{
     const reveal=clPhase==="reveal";
     h=`<div class="panel tight cl-q"><div class="qtop"><div><div class="eyebrow">Question ${clStep+1} of 3</div><h3>${esc(CL_STEPS[clStep])}</h3></div>
         ${reveal?"":`<div class="cd" id="clCd"><svg viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="22" r="19"/><circle class="arc" cx="22" cy="22" r="19"/></svg><span class="mono" id="clCdN">${CL_SECS}</span></div>`}</div>
       <div class="opts cl-opts">${options.map((o,i)=>`<div class="opt ${reveal?(i===correct?"right":"dim"):""}"><span class="k">${"ABCD"[i]}</span><span>${esc(o)}</span></div>`).join("")}</div>
-      ${reveal?resultsRow(r,a=>"ABCD"[a.choice]||"?")+speedLineRef(ref+":speed"):rstatus(ref)}
-      ${reveal?`<div class="cl-next"><span id="clNextTxt">${clPaused?"Paused. Press Resume or Next now.":"Next question shortly…"}</span><i id="clNextBar"></i></div>`:""}</div>`;
+      ${reveal?resultsRow(r,a=>"ABCD"[a.choice]||"?")+speedLineRef(ref+":speed")+streakLine(ref):`<div class="cl-up" id="clUp" hidden>Time's up. Press <b>Close &amp; reveal</b>.</div>`+rstatus(ref)}</div>`;
   }
   $("#clReveal-grid").innerHTML=h+CL_PARTS.map((p,i)=>`<div class="rv ${i<shown?"":"hidden-rv"}"><span class="eyebrow">${p[1]}</span><div>${esc(c[p[0]])}</div></div>`).join("");
   const running=clAuto&&clPhase!=="done";
   $("#clStart").hidden=running||!isHost();$("#clStart").textContent=clPhase==="done"?"Play again":clI||clStep?`Start from customer ${clI+1}`:"Start";
-  $("#clPause").hidden=!running||!isHost();$("#clPause").textContent=clPaused?"Resume":"Pause";
-  $("#clSkip").hidden=!running||!isHost();$("#clSkip").textContent=clPhase==="ask"?"Lock answers now":"Next now";
+  $("#clPause").hidden=true;
+  const lastQ=clStep===2&&clI===CLUES.length-1;
+  $("#clSkip").hidden=!running||!isHost()||clPhase==="locking";$("#clSkip").textContent=clPhase==="ask"?"Close & reveal":lastQ?"Finish game":"Next question";$("#clSkip").classList.add("primary");
   $("#clStop").hidden=!running||!isHost();
   $("#clPrev").disabled=$("#clNext").disabled=running;
   refreshRoundStatus();
@@ -1454,39 +1476,30 @@ async function clAsk(){
 async function clLock(){
   if(clPhase!=="ask")return;clPhase="locking";
   const ref=clRef(clI,clStep),{correct}=clOptions(clI,clStep);
-  if(liveRound&&liveRound.ref===ref){const id=liveRound.id;try{scoredToast(await closeRound());await awardSpeed(id,correct,ref+":speed",CL_SPEED,"clue")}catch(_){}}
-  clPhase="reveal";clNextAt=Date.now()+CL_SHOW*1000;renderClue();
+  if(liveRound&&liveRound.ref===ref){const id=liveRound.id;try{scoredToast(await closeRound());await awardSpeed(id,correct,ref+":speed",CL_SPEED,"clue");await awardStreaks("clue",ref)}catch(_){}}
+  clPhase="reveal";renderClue();
 }
 function clAdvance(){
   if(clStep<2){clStep++;clAsk()}
   else if(clI<CLUES.length-1){clI++;clStep=0;clAsk()}
   else{clPhase="done";clAuto=false;renderClue();finishGame("clue")}
 }
-// One heartbeat drives the countdown, the early lock and the pause between questions.
+// The heartbeat only draws the countdown. The facilitator closes each question and moves on.
 setInterval(()=>{
-  if(!clAuto)return;
-  if(clPhase==="ask"&&clDeadline){
-    const left=Math.max(0,clDeadline-Date.now()),n=Math.ceil(left/1000),cd=$("#clCd");
-    if(cd){$("#clCdN").textContent=n;cd.style.setProperty("--p",left/(CL_SECS*1000));cd.classList.toggle("low",n<=5)}
-    if(n!==clLast&&n<=5&&n>0&&!$("#v-clues").hidden&&$("#v-clues").classList.contains("on"))tick();clLast=n;
-    const phones=teams.filter(t=>t.claimed),answered=phones.filter(t=>liveAns[t.id]).length;
-    if(left<=0||(phones.length&&answered>=phones.length&&left<CL_SECS*1000-1500))clLock();
-  }else if(clPhase==="reveal"){
-    const bar=$("#clNextBar"),txt=$("#clNextTxt");
-    if(clPaused){clNextAt=Date.now()+CL_SHOW*1000;if(bar)bar.style.width="0%";return}
-    const left=Math.max(0,clNextAt-Date.now());
-    if(bar)bar.style.width=(100-left/(CL_SHOW*10))+"%";
-    if(txt)txt.textContent=clStep<2||clI<CLUES.length-1?`Next question in ${Math.ceil(left/1000)}…`:`Final scores in ${Math.ceil(left/1000)}…`;
-    if(!left)clAdvance();
-  }
+  if(!clAuto||clPhase!=="ask"||!clDeadline)return;
+  const left=Math.max(0,clDeadline-Date.now()),n=Math.ceil(left/1000),cd=$("#clCd");
+  if(cd){$("#clCdN").textContent=n;cd.style.setProperty("--p",left/(CL_SECS*1000));cd.classList.toggle("low",n<=5)}
+  const up=$("#clUp");if(up)up.hidden=left>0;
+  if(n!==clLast&&n<=5&&n>0&&$("#v-clues").classList.contains("on"))tick();
+  if(n!==clLast&&!left&&$("#v-clues").classList.contains("on"))beep();
+  clLast=n;
 },200);
 $("#clStart").onclick=()=>{
   if(!teams.length){toast("No teams yet. Show the join code so teams can join on their phones.",true);return}
   if(clPhase==="done"){clI=0;clStep=0}
   clAuto=true;clPaused=false;clAsk();
 };
-$("#clPause").onclick=()=>{clPaused=!clPaused;renderClue();toast(clPaused?"Paused after this answer":"Resumed")};
-$("#clSkip").onclick=()=>{if(clPhase==="ask")clLock();else if(clPhase==="reveal"){clPaused=false;clAdvance()}};
+$("#clSkip").onclick=()=>{if(clPhase==="ask")clLock();else if(clPhase==="reveal")clAdvance()};
 $("#clStop").onclick=async()=>{clAuto=false;clPaused=false;if(liveRound&&liveRound.ref.startsWith("clue:"))await cancelRound();clPhase="idle";clStep=0;renderClue();toast("Listen for the Clue stopped")};
 const goClue=d=>{clI=(clI+d+CLUES.length)%CLUES.length;clStep=0;clPhase="idle";renderClue()};
 $("#clNext").onclick=()=>goClue(1);
@@ -1494,10 +1507,10 @@ $("#clPrev").onclick=()=>goClue(-1);
 
 /* ================= SPIN ================= */
 // A turn: the team whose turn it is presses SPIN on its phone (or the facilitator spins for it) and the wheel picks a
-// product. The facilitator starts the 30-second pitch timer, then opens voting: every other team rates Feature,
-// Advantage and Benefit on its phone. Voting closes after 20 seconds (or once every phone has voted), the team
-// scores 10 points per average star (max 50), and the turn passes to the next team.
-const SP_PITCH=30,SP_VOTE=20,SP_CRIT=["Feature","Advantage","Benefit"];
+// product. The facilitator starts the 90-second pitch timer, then opens voting: every other team rates Feature,
+// Advantage and Benefit on its phone. The facilitator closes voting, the team scores 10 points per average star
+// (max 50), and the turn passes to the next team.
+const SP_PITCH=90,SP_CRIT=["Feature","Advantage","Benefit"];
 const cv=$("#wheel"),cx=cv.getContext("2d");let ang=0,spinning=false;
 let spPhase="idle",spTeam=null,spTurn=store.get("spturn",0),spPick=null,spPitchEnd=0,spVoteEnd=0,spResult=null;
 const WCOL=["#c4122f","#0f2238","#0b7f83","#b77900","#4b5fb0","#16794a"];
@@ -1530,7 +1543,7 @@ function renderSpin(){
     h=`<div class="eyebrow">Up next</div><h3 class="sp-team" style="--tc:${t?tcol(t):"var(--line)"}">${esc(t?t.name:"")}</h3>
       ${isHost()?`<div class="marks"><span class="eyebrow">Or choose a team</span>${st.map(x=>`<button class="mk" style="--tc:${tcol(x)}" data-spteam="${x.id}" aria-pressed="${x.id===spTeam}">${esc(x.name)}${[...events.values()].some(e=>e.team_id===x.id&&e.activity==="spin")?" ✓":""}</button>`).join("")}</div>
       <div class="row">${t&&t.claimed?`<button class="btn primary" id="spSend">Send SPIN to ${esc(t.name)}'s phone</button>`:""}<button class="btn ${t&&t.claimed?"":"primary"}" id="spHere">Spin here</button></div>`:`<p class="muted">Waiting for the facilitator.</p>`}
-      <p class="muted" style="margin:0">The team spins for a product and pitches it for ${SP_PITCH} seconds. You start the pitch timer and open voting; the other teams score it on their phones.</p>`;
+      <p class="muted" style="margin:0">The team spins for a product and pitches it for ${SP_PITCH/60} minutes. You start the pitch timer and open voting; the other teams score it on their phones.</p>`;
   }else if(spPhase==="waiting"){
     h=`<div class="eyebrow">Over to the team</div><h3 class="sp-team" style="--tc:${tcol(t)}">${esc(t.name)}</h3>
       <div class="rs-head"><span class="pulse"></span><b>Waiting for ${esc(t.name)} to press SPIN on their phone…</b></div>
@@ -1539,13 +1552,13 @@ function renderSpin(){
     h=`<div class="eyebrow">${esc(t.name)} is spinning</div><h3>Spinning…</h3>`;
   }else if(["ready","pitch","pitched","vote"].includes(spPhase)){
     const f=FAB[spPick]||["","",""],lbl={ready:"Ready when you are",pitch:"Pitch time",pitched:"Time's up",vote:"Vote now on your phones!"}[spPhase];
-    h=`<div class="eyebrow">${esc(t.name)} · ${SP_PITCH}-second pitch</div><h3>${esc(spPick)}</h3>
-      <div class="sp-clock ${spPhase==="vote"?"vote":""}"><span class="mono" id="spClock">${spPhase==="ready"?fmt(SP_PITCH):"00:00"}</span><span id="spClockLbl">${lbl}</span></div>
+    h=`<div class="eyebrow">${esc(t.name)} · ${fmt(SP_PITCH)} pitch</div><h3>${esc(spPick)}</h3>
+      <div class="sp-clock ${spPhase==="vote"?"vote":""}"><span class="mono" id="spClock">${spPhase==="ready"?fmt(SP_PITCH):spPhase==="vote"?"Open":"00:00"}</span><span id="spClockLbl">${lbl}</span></div>
       ${spPhase==="vote"?rstatus(spRateLive()?spRateLive().ref:""):""}
       ${isHost()?`<div class="row">${spPhase==="ready"?`<button class="btn primary" id="spStartPitch">Start pitch timer</button><button class="btn" id="spOpenVote">Skip to voting</button>`
         :spPhase==="pitch"?`<button class="btn" id="spStopPitch">Stop timer</button><button class="btn primary" id="spOpenVote">Open voting</button>`
         :spPhase==="pitched"?`<button class="btn primary" id="spOpenVote">Open voting</button><button class="btn" id="spStartPitch">Restart pitch timer</button>`
-        :`<button class="btn" id="spSkip">Close voting now</button>`}</div>`:""}
+        :`<button class="btn primary" id="spSkip">Close voting &amp; score</button>`}</div>`:""}
       <details class="sp-notes"><summary>Coaching notes (Feature · Advantage · Benefit)</summary><div class="fab"><div><b>Feature</b><span>${esc(f[0])}</span></div><div><b>Advantage</b><span>${esc(f[1])}</span></div><div><b>Benefit</b><span>${esc(f[2])}</span></div></div></details>`;
   }else if(spPhase==="result"&&spResult){
     const sc=tbScore(spResult),rt=teamById(spResult.payload.presenter);
@@ -1560,8 +1573,8 @@ function renderSpin(){
   sendScreen();
 }
 function spDrawClock(){
-  const c=$("#spClock");if(!c||(spPhase!=="pitch"&&spPhase!=="vote"))return;const now=Date.now();
-  const left=spPhase==="pitch"?Math.max(0,spPitchEnd-now):Math.max(0,spVoteEnd-now);
+  const c=$("#spClock");if(!c||spPhase!=="pitch")return;const now=Date.now();
+  const left=Math.max(0,spPitchEnd-now);
   c.textContent=fmt(Math.ceil(left/1000));c.parentElement.classList.toggle("low",left<=5000);
 }
 async function spSend(){
@@ -1579,7 +1592,7 @@ function spStartPitch(){spPitchEnd=Date.now()+SP_PITCH*1000;spPhase="pitch";rend
 async function spOpenVote(){
   const t=teamById(spTeam);if(!t){spPhase="idle";renderSpin();return}
   try{await openRound("text","spin","spinrate:"+Date.now(),0,{type:"rate",title:"Spin & Explain",presenter:t.id,presenterName:t.name,family:"Spin & Explain",criteria:SP_CRIT,products:[spPick],pitch:SP_PITCH},{})}catch(_){return}
-  spVoteEnd=Date.now()+SP_VOTE*1000;spPhase="vote";renderSpin();
+  spPhase="vote";renderSpin();
 }
 async function spClose(){
   if(spPhase!=="vote")return;spPhase="closing";
@@ -1587,12 +1600,11 @@ async function spClose(){
     toast(sc.n?`${r.payload.presenterName} +${sc.pts}`:"No team voted, so no points.",!sc.n)}}catch(_){}
   spTurn++;store.set("spturn",spTurn);spPhase="result";spTeam=null;renderSpin();
 }
-// Heartbeat: notices the team's phone spin, runs the pitch and vote clocks, and closes the vote.
+// Heartbeat: notices the team's phone spin and runs the pitch clock. The facilitator closes the vote.
 setInterval(()=>{
   if(spPhase==="waiting"&&liveRound&&liveRound.payload&&liveRound.payload.type==="spin"&&liveAns[spTeam])spGo();
   else if(spPhase==="pitch"){spDrawClock();if(Date.now()>=spPitchEnd){spPhase="pitched";beep();renderSpin()}}
-  else if(spPhase==="vote"){spDrawClock();const raters=teams.filter(x=>x.claimed&&x.id!==spTeam),voted=raters.filter(x=>liveAns[x.id]).length;
-    if(Date.now()>=spVoteEnd||(raters.length&&voted>=raters.length))spClose()}
+
 },200);
 $("#spinRes").addEventListener("click",async e=>{
   const pick=e.target.closest("[data-spteam]");if(pick){spTeam=pick.dataset.spteam;renderSpin();return}
@@ -1602,7 +1614,7 @@ $("#spinRes").addEventListener("click",async e=>{
   if(e.target.closest("#spStartPitch"))return spStartPitch();
   if(e.target.closest("#spStopPitch")){spPhase="pitched";renderSpin();return}
   if(e.target.closest("#spOpenVote")){e.target.disabled=true;return spOpenVote()}
-  if(e.target.closest("#spSkip")){if(spPhase==="vote")spVoteEnd=Date.now();return}
+  if(e.target.closest("#spSkip"))return spClose();
   if(e.target.closest("#spNextTeam")){spPhase="idle";spResult=null;spTeam=null;renderSpin()}
 });
 cv.addEventListener("click",()=>{if(isHost()&&(spPhase==="idle"||spPhase==="waiting"))spGo()});
@@ -1617,6 +1629,8 @@ function roundResults(r,label){
   return sortedTeams().map(t=>{const x=res[t.id]||{};return {id:t.id,ans:x.answer?label(x.answer):null,pts:x.points==null?null:x.points}});
 }
 const speedOf=ref=>[...events.values()].filter(e=>e.ref===ref).map(e=>[e.team_id,e.points]);
+// The projector shows each presenting team's products: who they suit, key facts and the one-line pitch.
+const ppDetails=names=>names.map(n=>PRODUCTS.find(p=>p.n===n)).filter(Boolean).map(p=>({n:p.n,tags:p.tags||[],who:p.who||"",k:p.k||[],pitch:p.pitch||""}));
 function screenModel(){
   const m={v:curView,sound:screenSound,code:sess?sess.code:"",join:sess?playUrl():"",teams:sortedTeams().map(tinfo),finished:GAMES.filter(g=>finished.includes(g[0])).map(g=>[g[0],g[1]]),
     answered:liveRound?Object.keys(liveAns):[],at:Date.now()};
@@ -1628,10 +1642,11 @@ function screenModel(){
   const now=Date.now();
   if(curView==="warmup"){const s=MF[mfI],r=roundFor(mfRef(mfI));
     m.mf={i:mfI,n:MF.length,s:s.s,shown:mfShown,live:mfLive,open:!!(liveRound&&liveRound.ref===mfRef(mfI)),
-      answer:mfShown?(s.a?"TRUE":"FALSE"):null,e:mfShown?s.e:null,results:mfShown?roundResults(r,a=>a.choice===0?"True":"False"):null}}
+      answer:mfShown?(s.a?"TRUE":"FALSE"):null,e:mfShown?s.e:null,results:mfShown?roundResults(r,a=>a.choice===0?"True":"False"):null,streak:mfShown?streakOf(mfRef(mfI)):[]}}
   if(curView==="library"){const live=liveRound&&String(liveRound.ref).startsWith("teachback:")?liveRound:null,last=tbRounds()[0];
     m.pp={picking:pickingOpen(),picks:Object.fromEntries(picks),products:PASS_FAMS.map(([k,n])=>[n,PRODUCTS.filter(p=>p.f===k).map(p=>[pid(p),p.n])]),
-      live:live?{team:live.payload.presenter,products:live.payload.products||[]}:null,
+      live:live?{team:live.payload.presenter,products:live.payload.products||[],details:ppDetails(live.payload.products||[])}:null,
+      next:!live&&tbTeam&&teamById(tbTeam)?(()=>{const ps=picksOf(tbTeam);return {team:tbTeam,products:ps.map(x=>x.n),details:ppDetails(ps.map(x=>x.n))}})():null,
       last:last&&!live?(()=>{const sc=tbScore(last);return {team:last.payload.presenter,products:last.payload.products||[],avg:sc.avg,pts:sc.pts,n:sc.n,notes:sc.notes,crit:TB_CRIT}})():null}}
   if(curView==="challenge"){
     const auto=new Set();for(const e of events.values())if(e.ref&&e.ref.startsWith("quiz:"))auto.add(e.ref.slice(5));
@@ -1639,15 +1654,15 @@ function screenModel(){
     m.quiz={cats:QCATS,used:[...new Set([...used,...auto])],turn:st.length?st[quizTurn%st.length].name:""};
     if(modalKind==="quiz"&&qs){const [c,r]=qs.k.split("-").map(Number),it=Q[c][r];
       m.quiz.open={k:qs.k,cat:QCATS[c],pts:(r+1)*100,q:it.q,options:it.o,leftMs:qs.deadline?Math.max(0,qs.deadline-now):null,secs:qSec,revealed:qs.revealed,
-        correct:qs.revealed?it.a:null,results:qs.revealed?roundResults(roundFor(qRef(qs.k)),a=>"ABCD"[a.choice]||"?"):null,speed:qs.revealed?speedOf("quiz-speed:"+qs.k):[]}}}
+        correct:qs.revealed?it.a:null,results:qs.revealed?roundResults(roundFor(qRef(qs.k)),a=>"ABCD"[a.choice]||"?"):null,speed:qs.revealed?speedOf("quiz-speed:"+qs.k):[],streak:qs.revealed?streakOf(qRef(qs.k)):[]}}}
   if(curView==="clues"){const c=CLUES[clI],ref=clRef(clI,clStep),{options,correct}=clOptions(clI,clStep),rev=clPhase==="reveal";
     m.cl={i:clI,n:CLUES.length,q:c.q,by:c.by,step:clStep,phase:clPhase,question:CL_STEPS[clStep],options,secs:CL_SECS,
-      leftMs:clPhase==="ask"&&clDeadline?Math.max(0,clDeadline-now):null,nextMs:rev&&!clPaused?Math.max(0,clNextAt-now):null,paused:clPaused,
+      leftMs:clPhase==="ask"&&clDeadline?Math.max(0,clDeadline-now):null,nextMs:null,paused:false,streak:rev?streakOf(ref):[],
       correct:rev?correct:null,results:rev?roundResults(roundFor(ref),a=>"ABCD"[a.choice]||"?"):null,speed:rev?speedOf(ref+":speed"):[],
       parts:CL_PARTS.slice(0,clPartsShown()).map(([k,l])=>[l,c[k]])}}
   if(curView==="spin"){const t=teamById(spTeam)||spUp();
     m.sp={phase:spPhase,team:t?t.id:null,up:(spUp()||{}).id||null,pick:spPick,wheel:WHEEL,spin:spSpin&&spPhase==="spinning"?{...spSpin,elapsed:now-spSpin.t0}:null,
-      pitchLeft:spPhase==="pitch"?Math.max(0,spPitchEnd-now):null,voteLeft:spPhase==="vote"?Math.max(0,spVoteEnd-now):null,secs:SP_PITCH,
+      pitchLeft:spPhase==="pitch"?Math.max(0,spPitchEnd-now):null,voteLeft:null,secs:SP_PITCH,
       result:spPhase==="result"&&spResult?(()=>{const sc=tbScore(spResult);return {team:spResult.payload.presenter,pick:spResult.payload.products[0],avg:sc.avg,pts:sc.pts,n:sc.n,notes:sc.notes,crit:SP_CRIT}})():null}}
   return m;
 }
