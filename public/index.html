@@ -427,6 +427,8 @@ span.pchip{display:inline-block}
 .qsec button{border:0;background:transparent;border-radius:999px;padding:3px 9px;font-weight:700;font-size:.8rem;color:var(--muted)}
 .qsec button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
 .qtop{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center}
+.mf-timer{display:flex;align-items:center;gap:14px;margin:10px 0}
+.cl-up{font-weight:700;color:var(--accent)}
 .cd{position:relative;width:96px;height:96px;--p:1}
 .cd svg{width:100%;height:100%;transform:rotate(-90deg)}
 .cd circle{fill:none;stroke:var(--line);stroke-width:4}
@@ -550,7 +552,7 @@ span.pchip{display:inline-block}
     <!-- WARM UP -->
     <section class="view" id="v-warmup" data-title="True or False">
       <div class="hd"><div><div class="eyebrow">Activity 1 · 10 min · whole room</div><h2>True or False?</h2>
-        <p>Read the statement aloud. Everyone stands for <b>True</b> and stays seated for <b>False</b>. Press <b>Start</b>: the statement appears on every team phone. <b>Reveal</b> shows the answer and adds 10 points to every team that called it right. <b>Next</b> sends the next statement to the phones. Ask one person who got it right to explain why. 🔥 <b>Streak bonus:</b> from the 3rd correct answer in a row, +5 for each further one.</p></div>
+        <p>Read the statement aloud. Everyone stands for <b>True</b> and stays seated for <b>False</b>. Press <b>Start</b>: the statement appears on every team phone with a 20-second timer. <b>Reveal</b> shows the answer and adds 10 points to every team that called it right. <b>Next</b> sends the next statement to the phones. Ask one person who got it right to explain why. 🔥 <b>Streak bonus:</b> from the 3rd correct answer in a row, +5 for each further one.</p></div>
         <div class="row"><button class="btn primary" id="mfStart">Start</button><button class="btn" id="mfPrev">Back</button><button class="btn primary" id="mfReveal">Reveal</button><button class="btn" id="mfNext">Next</button></div></div>
       <div class="mf">
         <div class="mf-card" id="mfCard"></div>
@@ -1153,10 +1155,11 @@ $("#ros").innerHTML=ROS.map(r=>`<div class="ros-row"><div class="ros-time">${r.t
 /* ================= TRUE OR FALSE ================= */
 // Run as a game: Start sends statement 1 to every team phone, Reveal closes the round and the server
 // scores every team that called it right, Next sends the following statement straight away.
-let mfI=0,mfShown=false,mfLive=false;
+let mfI=0,mfShown=false,mfLive=false,mfDeadline=0,mfLast=-1;
+const MF_SECS=20;
 const mfRef=i=>"mf:"+i;
 ROUND_OPENERS.mf=ref=>{const i=+ref.split(":")[1],m=MF[i];
-  return openRound("choice","mythfact",ref,10,{type:"mf",title:`True or False? · ${i+1} of ${MF.length}`,text:m.s,options:["True","False"]},{correct:m.a?0:1})};
+  return openRound("choice","mythfact",ref,10,{type:"mf",title:`True or False? · ${i+1} of ${MF.length}`,text:m.s,options:["True","False"],seconds:MF_SECS},{correct:m.a?0:1})};
 function renderMF(){
   // After a reload mid-game, pick the game up from the statement that is still open on the phones.
   if(!mfLive&&liveRound&&liveRound.ref.startsWith("mf:")){mfLive=true;mfI=+liveRound.ref.slice(3);mfShown=false}
@@ -1166,6 +1169,7 @@ function renderMF(){
    (mfShown?`<div class="verdict ${m.a?"fact":"myth"}">${m.a?"TRUE":"FALSE"}</div><div class="mf-ex">${esc(m.e)}</div>
       ${resultsRow(r,a=>a.choice===0?"True":"False")}${streakLine(ref)}${markRow(ref,10,"mythfact","Correct the points if needed")}`
      :`<div class="row">${status}<span class="pill red">Teams answer on their phone</span></div>
+      ${mfLive&&mfDeadline?`<div class="mf-timer"><div class="cd" id="mfCd"><svg viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="22" r="19"/><circle class="arc" cx="22" cy="22" r="19"/></svg><span class="mono" id="mfCdN">${MF_SECS}</span></div><div class="cl-up" id="mfUp" hidden>Time's up. Press <b>Reveal</b>.</div></div>`:""}
       ${!teams.length?noTeams():mfLive?rstatus(ref):isHost()?`<div class="note">Press <b>Start</b> to send statement ${mfI+1} to every team phone.</div>`:rstatus(ref)}`);
   $("#mfProg").innerHTML=MF.map((_,i)=>`<i class="${i<mfI?"done":i===mfI?"cur":""}"></i>`).join("");
   const st=$("#mfStart");st.hidden=!isHost();st.textContent=mfLive?"Stop game":(mfI?"Start from "+(mfI+1):"Start");st.classList.toggle("primary",!mfLive);
@@ -1176,7 +1180,17 @@ function renderMF(){
   refreshMarks();refreshRoundStatus();
   sendScreen();
 }
-async function sendMF(){if(!isHost())return;try{await ROUND_OPENERS.mf(mfRef(mfI))}catch(_){mfLive=false}renderMF()}
+async function sendMF(){if(!isHost())return;mfDeadline=0;try{await ROUND_OPENERS.mf(mfRef(mfI));mfDeadline=Date.now()+MF_SECS*1000;mfLast=-1}catch(_){mfLive=false}renderMF()}
+// The 20-second countdown on each statement. At zero the phones lock; the facilitator presses Reveal.
+setInterval(()=>{
+  if(!mfLive||mfShown||!mfDeadline)return;
+  const left=Math.max(0,mfDeadline-Date.now()),n=Math.ceil(left/1000),cd=$("#mfCd");
+  if(cd){$("#mfCdN").textContent=n;cd.style.setProperty("--p",left/(MF_SECS*1000));cd.classList.toggle("low",n<=5)}
+  const up=$("#mfUp");if(up)up.hidden=left>0;
+  const on=$("#v-warmup").classList.contains("on");
+  if(n!==mfLast&&on){if(n<=5&&n>0)tick();else if(!left)beep()}
+  mfLast=n;
+},200);
 $("#mfStart").onclick=async()=>{
   if(mfLive){mfLive=false;if(liveRound&&liveRound.ref.startsWith("mf:"))await cancelRound();renderMF();toast("True or False stopped");return}
   if(!teams.length){toast("No teams yet. Show the join code so teams can join on their phones.",true);return}
@@ -1641,7 +1655,7 @@ function screenModel(){
     m.by=Object.fromEntries(sortedTeams().map(t=>[t.id,Object.fromEntries(GAMES.map(g=>[g[0],gameScore(t.id,g[0])]))]))}
   const now=Date.now();
   if(curView==="warmup"){const s=MF[mfI],r=roundFor(mfRef(mfI));
-    m.mf={i:mfI,n:MF.length,s:s.s,shown:mfShown,live:mfLive,open:!!(liveRound&&liveRound.ref===mfRef(mfI)),
+    m.mf={i:mfI,n:MF.length,s:s.s,shown:mfShown,live:mfLive,secs:MF_SECS,leftMs:mfLive&&!mfShown&&mfDeadline?Math.max(0,mfDeadline-now):null,open:!!(liveRound&&liveRound.ref===mfRef(mfI)),
       answer:mfShown?(s.a?"TRUE":"FALSE"):null,e:mfShown?s.e:null,results:mfShown?roundResults(r,a=>a.choice===0?"True":"False"):null,streak:mfShown?streakOf(mfRef(mfI)):[]}}
   if(curView==="library"){const live=liveRound&&String(liveRound.ref).startsWith("teachback:")?liveRound:null,last=tbRounds()[0];
     m.pp={picking:pickingOpen(),picks:Object.fromEntries(picks),products:PASS_FAMS.map(([k,n])=>[n,PRODUCTS.filter(p=>p.f===k).map(p=>[pid(p),p.n])]),
