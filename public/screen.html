@@ -171,7 +171,7 @@ const sb=window.supabase?window.supabase.createClient(SB_URL,SB_KEY,{auth:{persi
 const scene=$("#scene");
 
 // Round titles for the intro cards, in run-of-show order.
-const GAME_INTRO={warmup:[1,["TRUE OR","FALSE"]],library:[2,["PRODUCT","PASSPORT"]],challenge:[3,["PRODUCT","CHALLENGE"]],clues:[4,["LISTEN FOR","THE CLUE"]],spin:[5,["SPIN &","EXPLAIN"]]};
+const GAME_INTRO={warmup:[1,["TRUE OR","FALSE"]],library:[2,["PRODUCT","PASSPORT"]],clues:[3,["LISTEN FOR","THE CLUE"]],spin:[4,["SPIN &","EXPLAIN"]],challenge:[5,["PRODUCT","CHALLENGE"]]};
 const FACTS=window.KYKP_CONTENT?KYKP_CONTENT.facts:[];
 
 /* ---------- split-flap board ---------- */
@@ -347,8 +347,8 @@ function quizBoardHtml(q){
 }
 function sQuiz(m,prev){
   const q=m.quiz,o=q.open;
-  if(!o){scene.innerHTML=`<div class="label">Round 3 · Product Challenge · <b>${esc(q.turn?"choosing next: "+q.turn:"")}</b></div><div class="qb" id="qBoard">${quizBoardHtml(q)}</div>`;return}
-  scene.innerHTML=`<div class="label">Round 3 · Product Challenge · <b>${esc(o.cat)} · ${o.pts}</b></div>
+  if(!o){scene.innerHTML=`<div class="label">Round 5 · Product Challenge · <b>${esc(q.turn?"choosing next: "+q.turn:"")}</b></div><div class="qb" id="qBoard">${quizBoardHtml(q)}</div>`;return}
+  scene.innerHTML=`<div class="label">Round 5 · Product Challenge · <b>${esc(o.cat)} · ${o.pts}</b></div>
     <div class="qhead"><div class="big">${esc(o.q)}</div>${o.revealed?"":ring("qRing",o.secs||20)}</div>
     <div class="opts">${o.options.map((x,i)=>`<div class="opt ${o.revealed?(i===o.correct?"right":"dim"):""}"><i>${"ABCD"[i]}</i><span>${esc(x)}</span></div>`).join("")}</div>
     ${o.revealed?resultChips(o.results)+speedChips(o.speed):`<div id="answered"></div>`}`;
@@ -356,8 +356,8 @@ function sQuiz(m,prev){
 }
 function sClue(m,prev){
   const c=m.cl,rev=c.phase==="reveal";
-  if(c.phase==="idle"||c.phase==="done"){scene.innerHTML=`<div class="label">Round 4 · Listen for the clue</div><div class="big" style="font-size:4cqw;margin:auto 0">${c.phase==="done"?"All customers done.":"Listen to the customer. Find the clue, the product and the next question."}</div>`;return}
-  scene.innerHTML=`<div class="label">Round 4 · Listen for the clue · <b>customer ${c.i+1} of ${c.n} · question ${c.step+1} of 3</b></div>
+  if(c.phase==="idle"||c.phase==="done"){scene.innerHTML=`<div class="label">Round 3 · Listen for the clue</div><div class="big" style="font-size:4cqw;margin:auto 0">${c.phase==="done"?"All customers done.":"Listen to the customer. Find the clue, the product and the next question."}</div>`;return}
+  scene.innerHTML=`<div class="label">Round 3 · Listen for the clue · <b>customer ${c.i+1} of ${c.n} · question ${c.step+1} of 3</b></div>
     <div class="grid2"><div class="card"><div class="quote">“${esc(c.q)}”</div><div class="by">${esc(c.by)}</div>${c.parts.length?`<div class="parts">${c.parts.map(([l,t])=>`<div><span>${esc(l)}</span>${esc(t)}</div>`).join("")}</div>`:""}</div>
       <div style="display:flex;flex-direction:column;gap:1.2cqw;min-width:0"><div class="qhead"><div class="big" style="font-size:2.4cqw">${esc(c.question)}</div>${rev||c.phase!=="ask"?"":ring("clRing",c.secs||20)}</div>
         <div class="opts one">${c.options.map((x,i)=>`<div class="opt ${rev?(i===c.correct?"right":"dim"):""}" style="font-size:1.45cqw"><i>${"ABCD"[i]}</i><span>${esc(x)}</span></div>`).join("")}</div>
@@ -388,7 +388,7 @@ function sSpin(m,prev){
     side=`<div class="label">${esc(s.result.pick)}</div><div class="big" style="font-size:3.6cqw;color:${rt.col}">${esc(rt.name)}</div><div class="pts">+${s.result.pts}</div>
       ${s.result.crit.map((c,i)=>`<div class="avg"><span>${esc(c)}</span>${starRow(s.result.avg[i])}<span class="mono">${s.result.avg[i].toFixed(1)}</span></div>`).join("")}`;
     if(prev&&prev.startsWith("sp:")){sChime();confetti([rt.col])}}
-  scene.innerHTML=`<div class="label">Round 5 · Spin &amp; explain</div><div class="grid2" style="align-items:center"><div class="wheelbox"><div class="ptr"></div><canvas id="wheel" width="900" height="900"></canvas></div><div style="display:flex;flex-direction:column;gap:1.2cqw;min-width:0">${side}</div></div>`;
+  scene.innerHTML=`<div class="label">Round 4 · Spin &amp; explain</div><div class="grid2" style="align-items:center"><div class="wheelbox"><div class="ptr"></div><canvas id="wheel" width="900" height="900"></canvas></div><div style="display:flex;flex-direction:column;gap:1.2cqw;min-width:0">${side}</div></div>`;
   const cv=$("#wheel");drawWheel(cv,s.wheel,wheelAng);
   if(s.pick&&$("#pickB")){const b=flapBoard(wrapWords(s.pick.toUpperCase(),12).slice(0,3),12,{colors:["sun","sun","sun"],size:"3.2cqw"});$("#pickB").appendChild(b);b.play()}
   if(s.spin&&s.spin.id!==wheelSpinId){wheelSpinId=s.spin.id;const {start,delta,dur}=s.spin,t0=performance.now()-(s.spin.elapsed||0);

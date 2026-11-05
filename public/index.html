@@ -569,17 +569,8 @@ span.pchip{display:inline-block}
     </section>
 
     <!-- QUIZ -->
-    <section class="view" id="v-challenge" data-title="Product Challenge">
-      <div class="hd"><div><div class="eyebrow">Activity 3 · 20 min · team quiz</div><h2>BML Product Challenge</h2>
-        <p>Tables take turns choosing a category and a value. The tile goes to every team phone at once with a countdown (choose 15, 20 or 30 seconds). Answers lock at zero or as soon as every team has answered. Every correct team scores the tile value, and the fastest correct team gets <b>+50</b>, the second fastest <b>+25</b>.</p></div>
-        <div class="row"><span class="qsec" id="qSec" aria-label="Time per question"></span><span class="pill sun" id="qTurn"></span><span class="pill" id="qLeft">24 questions left</span></div></div>
-      <div class="board" id="board"></div>
-      <div class="note"><b>Facilitator tip:</b> after each answer, ask "How would you say that to a customer?" A correct fact is only half the point. The other half is being able to explain it in plain words.</div>
-    </section>
-
-    <!-- CLUES -->
     <section class="view" id="v-clues" data-title="Listen for the Clue">
-      <div class="hd"><div><div class="eyebrow">Activity 4 · 15 min · needs discovery</div><h2>Listen for the Clue</h2>
+      <div class="hd"><div><div class="eyebrow">Activity 3 · 15 min · needs discovery</div><h2>Listen for the Clue</h2>
         <p>Customers rarely say "I need a product". They mention a life event, how they are paid, something that annoys them, or a goal. Press <b>Start</b> and it runs by itself: each customer's words appear on the screen and the phones, and teams answer three timed questions: <b>the clue</b>, <b>the product to lead with</b> and <b>the best next question</b>. 20 points for each correct answer, +10 for the fastest. Read the quote aloud while teams think.</p></div>
         <div class="row"><button class="btn" id="clPrev" title="Previous customer">◀</button><button class="btn primary" id="clStart">Start</button><button class="btn" id="clPause" hidden>Pause</button><button class="btn" id="clSkip" hidden>Next now</button><button class="btn ghost" id="clStop" hidden>Stop</button><button class="btn" id="clNext" title="Next customer">▶</button></div></div>
       <div class="alll">
@@ -596,7 +587,7 @@ span.pchip{display:inline-block}
 
     <!-- SPIN -->
     <section class="view" id="v-spin" data-title="Spin & Explain">
-      <div class="hd"><div><div class="eyebrow">Activity 5 · 20 min · confidence round</div><h2>Spin &amp; Explain</h2>
+      <div class="hd"><div><div class="eyebrow">Activity 4 · 20 min · confidence round</div><h2>Spin &amp; Explain</h2>
         <p>Teams take turns. The team presses <b>SPIN</b> on its phone and the wheel picks a product. Press <b>Start pitch timer</b> when the volunteer is ready: 30 seconds using Feature, Advantage and Benefit. Then press <b>Open voting</b>: every other team rates the pitch on its phone, voting closes after 20 seconds, and the team scores 10 points per average star (up to 50).</p></div></div>
       <div class="spinwrap">
         <div class="wheel-box"><div class="pointer" aria-hidden="true"></div><canvas id="wheel" width="1040" height="1040" aria-label="Product wheel"></canvas></div>
@@ -605,6 +596,15 @@ span.pchip{display:inline-block}
     </section>
 
     <!-- PRODUCT LIBRARY -->
+    <section class="view" id="v-challenge" data-title="Product Challenge">
+      <div class="hd"><div><div class="eyebrow">Activity 5 · 20 min · team quiz</div><h2>BML Product Challenge</h2>
+        <p>Tables take turns choosing a category and a value. The tile goes to every team phone at once with a countdown (choose 15, 20 or 30 seconds). Answers lock at zero or as soon as every team has answered. Every correct team scores the tile value, and the fastest correct team gets <b>+50</b>, the second fastest <b>+25</b>.</p></div>
+        <div class="row"><span class="qsec" id="qSec" aria-label="Time per question"></span><span class="pill sun" id="qTurn"></span><span class="pill" id="qLeft">24 questions left</span></div></div>
+      <div class="board" id="board"></div>
+      <div class="note"><b>Facilitator tip:</b> after each answer, ask "How would you say that to a customer?" A correct fact is only half the point. The other half is being able to explain it in plain words.</div>
+    </section>
+
+    <!-- CLUES -->
     <section class="view" id="v-products" data-title="Product Library">
       <div class="hd"><div><div class="eyebrow">Reference · individual and business customers</div><h2>Product Library</h2>
         <p>Every Bank of Maldives product in one place, for individual and business customers, with who it is for, the key facts and a one-line pitch. Product facts come from bankofmaldives.com.mv; rates, limits and fees change, so check the current Schedule of Charges before quoting a figure to a customer.</p></div></div>
@@ -661,16 +661,16 @@ const store={get(k,d){try{const v=localStorage.getItem("kykp:"+k);return v?JSON.
 /* ================= DATA ================= */
 const VIEWS=[
  ["plan","Run of show","Facilitator plan"],["warmup","True or False","Warm-up · 10 min"],["library","Product Passport","Refresh · 25 min"],
- ["challenge","Product Challenge","Quiz · 20 min"],["clues","Listen for the Clue","Needs · 15 min"],
- ["spin","Spin & Explain","Confidence · 20 min"],["close","Close","Commit · 5 min"],
+ ["clues","Listen for the Clue","Needs · 15 min"],["spin","Spin & Explain","Confidence · 20 min"],
+ ["challenge","Product Challenge","Quiz · 20 min"],["close","Close","Commit · 5 min"],
  ["products","Product Library","All products · reference"]];
 
 const ROS=[
  {t:"0:00",d:"10 min",v:"warmup",h:"True or False warm-up",p:"Wakes the room up and shows what people don't know yet, before any teaching starts.",n:["Ask the 1–5 confidence question first and note the hand count.","Run 6–8 statements. Keep it fast: about 60 seconds each.","Start the session and show the join QR code. Each team joins on one phone (up to 6 teams)."]},
  {t:"0:10",d:"25 min",v:"library",h:"Product Passport: jigsaw teach-back",p:"Staff refresh the products by teaching each other. People remember what they explain far better than what they hear.",n:["Open product picking: each table takes 2 products on its phone, and no two tables can take the same one.","10 minutes to prepare, then 3 minutes per table to teach.","The other tables score each teach-back on their phones. You correct and add detail in under 60 seconds."]},
- {t:"0:35",d:"20 min",v:"challenge",h:"BML Product Challenge quiz",p:"Checks recall across all families straight after the teach-backs. Includes the Islamic structure names customers will now ask about.",n:["Tables take turns choosing a tile. Every team answers on its phone, and every correct team scores.","Leave the 400-point questions until the end to build tension.","After each answer, ask: how would you say that to a customer?"]},
- {t:"0:55",d:"15 min",v:"clues",h:"Listen for the Clue",p:"Moves from knowing products to spotting needs. Introduces ASK · LISTEN · LINK · LEAD.",n:["2 minutes on the four clue types, then press Start.","It runs by itself: each customer gets 3 timed questions on the phones (clue, product, next question), 20 points each, +10 for the fastest.","Read each quote aloud and use the 8-second answer pause to say why the right answer wins."]},
- {t:"1:10",d:"20 min",v:"spin",h:"Spin & Explain",p:"Builds confidence through a 30-second product pitch, scored by the other teams on their phones.",n:["Each team takes a turn: it presses SPIN on its phone and the wheel picks a product.","Start the pitch timer when the volunteer is ready, then open voting: the other teams rate it on their phones.","Voting closes by itself; coach in one sentence, then press Next team."]},
+ {t:"0:35",d:"15 min",v:"clues",h:"Listen for the Clue",p:"Moves from knowing products to spotting needs. Introduces ASK · LISTEN · LINK · LEAD.",n:["2 minutes on the four clue types, then press Start.","It runs by itself: each customer gets 3 timed questions on the phones (clue, product, next question), 20 points each, +10 for the fastest.","Read each quote aloud and use the 8-second answer pause to say why the right answer wins."]},
+ {t:"0:50",d:"20 min",v:"spin",h:"Spin & Explain",p:"Builds confidence through a 30-second product pitch, scored by the other teams on their phones.",n:["Each team takes a turn: it presses SPIN on its phone and the wheel picks a product.","Start the pitch timer when the volunteer is ready, then open voting: the other teams rate it on their phones.","Voting closes by itself; coach in one sentence, then press Next team."]},
+ {t:"1:10",d:"20 min",v:"challenge",h:"BML Product Challenge quiz",p:"The grand finale: checks recall across all families, and the 400-point tiles can still change the winner. Includes the Islamic structure names customers will now ask about.",n:["Tables take turns choosing a tile. Every team answers on its phone, and every correct team scores.","Leave the 400-point questions until the end to build tension.","After each answer, ask: how would you say that to a customer?"]},
  {t:"1:30",d:"5 min",v:"close",h:"Close and commitments",p:"Winner announced, confidence check repeated, three commitments written on sticky notes.",n:["Ask the confidence question again and compare with the opening count.","Collect the sticky notes for the Day 2 sales simulation."]}
 ];
 
@@ -959,8 +959,8 @@ function stopPickPoll(){clearInterval(pickPoll);pickPoll=null}
 /* ---- finished games and standings ---- */
 // Finishing a game records it as complete and puts the standings on the projector and on every team phone:
 // each team's score in the game just finished, its total, and its score in every finished game so far.
-const GAMES=[["mythfact","True or False","warmup"],["teach","Product Passport","library"],["quiz","Product Challenge","challenge"],
-  ["clue","Listen for the Clue","clues"],["spin","Spin & Explain","spin"]];
+const GAMES=[["mythfact","True or False","warmup"],["teach","Product Passport","library"],["clue","Listen for the Clue","clues"],
+  ["spin","Spin & Explain","spin"],["quiz","Product Challenge","challenge"]];
 const gameName=k=>(GAMES.find(g=>g[0]===k)||[k,ACT[k]||k])[1];
 let finished=[];
 const gameScore=(team,key)=>{let s=0;for(const e of events.values())if(e.team_id===team&&e.activity===key)s+=e.points;return s};
@@ -1077,7 +1077,7 @@ function renderLeader(){
 // Each staff member answers on their own phone at /feedback. Only the facilitator's device can read the answers;
 // it re-reads them every 5 seconds while the Close view is open.
 let fbRows=[],fbErr=null,fbShow=false,fbT=null;
-const FB_ACTS=["True or False","Product Passport","Product Challenge","Listen for the Clue","Spin & Explain"];
+const FB_ACTS=["True or False","Product Passport","Listen for the Clue","Spin & Explain","Product Challenge"];
 const feedbackUrl=()=>(location.protocol==="file:"?location.href.replace(/[^/]*$/,"")+"feedback.html":location.origin+location.pathname.replace(/[^/]*$/,"")+"feedback")+"?s="+(sess?sess.code:"");
 function fbSummary(){
   const n=fbRows.length,avg=k=>n?(fbRows.reduce((a,r)=>a+r[k],0)/n).toFixed(1):"–",dist=k=>[1,2,3,4,5].map(v=>fbRows.filter(r=>r[k]===v).length);

@@ -100,7 +100,7 @@ const store={get(k,d){try{const v=localStorage.getItem("kykp:"+k);return v?JSON.
 const SB_URL="https://jtofxcdoyzyyxdlbjrbh.supabase.co", SB_KEY="sb_publishable_UduFSvz4bpmCY41kxjLRww_iufXEQpx";
 const sb=window.supabase?window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:false,autoRefreshToken:false}}):null;
 const app=$("#app");
-const ACTIVITIES=["True or False","Product Passport","Product Challenge","Listen for the Clue","Spin & Explain"];
+const ACTIVITIES=["True or False","Product Passport","Listen for the Clue","Spin & Explain","Product Challenge"];
 const CONF_Q="how confident were you explaining BML's financing products to a customer?";
 
 function toast(msg,bad){const el=$("#toast");el.textContent=msg;el.classList.toggle("bad",!!bad);el.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>el.hidden=true,bad?5000:2200)}
